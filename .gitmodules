@@ -1,0 +1,12 @@
+[submodule "locrawl"]
+	path = locrawl
+	url = git@github.com:Tenshimatt/locrawl.git
+[submodule "playground-tools"]
+	path = playground-tools
+	url = git@github.com:Tenshimatt/playground-tools.git
+[submodule "superluxe"]
+	path = superluxe
+	url = git@github.com:Tenshimatt/superluxe.git
+[submodule "superluxe_multicurrency"]
+	path = superluxe_multicurrency
+	url = git@github.com:Tenshimatt/SUPERLUXE_multicurrency.git
