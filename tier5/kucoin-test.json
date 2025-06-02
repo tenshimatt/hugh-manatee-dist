@@ -1,0 +1,8 @@
+{
+  "orderId": "TEST-KUCOIN-001",
+  "currencies": ["USDT", "BTC", "KCS", "ETH", "USDC", "FET"],
+  "paymentMethodCode": "",
+  "accountTypes": ["MAIN", "TRADE"],
+  "userId": "672351e3e1e3580001c3594b"
+}
+

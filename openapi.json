@@ -1,0 +1,109 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pandora Plugin API",
+    "description": "API for the Pandora ChatGPT plugin providing code execution endpoints.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.beyondpandora.com"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "schemas": {
+      "CodeSubmission": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" }
+        },
+        "required": [ "code" ],
+        "additionalProperties": false
+      },
+      "ChatgptSubmitResponse": {
+        "type": "object",
+        "properties": {
+          "output": { "type": "string" }
+        },
+        "required": [ "output" ],
+        "additionalProperties": false
+      },
+      "SubmitResponse": {
+        "type": "object",
+        "properties": {
+          "output": { "type": "string" },
+          "status": { "type": "string" },
+          "filename": { "type": "string" },
+          "executionTime": { "type": "string" }
+        },
+        "required": [ "output", "status", "filename", "executionTime" ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/chatgpt_submit": {
+      "post": {
+        "operationId": "chatgptSubmitCode",
+        "summary": "Submit code (no auth required)",
+        "description": "Submits code and returns the output.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CodeSubmission" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatgptSubmitResponse" }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/submit": {
+      "post": {
+        "operationId": "submitCode",
+        "summary": "Submit code (requires API key)",
+        "description": "Submits code and returns output along with status, filename, and execution time. Requires API key.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CodeSubmission" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SubmitResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

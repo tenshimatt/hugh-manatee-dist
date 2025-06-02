@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Pandora Executor",
+  "name_for_model": "pandora_executor",
+  "description_for_human": "Run Python code securely via EC2 and see the output.",
+  "description_for_model": "Submit code blocks for execution. Returns stdout/stderr.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://api.beyondpandora.com/openapi.json"
+  },
+  "logo_url": "https://api.beyondpandora.com/logo.png",
+  "contact_email": "matt@beyondpandora.com",
+  "legal_info_url": "https://beyondpandora.com/legal"
+}
