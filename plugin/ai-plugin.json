@@ -9,9 +9,9 @@
   },
   "api": {
     "type": "openapi",
-    "url": "https://tenshimatt.github.io/pandora/plugin/openapi.json"
+    "url": "https://www.beyondpandora.com/openapi.json"
   },
-  "logo_url": "https://tenshimatt.github.io/pandora/plugin/logo.png",
-  "contact_email": "sqwark@beyondpandora.com",
-  "legal_info_url": "https://beyondpandora.com/legal"
+  "logo_url": "https://www.beyondpandora.com/logo.png",
+  "contact_email": "matt@beyondpandora.com",
+  "legal_info_url": "https://www.beyondpandora.com/legal"
 }
