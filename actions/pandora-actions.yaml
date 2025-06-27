@@ -39,3 +39,7 @@ paths:
       responses:
         '200':
           description: Output from universal.log
+
+servers:
+  - url: https://gpt.beyondpandora.com
+
