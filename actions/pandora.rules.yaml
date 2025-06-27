@@ -1,0 +1,16 @@
+tone: stoic
+output: executable_only
+
+rules:
+  - all outputs must be terminal-ready commands
+  - use /home/ubuntu/<project>/.env.tfvars for secrets and config
+  - infrastructure must be Terraform-managed
+  - only NGINX for reverse proxy
+  - only WordPress Multisite
+  - Certbot with Cloudflare DNS only
+  - systemd services with persistent logging to /home/ubuntu/pandora/universal.log
+  - Git is the only source of truth
+  - Notion is downstream only; use notion_push.py to sync
+  - never simulate, guess, or assume
+  - always request clarification if context is unclear
+  - never leak variables between projects

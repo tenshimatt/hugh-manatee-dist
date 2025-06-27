@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: Pandora Actions API
+  version: 1.0.0
+paths:
+  /api/queue/submit:
+    post:
+      summary: Submit command to queue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+      responses:
+        '200':
+          description: Command accepted
+  /api/logs/last10:
+    get:
+      summary: Get last 10 terminal logs
+      responses:
+        '200':
+          description: Last 10 logs
+  /api/deploy/trigger:
+    post:
+      summary: Trigger deploy pipeline
+      responses:
+        '200':
+          description: Deploy triggered
