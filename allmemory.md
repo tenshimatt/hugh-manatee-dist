@@ -1,12 +1,15 @@
 # AllMemory.md - Complete Project Summary
 
-**Last Updated**: 2025-07-28 20:00:39 UTC
+**Last Updated**: 2025-07-29 08:00:05 UTC
 **Updated By**: Scheduled Auto-Update
 **Deployment Status**: ✅ PRODUCTION LIVE
 
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
+- 2025-07-29 22:43:00 UTC: ✅ PREVIEW LINKS FIXED - Completed Firecrawl integration in WebsiteReplicator, fixed "View Live Preview" functionality, Version: b6921c72-b30c-4d36-960a-bbdfd98668f9
+- 2025-07-28 22:39:00 UTC: 🔥 FIRECRAWL INTEGRATION - Enhanced WebsiteAnalyzer with Firecrawl API for superior content extraction, Version: 997d8639-ddff-4649-9209-1f5433106497
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -22,6 +25,7 @@
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -65,6 +69,7 @@
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -108,6 +113,7 @@ database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -125,12 +131,26 @@ database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
    - Handles API requests
    - Coordinates screenshot generation and email templating
 
-3. **Email Template System** (`src/rawgle-email-template.js`)
+3. **🔥 Website Analyzer with Firecrawl** (`src/utils/website-analyzer.js`)
+   - **NEW**: Firecrawl API integration for superior content extraction
+   - Clean markdown conversion of website content
+   - Enhanced metadata extraction (generator, viewport, etc.)
+   - Intelligent fallback to basic HTTP if Firecrawl fails
+   - Better modern website detection using framework metadata
+
+4. **✅ Website Replicator with Firecrawl** (`src/website-replicator.js`)
+   - **COMPLETED**: Integrated Firecrawl API for robust content extraction
+   - Enhanced markdown processing for better content understanding
+   - Improved business information extraction from clean content
+   - Path-based preview URLs working: `/preview/business-name/design-type`
+   - KV storage integration for serving generated websites
+
+5. **Email Template System** (`src/rawgle-email-template.js`)
    - Production-ready Rawgle-branded emails
    - Based on `production_email_real-001.html` format
    - Static metrics with dynamic business data
 
-4. **Integration Module** (`src/approval-dashboard-integration.js`)
+6. **Integration Module** (`src/approval-dashboard-integration.js`)
    - Connects with existing approval dashboard
    - Enhanced UI with preview capabilities
 
@@ -148,6 +168,7 @@ database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -183,6 +204,7 @@ LOW (>70): $2.5k-$4k         (was $5k-$8k)
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -215,6 +237,7 @@ curl -X POST https://rawgle-sitereviver-prod.findrawdogfood.workers.dev/api/proc
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -247,6 +270,7 @@ npm run db:reset
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -269,16 +293,20 @@ result = rawgle.generate_email_campaign(business_data)
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
 
-## 📊 **GENERATED WEBSITE URLS**
+## 📊 **GENERATED WEBSITE URLS - ✅ WORKING**
 
 ### **Format**
-- **Professional**: `https://[business-name]-professional.sitereviver.pages.dev`
-- **Science-Backed**: `https://[business-name]-science.sitereviver.pages.dev`
-- **Appendix**: `https://[business-name]-science.sitereviver.pages.dev?appendix=true`
+- **Professional**: `https://rawgle-sitereviver-prod.findrawdogfood.workers.dev/preview/[business-name]/professional`
+- **Science-Backed**: `https://rawgle-sitereviver-prod.findrawdogfood.workers.dev/preview/[business-name]/science`
+
+### **Example Working URLs**
+- **Professional**: `https://rawgle-sitereviver-prod.findrawdogfood.workers.dev/preview/test-raw-dog-food-co/professional`
+- **Science**: `https://rawgle-sitereviver-prod.findrawdogfood.workers.dev/preview/test-raw-dog-food-co/science`
 
 ### **URL Sanitization**
 ```javascript
@@ -295,6 +323,7 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -324,6 +353,7 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -346,6 +376,7 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -368,6 +399,7 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -394,6 +426,7 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
@@ -424,6 +457,7 @@ wrangler d1 execute findrawdogfood-db --command "SELECT COUNT(*) FROM siterevive
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2025-07-29 08:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-29 08:34:26
 - 2025-07-28 20:00:39 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-28 08:08:34 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-07-28 00:47:59
 - 2025-07-27 21:58:45 UTC: Auto-update - Worker: DEPLOYED, API: ONLINE, Last Core Change: 2025-07-27 21:53:21
