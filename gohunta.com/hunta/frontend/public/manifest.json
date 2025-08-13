@@ -1,0 +1,21 @@
+{
+  "name": "Hunta - Elite Dog Hunting Platform",
+  "short_name": "Hunta",
+  "description": "Elite dog hunting platform with offline-first wilderness compatibility",
+  "icons": [
+    {
+      "src": "/hunta-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/hunta-icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2D5530",
+  "background_color": "#F0F9F1"
+}

@@ -1,0 +1,7 @@
+name = "hunta-v2-frontend"
+compatibility_date = "2024-01-01"
+
+[[pages.rules]]
+pattern = "/*"
+command = "npm run build"
+build_directory = "dist"

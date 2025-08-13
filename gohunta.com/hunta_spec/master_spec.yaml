@@ -1,0 +1,21 @@
+# Hunta – Master Specification
+
+## Overview
+
+Hunta (https://gohutna.com) is a niche, expert-led platform for dog-assisted hunting enthusiasts. The site is focused on tracking, training, ethical hunting, and community storytelling. It is optimized for rural users and built for offline-first wilderness compatibility.
+
+## Dev Automation
+
+Uses [Tmux-Orchestrator](https://github.com/Jedward23/Tmux-Orchestrator) to manage local multi-pane dev environments. See `tmux.yml`.
+
+Commands:
+orchestrate-tmux tmux.yml
+
+## Modules
+
+- Pack & Profile Management
+- Hunt Route Planner (GPS)
+- Trial & Event Listings
+- Gear Reviews & Loadouts
+- Ethics Knowledge Base
+- Brag Board & Journal

@@ -1,0 +1,21 @@
+name = "hunta-backend"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "production"
+JWT_SECRET = "hunta-production-secret-2025"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hunta-production"
+database_id = "hunta-prod-db-id"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "hunta-cache-prod"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "hunta-media-prod"

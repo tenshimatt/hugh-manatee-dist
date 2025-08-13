@@ -1,0 +1,27 @@
+name = "hunta-backend-prod"
+main = "workers/production-index.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "production"
+JWT_SECRET = "UiSznsG+JA28u28hAx/CPglTA6Q6HYRExFL4KbJIeoU="
+UPLOAD_LIMIT = "10485760"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hunta-db-prod"
+database_id = "8a950a6b-e1c8-4ac0-97bc-ad93c75450b6"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "c53c6240247746f48374f5fc20af1f0c"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "hunta-media-prod"
+
+# Custom domain routes - Enable after DNS configuration
+# routes = [
+#   { pattern = "api.gohunta.com/*", zone_name = "gohunta.com" }
+# ]
