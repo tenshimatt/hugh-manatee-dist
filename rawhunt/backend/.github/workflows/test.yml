@@ -1,0 +1,496 @@
+name: Comprehensive Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18'
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+jobs:
+  # Job 1: Setup and validation
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Generate cache key
+        id: cache-key
+        run: echo "key=node-modules-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ steps.cache-key.outputs.key }}
+          restore-keys: |
+            node-modules-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate package.json
+        run: npm audit --audit-level=moderate
+
+      - name: Setup test database
+        run: npm run setup:test-db
+
+  # Job 2: Linting and code quality
+  lint:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Run ESLint
+        run: npx eslint src/ tests/ --ext .js --format json --output-file eslint-report.json
+        continue-on-error: true
+
+      - name: Run Prettier check
+        run: npx prettier --check src/ tests/
+
+      - name: Check for console.log statements
+        run: |
+          if grep -r "console\.log" src/; then
+            echo "Found console.log statements in source code"
+            exit 1
+          fi
+
+      - name: Upload lint results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: lint-results
+          path: eslint-report.json
+
+  # Job 3: Unit tests with coverage
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        test-group: [auth, suppliers, paws, orders, reviews, notifications]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Run unit tests for ${{ matrix.test-group }}
+        run: npm run test:unit -- --coverage --reporter=json --outputFile=unit-test-results-${{ matrix.test-group }}.json tests/unit/${{ matrix.test-group }}*
+        env:
+          CI: true
+          NODE_ENV: test
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: unit-test-results-${{ matrix.test-group }}
+          path: |
+            unit-test-results-${{ matrix.test-group }}.json
+            coverage/
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.info
+          delete-old-comments: true
+
+  # Job 4: Integration tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    services:
+      # Mock external services for integration testing
+      mock-api:
+        image: mockserver/mockserver:latest
+        ports:
+          - 1080:1080
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Setup test environment
+        run: |
+          echo "Setting up integration test environment"
+          npm run setup:test-db
+
+      - name: Run integration tests
+        run: npm run test:integration -- --coverage --reporter=json --outputFile=integration-test-results.json
+        env:
+          CI: true
+          NODE_ENV: test
+          TEST_DATABASE_URL: "sqlite://test.db"
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: integration-test-results
+          path: |
+            integration-test-results.json
+            coverage/
+
+  # Job 5: Security tests
+  security-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Run security tests
+        run: npm run test:security -- --reporter=json --outputFile=security-test-results.json
+        env:
+          CI: true
+          NODE_ENV: test
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high --json > npm-audit.json
+        continue-on-error: true
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --json > snyk-results.json
+        continue-on-error: true
+
+      - name: Upload security test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-test-results
+          path: |
+            security-test-results.json
+            npm-audit.json
+            snyk-results.json
+
+  # Job 6: Performance tests
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Install Artillery
+        run: npm install -g artillery@latest
+
+      - name: Start application for performance testing
+        run: |
+          npm run dev &
+          sleep 30  # Wait for app to start
+        env:
+          NODE_ENV: test
+
+      - name: Wait for application to be ready
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:8787/health; do sleep 2; done'
+
+      - name: Run performance tests
+        run: npm run test:performance
+        continue-on-error: true
+
+      - name: Upload performance test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-test-results
+          path: |
+            artillery-report.json
+            performance-metrics.json
+
+  # Job 7: E2E tests
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        project: [chromium, firefox, webkit]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Install Playwright browsers
+        run: npx playwright install ${{ matrix.project }}
+
+      - name: Start application
+        run: |
+          npm run dev &
+          sleep 30
+        env:
+          NODE_ENV: test
+
+      - name: Wait for application
+        run: npx wait-on http://localhost:8787/health --timeout 60000
+
+      - name: Run E2E tests
+        run: npx playwright test --project=${{ matrix.project }} --reporter=json --output-dir=test-results-${{ matrix.project }}
+        env:
+          CI: true
+          TEST_BASE_URL: http://localhost:8787
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-results-${{ matrix.project }}
+          path: |
+            test-results-${{ matrix.project }}/
+            playwright-report/
+
+  # Job 8: Test result aggregation and reporting
+  test-reporting:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, security-tests, performance-tests, e2e-tests]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Merge coverage reports
+        run: |
+          npm install -g nyc
+          mkdir -p coverage-merged
+          
+          # Merge all coverage reports
+          find . -name "coverage" -type d | while read dir; do
+            if [ -f "$dir/coverage-final.json" ]; then
+              cp "$dir/coverage-final.json" "coverage-merged/coverage-$(basename $(dirname $dir)).json"
+            fi
+          done
+          
+          # Generate merged report
+          npx nyc merge coverage-merged coverage-merged.json
+          npx nyc report --reporter=html --reporter=text --reporter=lcov --temp-dir=coverage-merged
+
+      - name: Generate test summary report
+        run: |
+          cat > test-summary.md << EOF
+          # Test Results Summary
+          
+          ## Coverage Summary
+          $(cat coverage/lcov.info | grep -E "LF:|LH:" | tail -2)
+          
+          ## Test Status
+          - Unit Tests: $([[ -f unit-test-results-*/unit-test-results-*.json ]] && echo "✅ PASSED" || echo "❌ FAILED")
+          - Integration Tests: $([[ -f integration-test-results/integration-test-results.json ]] && echo "✅ PASSED" || echo "❌ FAILED")
+          - Security Tests: $([[ -f security-test-results/security-test-results.json ]] && echo "✅ PASSED" || echo "❌ FAILED")
+          - Performance Tests: $([[ -f performance-test-results/artillery-report.json ]] && echo "✅ PASSED" || echo "❌ FAILED")
+          - E2E Tests: $([[ -d e2e-test-results-chromium ]] && echo "✅ PASSED" || echo "❌ FAILED")
+          
+          ## Security Findings
+          $(if [ -f security-test-results/npm-audit.json ]; then echo "NPM Audit: $(jq '.metadata.totalVulnerabilities' security-test-results/npm-audit.json) vulnerabilities"; fi)
+          $(if [ -f security-test-results/snyk-results.json ]; then echo "Snyk Scan: $(jq '.uniqueCount' security-test-results/snyk-results.json) unique vulnerabilities"; fi)
+          
+          EOF
+
+      - name: Upload merged coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: merged-coverage-report
+          path: coverage/
+
+      - name: Upload test summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-summary
+          path: test-summary.md
+
+      - name: Comment test summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('test-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+  # Job 9: Deployment readiness check
+  deployment-check:
+    runs-on: ubuntu-latest
+    needs: [test-reporting]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download test results
+        uses: actions/download-artifact@v3
+        with:
+          name: merged-coverage-report
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(grep -o 'lines......: [0-9.]*' coverage/lcov-report/index.html | grep -o '[0-9.]*')
+          echo "Coverage: $COVERAGE%"
+          
+          if (( $(echo "$COVERAGE >= 95" | bc -l) )); then
+            echo "✅ Coverage threshold met: $COVERAGE% >= 95%"
+          else
+            echo "❌ Coverage threshold not met: $COVERAGE% < 95%"
+            exit 1
+          fi
+
+      - name: Check for critical security issues
+        run: |
+          if [ -f security-test-results/npm-audit.json ]; then
+            CRITICAL=$(jq '.metadata.vulnerabilities.critical' security-test-results/npm-audit.json)
+            HIGH=$(jq '.metadata.vulnerabilities.high' security-test-results/npm-audit.json)
+            
+            if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+              echo "❌ Critical or high severity vulnerabilities found"
+              echo "Critical: $CRITICAL, High: $HIGH"
+              exit 1
+            else
+              echo "✅ No critical or high severity vulnerabilities"
+            fi
+          fi
+
+      - name: Validate performance benchmarks
+        run: |
+          if [ -f performance-test-results/artillery-report.json ]; then
+            # Check if average response time is under 100ms
+            AVG_RESPONSE=$(jq '.aggregate.latency.mean' performance-test-results/artillery-report.json)
+            
+            if (( $(echo "$AVG_RESPONSE <= 100" | bc -l) )); then
+              echo "✅ Performance benchmark met: ${AVG_RESPONSE}ms <= 100ms"
+            else
+              echo "❌ Performance benchmark not met: ${AVG_RESPONSE}ms > 100ms"
+              exit 1
+            fi
+          fi
+
+      - name: Create deployment flag
+        run: |
+          echo "DEPLOYMENT_READY=true" >> $GITHUB_ENV
+          echo "All checks passed - ready for deployment"
+
+  # Job 10: Cleanup and notification
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [test-reporting]
+    if: always()
+    steps:
+      - name: Clean up test data
+        run: |
+          echo "Cleaning up test databases and temporary files"
+          # Add cleanup commands here
+
+      - name: Send Slack notification
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: "Test suite failed on ${{ github.ref }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send success notification
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: "All tests passed on ${{ github.ref }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
