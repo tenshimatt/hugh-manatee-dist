@@ -1,0 +1,339 @@
+//
+// CoreDataStack.swift - Core Data Stack and Persistence
+//
+import Foundation
+import CoreData
+
+// MARK: - Core Data Stack
+class CoreDataStack: ObservableObject {
+    static let shared = CoreDataStack()
+    
+    lazy var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "KnomeDataModel")
+        
+        // Configure for CloudKit if needed
+        configureContainer(container)
+        
+        container.loadPersistentStores { _, error in
+            if let error = error as NSError? {
+                print("❌ Core Data error: \(error), \(error.userInfo)")
+                // In production, you might want to handle this more gracefully
+                fatalError("Core Data failed to load: \(error)")
+            } else {
+                print("✅ Core Data loaded successfully")
+            }
+        }
+        
+        // Automatic merging from parent context
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        
+        return container
+    }()
+    
+    var viewContext: NSManagedObjectContext {
+        return persistentContainer.viewContext
+    }
+    
+    private init() {}
+    
+    private func configureContainer(_ container: NSPersistentContainer) {
+        // Configure for encryption
+        if let storeDescription = container.persistentStoreDescriptions.first {
+            // Enable history tracking for CloudKit sync
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+            
+            // Add file protection
+            storeDescription.setOption(FileProtectionType.complete as NSString, 
+                                      forKey: NSPersistentStoreFileProtectionKey)
+        }
+    }
+    
+    // MARK: - Background Context
+    func backgroundContext() -> NSManagedObjectContext {
+        return persistentContainer.newBackgroundContext()
+    }
+    
+    // MARK: - Save Context
+    func save() {
+        let context = persistentContainer.viewContext
+        
+        if context.hasChanges {
+            do {
+                try context.save()
+                print("✅ Core Data saved successfully")
+            } catch {
+                print("❌ Core Data save error: \(error)")
+                // Handle the error appropriately
+                context.rollback()
+            }
+        }
+    }
+    
+    func saveBackground(_ context: NSManagedObjectContext) {
+        context.perform {
+            if context.hasChanges {
+                do {
+                    try context.save()
+                } catch {
+                    print("❌ Background context save error: \(error)")
+                }
+            }
+        }
+    }
+    
+    // MARK: - Batch Operations
+    func performBackgroundTask(_ block: @escaping (NSManagedObjectContext) -> Void) {
+        persistentContainer.performBackgroundTask(block)
+    }
+    
+    // MARK: - Delete All Data
+    func deleteAllData() {
+        let context = persistentContainer.viewContext
+        
+        // Delete all entities
+        let entities = persistentContainer.managedObjectModel.entities
+        
+        for entity in entities {
+            if let entityName = entity.name {
+                let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+                let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                
+                do {
+                    try context.execute(deleteRequest)
+                } catch {
+                    print("❌ Failed to delete \(entityName): \(error)")
+                }
+            }
+        }
+        
+        save()
+    }
+}
+
+// MARK: - Core Data Models
+extension CoreDataStack {
+    
+    // MARK: - Chat Message Operations
+    func saveChatMessage(_ message: ChatMessage) {
+        let context = viewContext
+        let entity = NSEntityDescription.insertNewObject(forEntityName: "ChatMessageEntity", into: context) as! ChatMessageEntity
+        
+        entity.id = message.id
+        entity.content = message.content
+        entity.isUser = message.isUser
+        entity.timestamp = message.timestamp
+        
+        save()
+    }
+    
+    func saveChatMessages(_ messages: [ChatMessage]) {
+        performBackgroundTask { context in
+            for message in messages {
+                let entity = NSEntityDescription.insertNewObject(forEntityName: "ChatMessageEntity", into: context) as! ChatMessageEntity
+                entity.id = message.id
+                entity.content = message.content
+                entity.isUser = message.isUser
+                entity.timestamp = message.timestamp
+            }
+            
+            self.saveBackground(context)
+        }
+    }
+    
+    func fetchChatMessages(limit: Int = 100) -> [ChatMessage] {
+        let request: NSFetchRequest<ChatMessageEntity> = ChatMessageEntity.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \ChatMessageEntity.timestamp, ascending: true)]
+        request.fetchLimit = limit
+        
+        do {
+            let entities = try viewContext.fetch(request)
+            return entities.compactMap { entity in
+                guard let id = entity.id,
+                      let content = entity.content,
+                      let timestamp = entity.timestamp else { return nil }
+                
+                return ChatMessage(id: id, content: content, isUser: entity.isUser, timestamp: timestamp)
+            }
+        } catch {
+            print("❌ Failed to fetch chat messages: \(error)")
+            return []
+        }
+    }
+    
+    func deleteChatMessages(olderThan date: Date) {
+        let request: NSFetchRequest<NSFetchRequestResult> = ChatMessageEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "timestamp < %@", date as NSDate)
+        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+        
+        do {
+            try viewContext.execute(deleteRequest)
+            save()
+        } catch {
+            print("❌ Failed to delete old messages: \(error)")
+        }
+    }
+    
+    // MARK: - Journal Entry Operations
+    func saveJournalEntry(_ entry: JournalEntry) {
+        let context = viewContext
+        let entity = NSEntityDescription.insertNewObject(forEntityName: "JournalEntryEntity", into: context) as! JournalEntryEntity
+        
+        entity.id = entry.id
+        entity.content = entry.content
+        entity.mood = entry.mood?.rawValue
+        entity.timestamp = entry.timestamp
+        
+        save()
+    }
+    
+    func updateJournalEntry(_ entry: JournalEntry) {
+        let request: NSFetchRequest<JournalEntryEntity> = JournalEntryEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", entry.id as CVarArg)
+        
+        do {
+            let entities = try viewContext.fetch(request)
+            if let entity = entities.first {
+                entity.content = entry.content
+                entity.mood = entry.mood?.rawValue
+                save()
+            }
+        } catch {
+            print("❌ Failed to update journal entry: \(error)")
+        }
+    }
+    
+    func fetchJournalEntries(limit: Int = 50) -> [JournalEntry] {
+        let request: NSFetchRequest<JournalEntryEntity> = JournalEntryEntity.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \JournalEntryEntity.timestamp, ascending: false)]
+        request.fetchLimit = limit
+        
+        do {
+            let entities = try viewContext.fetch(request)
+            return entities.compactMap { entity in
+                guard let id = entity.id,
+                      let content = entity.content,
+                      let timestamp = entity.timestamp else { return nil }
+                
+                let mood = entity.mood.flatMap { MoodType(rawValue: $0) }
+                return JournalEntry(content: content, mood: mood)
+            }
+        } catch {
+            print("❌ Failed to fetch journal entries: \(error)")
+            return []
+        }
+    }
+    
+    func deleteJournalEntry(id: UUID) {
+        let request: NSFetchRequest<JournalEntryEntity> = JournalEntryEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            let entities = try viewContext.fetch(request)
+            for entity in entities {
+                viewContext.delete(entity)
+            }
+            save()
+        } catch {
+            print("❌ Failed to delete journal entry: \(error)")
+        }
+    }
+    
+    // MARK: - Mood Tracking Operations
+    func saveMoodEntry(mood: MoodType, timestamp: Date = Date(), notes: String? = nil) {
+        let context = viewContext
+        let entity = NSEntityDescription.insertNewObject(forEntityName: "MoodEntryEntity", into: context) as! MoodEntryEntity
+        
+        entity.id = UUID()
+        entity.mood = mood.rawValue
+        entity.timestamp = timestamp
+        entity.notes = notes
+        
+        save()
+    }
+    
+    func fetchMoodEntries(from startDate: Date, to endDate: Date) -> [MoodEntryEntity] {
+        let request: NSFetchRequest<MoodEntryEntity> = MoodEntryEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "timestamp >= %@ AND timestamp <= %@", 
+                                       startDate as NSDate, endDate as NSDate)
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \MoodEntryEntity.timestamp, ascending: true)]
+        
+        do {
+            return try viewContext.fetch(request)
+        } catch {
+            print("❌ Failed to fetch mood entries: \(error)")
+            return []
+        }
+    }
+    
+    func fetchRecentMoodEntries(days: Int = 30) -> [MoodEntryEntity] {
+        let startDate = Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date()
+        return fetchMoodEntries(from: startDate, to: Date())
+    }
+    
+    // MARK: - Analytics and Insights
+    func getMoodStatistics(for days: Int = 30) -> MoodStatistics {
+        let entries = fetchRecentMoodEntries(days: days)
+        
+        var moodCounts: [String: Int] = [:]
+        var totalEntries = 0
+        
+        for entry in entries {
+            if let mood = entry.mood {
+                moodCounts[mood, default: 0] += 1
+                totalEntries += 1
+            }
+        }
+        
+        let mostCommonMood = moodCounts.max { $0.value < $1.value }?.key
+        let averageEntriesPerDay = Double(totalEntries) / Double(days)
+        
+        return MoodStatistics(
+            totalEntries: totalEntries,
+            averageEntriesPerDay: averageEntriesPerDay,
+            mostCommonMood: mostCommonMood.flatMap { MoodType(rawValue: $0) },
+            moodDistribution: moodCounts,
+            dateRange: (start: Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date(), end: Date())
+        )
+    }
+    
+    func getUsageStatistics() -> UsageStatistics {
+        let chatMessages = fetchChatMessages()
+        let journalEntries = fetchJournalEntries()
+        
+        let userMessages = chatMessages.filter { $0.isUser }
+        let totalConversations = userMessages.count
+        let totalJournalEntries = journalEntries.count
+        
+        // Calculate streaks, session lengths, etc.
+        let lastActiveDate = chatMessages.last?.timestamp ?? Date()
+        let firstActiveDate = chatMessages.first?.timestamp ?? Date()
+        let daysSinceFirstUse = Calendar.current.dateComponents([.day], from: firstActiveDate, to: Date()).day ?? 0
+        
+        return UsageStatistics(
+            totalConversations: totalConversations,
+            totalJournalEntries: totalJournalEntries,
+            daysSinceFirstUse: daysSinceFirstUse,
+            lastActiveDate: lastActiveDate,
+            averageMessagesPerDay: Double(totalConversations) / max(Double(daysSinceFirstUse), 1.0)
+        )
+    }
+}
+
+// MARK: - Statistics Models
+struct MoodStatistics {
+    let totalEntries: Int
+    let averageEntriesPerDay: Double
+    let mostCommonMood: MoodType?
+    let moodDistribution: [String: Int]
+    let dateRange: (start: Date, end: Date)
+}
+
+struct UsageStatistics {
+    let totalConversations: Int
+    let totalJournalEntries: Int
+    let daysSinceFirstUse: Int
+    let lastActiveDate: Date
+    let averageMessagesPerDay: Double
+}

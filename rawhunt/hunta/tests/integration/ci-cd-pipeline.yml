@@ -1,0 +1,522 @@
+# GoHunta Integration Testing CI/CD Pipeline
+# Comprehensive automated testing for PWA and Backend API integration
+
+name: GoHunta Integration Tests
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run integration tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_environment:
+        description: 'Test environment to run against'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+        - local
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - api-integration
+        - pwa-integration
+        - cross-platform
+        - field-scenarios
+        - edge-cases
+        - performance
+
+env:
+  NODE_VERSION: '20'
+  PLAYWRIGHT_VERSION: '1.40.1'
+  GOHUNTA_API_BASE_URL: ${{ secrets.GOHUNTA_API_BASE_URL || 'http://localhost:8787' }}
+  GOHUNTA_PWA_BASE_URL: ${{ secrets.GOHUNTA_PWA_BASE_URL || 'http://localhost:5173' }}
+  TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+  TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+  GPS_API_KEY: ${{ secrets.GPS_API_KEY }}
+  WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+  STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      test-matrix: ${{ steps.test-matrix.outputs.matrix }}
+      backend-url: ${{ steps.setup-env.outputs.backend-url }}
+      frontend-url: ${{ steps.setup-env.outputs.frontend-url }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Environment Variables
+        id: setup-env
+        run: |
+          case "${{ github.event.inputs.test_environment || 'staging' }}" in
+            "production")
+              echo "backend-url=https://api.gohunta.com" >> $GITHUB_OUTPUT
+              echo "frontend-url=https://gohunta.com" >> $GITHUB_OUTPUT
+              ;;
+            "staging")
+              echo "backend-url=https://staging-api.gohunta.com" >> $GITHUB_OUTPUT
+              echo "frontend-url=https://staging.gohunta.com" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "backend-url=http://localhost:8787" >> $GITHUB_OUTPUT
+              echo "frontend-url=http://localhost:5173" >> $GITHUB_OUTPUT
+              ;;
+          esac
+      
+      - name: Generate Test Matrix
+        id: test-matrix
+        run: |
+          case "${{ github.event.inputs.test_suite || 'all' }}" in
+            "all")
+              echo 'matrix={"include":[{"name":"API Integration","suite":"api-integration","timeout":15},{"name":"PWA Integration","suite":"pwa-integration","timeout":20},{"name":"Cross Platform","suite":"cross-platform","timeout":10},{"name":"Field Scenarios","suite":"field-scenarios","timeout":25},{"name":"Edge Cases","suite":"edge-cases","timeout":30},{"name":"Performance","suite":"performance","timeout":20}]}' >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "matrix={\"include\":[{\"name\":\"${{ github.event.inputs.test_suite }}\",\"suite\":\"${{ github.event.inputs.test_suite }}\",\"timeout\":30}]}" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+  backend-setup:
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.backend-url == 'http://localhost:8787'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: gohunta_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: Install Wrangler
+        run: npm install -g wrangler@latest
+      
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm ci
+      
+      - name: Setup Test Database
+        working-directory: backend
+        run: |
+          # Create local D1 database for testing
+          wrangler d1 create gohunta-test-db
+          wrangler d1 migrations apply gohunta-test-db --local
+      
+      - name: Start Backend Server
+        working-directory: backend
+        run: |
+          wrangler dev --port 8787 --local &
+          echo $! > backend.pid
+          # Wait for server to be ready
+          timeout 60 bash -c 'until curl -f http://localhost:8787/api/health; do sleep 2; done'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      
+      - name: Upload Backend Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-process
+          path: backend/backend.pid
+
+  frontend-setup:
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.frontend-url == 'http://localhost:5173'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+      
+      - name: Build Frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: ${{ needs.setup.outputs.backend-url }}
+      
+      - name: Start Frontend Server
+        working-directory: frontend
+        run: |
+          npm run preview -- --port 5173 --host &
+          echo $! > frontend.pid
+          # Wait for server to be ready
+          timeout 60 bash -c 'until curl -f http://localhost:5173; do sleep 2; done'
+      
+      - name: Upload Frontend Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-process
+          path: frontend/frontend.pid
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [setup, backend-setup, frontend-setup]
+    if: always() && (needs.backend-setup.result == 'success' || needs.backend-setup.result == 'skipped') && (needs.frontend-setup.result == 'success' || needs.frontend-setup.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.test-matrix) }}
+    timeout-minutes: ${{ matrix.timeout }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: tests/package-lock.json
+      
+      - name: Install Playwright Browsers
+        run: |
+          npm install -g @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
+          playwright install --with-deps chromium firefox webkit
+      
+      - name: Install Test Dependencies
+        working-directory: tests
+        run: npm ci
+      
+      - name: Download Backend Process (if local)
+        if: needs.setup.outputs.backend-url == 'http://localhost:8787'
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-process
+      
+      - name: Download Frontend Process (if local)
+        if: needs.setup.outputs.frontend-url == 'http://localhost:5173'
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-process
+      
+      - name: Wait for Services (if local)
+        if: needs.setup.outputs.backend-url == 'http://localhost:8787'
+        run: |
+          timeout 60 bash -c 'until curl -f ${{ needs.setup.outputs.backend-url }}/api/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f ${{ needs.setup.outputs.frontend-url }}; do sleep 2; done'
+      
+      - name: Run Integration Tests - ${{ matrix.name }}
+        working-directory: tests
+        run: |
+          case "${{ matrix.suite }}" in
+            "api-integration")
+              npm test integration/api-integration.test.js
+              ;;
+            "pwa-integration")
+              npx playwright test integration/pwa-integration.test.js
+              ;;
+            "cross-platform")
+              npx playwright test integration/cross-platform-integration.test.js
+              ;;
+            "field-scenarios")
+              npx playwright test integration/field-usage-scenarios.test.js
+              ;;
+            "edge-cases")
+              npx playwright test integration/edge-case-scenarios.test.js
+              ;;
+            "performance")
+              npm run test:performance
+              ;;
+            *)
+              echo "Unknown test suite: ${{ matrix.suite }}"
+              exit 1
+              ;;
+          esac
+        env:
+          API_BASE_URL: ${{ needs.setup.outputs.backend-url }}
+          PWA_BASE_URL: ${{ needs.setup.outputs.frontend-url }}
+          APP_BASE_URL: ${{ needs.setup.outputs.frontend-url }}
+          GOHUNTA_URL: ${{ needs.setup.outputs.frontend-url }}
+          RAWGLE_URL: ${{ secrets.RAWGLE_URL || 'http://localhost:8080' }}
+          CI: true
+          HEADLESS: true
+      
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ matrix.suite }}
+          path: |
+            tests/test-results/
+            tests/reports/
+            tests/playwright-report/
+      
+      - name: Upload Test Videos (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-videos-${{ matrix.suite }}
+          path: tests/test-results/
+
+  performance-benchmarking:
+    runs-on: ubuntu-latest
+    needs: [setup, backend-setup, frontend-setup]
+    if: github.event_name == 'push' || github.event.inputs.test_suite == 'performance' || github.event.inputs.test_suite == 'all'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install Dependencies
+        working-directory: tests
+        run: npm ci
+      
+      - name: Run Performance Benchmarks
+        working-directory: tests
+        run: |
+          npm run test:performance -- --reporter json > performance-results.json
+        env:
+          API_BASE_URL: ${{ needs.setup.outputs.backend-url }}
+          PWA_BASE_URL: ${{ needs.setup.outputs.frontend-url }}
+      
+      - name: Upload Performance Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-benchmarks
+          path: tests/performance-results.json
+      
+      - name: Comment Performance Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('tests/performance-results.json', 'utf8'));
+            
+            const comment = `## 🚀 Performance Test Results
+            
+            | Metric | Value | Status |
+            |--------|-------|---------|
+            | Average Response Time | ${results.avgResponseTime}ms | ${results.avgResponseTime < 500 ? '✅' : '⚠️'} |
+            | Concurrent Users Supported | ${results.maxConcurrentUsers} | ${results.maxConcurrentUsers >= 100 ? '✅' : '⚠️'} |
+            | Memory Usage Peak | ${results.peakMemoryMB}MB | ${results.peakMemoryMB < 512 ? '✅' : '⚠️'} |
+            | Offline Sync Time | ${results.offlineSyncTimeMs}ms | ${results.offlineSyncTimeMs < 2000 ? '✅' : '⚠️'} |
+            
+            ${results.avgResponseTime > 500 || results.maxConcurrentUsers < 100 ? '⚠️ Performance regression detected!' : '✅ All performance benchmarks passed!'}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  mobile-device-testing:
+    runs-on: ubuntu-latest
+    needs: [setup, frontend-setup]
+    if: github.event_name == 'push' || contains(github.event.inputs.test_suite, 'pwa') || github.event.inputs.test_suite == 'all'
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ['iPhone 12', 'Pixel 5', 'iPad Pro']
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install Playwright
+        run: |
+          npm install -g @playwright/test
+          playwright install --with-deps
+      
+      - name: Install Test Dependencies
+        working-directory: tests
+        run: npm ci
+      
+      - name: Run Mobile Device Tests
+        working-directory: tests
+        run: |
+          npx playwright test integration/pwa-integration.test.js --project="${{ matrix.device }}"
+        env:
+          PWA_BASE_URL: ${{ needs.setup.outputs.frontend-url }}
+          DEVICE_TYPE: ${{ matrix.device }}
+      
+      - name: Upload Mobile Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: mobile-test-results-${{ matrix.device }}
+          path: tests/test-results/
+
+  accessibility-testing:
+    runs-on: ubuntu-latest
+    needs: [setup, frontend-setup]
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install Dependencies
+        run: |
+          npm install -g @axe-core/cli lighthouse-ci
+          npm ci
+      
+      - name: Run Accessibility Audit
+        run: |
+          axe ${{ needs.setup.outputs.frontend-url }} --save accessibility-results.json
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_BUILD_CONTEXT__CURRENT_HASH: ${{ github.sha }}
+          LHCI_BUILD_CONTEXT__COMMIT_TIME: ${{ github.event.head_commit.timestamp }}
+      
+      - name: Upload Accessibility Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: accessibility-audit
+          path: |
+            accessibility-results.json
+            .lighthouseci/
+
+  security-testing:
+    runs-on: ubuntu-latest
+    needs: [setup, backend-setup]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.8.0
+        with:
+          target: ${{ needs.setup.outputs.backend-url }}
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+      
+      - name: Upload ZAP Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-results
+          path: report_html.html
+
+  test-reporting:
+    runs-on: ubuntu-latest
+    needs: [integration-tests, performance-benchmarking, mobile-device-testing, accessibility-testing]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download All Test Artifacts
+        uses: actions/download-artifact@v3
+      
+      - name: Generate Comprehensive Test Report
+        run: |
+          cat > test-report.md << 'EOF'
+          # GoHunta Integration Test Report
+          
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          **Timestamp:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Triggered by:** ${{ github.event_name }}
+          
+          ## Test Suite Results
+          
+          | Test Suite | Status | Duration |
+          |------------|--------|----------|
+          | API Integration | ${{ needs.integration-tests.outputs.api-integration-status || 'N/A' }} | - |
+          | PWA Integration | ${{ needs.integration-tests.outputs.pwa-integration-status || 'N/A' }} | - |
+          | Cross Platform | ${{ needs.integration-tests.outputs.cross-platform-status || 'N/A' }} | - |
+          | Field Scenarios | ${{ needs.integration-tests.outputs.field-scenarios-status || 'N/A' }} | - |
+          | Edge Cases | ${{ needs.integration-tests.outputs.edge-cases-status || 'N/A' }} | - |
+          
+          ## Performance Benchmarks
+          
+          ${{ needs.performance-benchmarking.result == 'success' && '✅ Performance tests passed' || '❌ Performance tests failed' }}
+          
+          ## Mobile Device Compatibility
+          
+          ${{ needs.mobile-device-testing.result == 'success' && '✅ Mobile tests passed' || '❌ Mobile tests failed' }}
+          
+          ## Accessibility Compliance
+          
+          ${{ needs.accessibility-testing.result == 'success' && '✅ Accessibility tests passed' || '❌ Accessibility tests failed' }}
+          
+          ## Coverage Summary
+          
+          - **API Endpoints Tested:** All critical endpoints
+          - **PWA Features Tested:** Service worker, offline mode, hardware integration
+          - **Cross-platform Scenarios:** Platform detection and feature compatibility
+          - **Field Usage Scenarios:** Offline hunt logging, GPS tracking, media capture
+          - **Edge Cases:** Network interruption, battery optimization, GPS accuracy variations
+          
+          EOF
+      
+      - name: Upload Final Test Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: comprehensive-test-report
+          path: test-report.md
+      
+      - name: Post Test Summary to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('test-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [backend-setup, frontend-setup, integration-tests]
+    if: always() && (needs.backend-setup.outputs.backend-url == 'http://localhost:8787' || needs.frontend-setup.outputs.frontend-url == 'http://localhost:5173')
+    steps:
+      - name: Cleanup Local Services
+        run: |
+          # Kill any remaining processes
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) 2>/dev/null || true
+          fi
+          if [ -f frontend.pid ]; then
+            kill $(cat frontend.pid) 2>/dev/null || true
+          fi

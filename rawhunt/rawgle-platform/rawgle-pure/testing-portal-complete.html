@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Rawgle Complete Testing Portal - 125 Tests</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            text-align: center;
+            opacity: 0.8;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .controls {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .control-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn.primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+        
+        .filters {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-group label {
+            font-weight: bold;
+        }
+        
+        .filter-group select {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .filter-group select option {
+            background: #333;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+        }
+        
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .test-card.hidden {
+            display: none;
+        }
+        
+        .test-card.running {
+            border-color: #4ECDC4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+        
+        .test-card.passed {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        .test-card.failed {
+            border-color: #FF6B6B;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .test-id {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .test-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .test-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.8em;
+        }
+        
+        .test-meta span {
+            background: rgba(255,255,255,0.15);
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .test-meta .category {
+            background: rgba(33, 150, 243, 0.3);
+        }
+        
+        .test-meta .priority-Critical {
+            background: rgba(244, 67, 54, 0.3);
+        }
+        
+        .test-meta .priority-High {
+            background: rgba(255, 152, 0, 0.3);
+        }
+        
+        .test-meta .priority-Medium {
+            background: rgba(255, 193, 7, 0.3);
+        }
+        
+        .test-meta .priority-Low {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .test-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .test-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 15px;
+        }
+        
+        .test-result {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85em;
+            display: none;
+        }
+        
+        .test-result.show {
+            display: block;
+        }
+        
+        .status-bar {
+            background: rgba(0,0,0,0.3);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .status-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(45deg, #4CAF50, #4ECDC4);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .category-stats {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .category-stat {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        
+        .category-stat .count {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .category-stat .label {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .loading-overlay.show {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: #4ECDC4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .page-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .page-btn.active {
+            background: rgba(78, 205, 196, 0.5);
+            border-color: #4ECDC4;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <div class="header">
+        <h1>🧪 Rawgle Complete Testing Portal</h1>
+        <div class="subtitle">125 Comprehensive Test Scripts - Full Platform Coverage</div>
+    </div>
+    
+    <div class="container">
+        <div class="controls">
+            <div class="control-row">
+                <button class="btn primary" onclick="runAllTests()" id="runAllBtn">🚀 Run All 125 Tests</button>
+                <button class="btn secondary" onclick="runCriticalTests()">🔴 Critical Only</button>
+                <button class="btn secondary" onclick="runHighPriorityTests()">🟠 High Priority</button>
+                <button class="btn secondary" onclick="runCategoryTests()">📂 Run By Category</button>
+            </div>
+            <div class="control-row">
+                <button class="btn" onclick="stopAllTests()">⏹️ Stop All</button>
+                <button class="btn" onclick="clearResults()">🗑️ Clear Results</button>
+                <button class="btn" onclick="exportResults()">📊 Export Results</button>
+                <button class="btn" onclick="toggleCompactView()">📐 Compact View</button>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label>Category:</label>
+                <select id="categoryFilter" onchange="filterTests()">
+                    <option value="">All Categories</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Security">Security</option>
+                    <option value="Authentication">Authentication</option>
+                    <option value="PAWS">PAWS</option>
+                    <option value="AI Medical">AI Medical</option>
+                    <option value="NFT">NFT</option>
+                    <option value="Integration">Integration</option>
+                    <option value="Performance">Performance</option>
+                    <option value="Functionality">Functionality</option>
+                    <option value="User Stories">User Stories</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Priority:</label>
+                <select id="priorityFilter" onchange="filterTests()">
+                    <option value="">All Priorities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Status:</label>
+                <select id="statusFilter" onchange="filterTests()">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="running">Running</option>
+                    <option value="passed">Passed</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchBox" placeholder="Search tests..." onkeyup="filterTests()">
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-value" id="totalTests">125</span>
+                <span class="status-label">Total Tests</span>
+            </div>
+            <div class="status-item">
+                <span class="status-value" id="pendingTests">125</span>
+                <span class="status-label">Pending</span>
+            </div>
+            <div class="status-item">
+                <span class="status-value" id="runningTests">0</span>
+                <span class="status-label">Running</span>
+            </div>
+            <div class="status-item">
+                <span class="status-value" id="passedTests">0</span>
+                <span class="status-label">Passed</span>
+            </div>
+            <div class="status-item">
+                <span class="status-value" id="failedTests">0</span>
+                <span class="status-label">Failed</span>
+            </div>
+            <div class="status-item">
+                <span class="status-value" id="successRate">0%</span>
+                <span class="status-label">Success Rate</span>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        
+        <div class="category-stats" id="categoryStats">
+            <!-- Category statistics will be generated here -->
+        </div>
+        
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be generated here -->
+        </div>
+        
+        <div class="test-grid" id="testGrid">
+            <!-- Test cards will be dynamically generated here -->
+        </div>
+    </div>
+    
+    <script type="module">
+        import { testIndex, testCategories, getTestStatistics } from './tests/test-scripts/test-index.js';
+        
+        // State management
+        let testResults = new Map();
+        let runningTests = new Set();
+        let stopRequested = false;
+        let currentPage = 1;
+        const testsPerPage = 24;
+        let filteredTests = [...testIndex];
+        let compactView = false;
+        
+        // Initialize the portal
+        window.addEventListener('load', () => {
+            initializeCategoryStats();
+            initializeTestGrid();
+            updateStatusBar();
+            updatePagination();
+        });
+        
+        function initializeCategoryStats() {
+            const stats = getTestStatistics();
+            const container = document.getElementById('categoryStats');
+            
+            for (const [category, count] of Object.entries(stats.byCategory)) {
+                if (count > 0) {
+                    const stat = document.createElement('div');
+                    stat.className = 'category-stat';
+                    stat.innerHTML = `
+                        <div class="count">${count}</div>
+                        <div class="label">${category}</div>
+                    `;
+                    stat.onclick = () => {
+                        document.getElementById('categoryFilter').value = category;
+                        filterTests();
+                    };
+                    container.appendChild(stat);
+                }
+            }
+        }
+        
+        function initializeTestGrid() {
+            const grid = document.getElementById('testGrid');
+            grid.innerHTML = '';
+            
+            const startIdx = (currentPage - 1) * testsPerPage;
+            const endIdx = startIdx + testsPerPage;
+            const pageTests = filteredTests.slice(startIdx, endIdx);
+            
+            pageTests.forEach(test => {
+                const card = createTestCard(test);
+                grid.appendChild(card);
+            });
+        }
+        
+        function createTestCard(test) {
+            const card = document.createElement('div');
+            card.className = 'test-card';
+            card.id = `test-${test.id}`;
+            card.dataset.category = test.category;
+            card.dataset.priority = test.priority;
+            card.dataset.status = 'pending';
+            
+            card.innerHTML = `
+                <div class="test-header">
+                    <div>
+                        <div class="test-title">${test.name}</div>
+                        <div class="test-meta">
+                            <span class="category">${test.category}</span>
+                            <span class="priority-${test.priority}">${test.priority}</span>
+                        </div>
+                    </div>
+                    <div class="test-id">${test.id}</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn" onclick="runSingleTest('${test.id}')">▶️ Run</button>
+                    <button class="btn" onclick="viewTestDetails('${test.id}')">📄 Details</button>
+                </div>
+                <div class="test-result" id="result-${test.id}"></div>
+            `;
+            
+            return card;
+        }
+        
+        async function runSingleTest(testId) {
+            if (runningTests.has(testId) || stopRequested) return;
+            
+            const test = testIndex.find(t => t.id === testId);
+            if (!test) return;
+            
+            runningTests.add(testId);
+            const card = document.getElementById(`test-${testId}`);
+            if (card) {
+                card.className = 'test-card running';
+                card.dataset.status = 'running';
+            }
+            
+            updateStatusBar();
+            
+            try {
+                // Import and execute the test
+                const module = await import(`./tests/test-scripts/${test.file}`);
+                const testScript = module.default;
+                
+                const results = await testScript.execute();
+                
+                // Determine overall status
+                const failed = results.some(r => r.status === 'failed');
+                const status = failed ? 'failed' : 'passed';
+                
+                if (card) {
+                    card.className = `test-card ${status}`;
+                    card.dataset.status = status;
+                    
+                    const resultDiv = document.getElementById(`result-${testId}`);
+                    if (resultDiv) {
+                        resultDiv.className = 'test-result show';
+                        resultDiv.innerHTML = `
+                            <div>Status: <strong>${status.toUpperCase()}</strong></div>
+                            <div>Steps: ${results.length}</div>
+                            <div>Passed: ${results.filter(r => r.status === 'passed').length}</div>
+                            <div>Failed: ${results.filter(r => r.status === 'failed').length}</div>
+                        `;
+                    }
+                }
+                
+                testResults.set(testId, { status, results, timestamp: new Date() });
+                
+            } catch (error) {
+                if (card) {
+                    card.className = 'test-card failed';
+                    card.dataset.status = 'failed';
+                }
+                testResults.set(testId, { status: 'failed', error: error.message });
+            }
+            
+            runningTests.delete(testId);
+            updateStatusBar();
+        }
+        
+        async function runAllTests() {
+            stopRequested = false;
+            showLoading();
+            
+            const button = document.getElementById('runAllBtn');
+            button.disabled = true;
+            button.textContent = '🔄 Running...';
+            
+            for (const test of testIndex) {
+                if (stopRequested) break;
+                await runSingleTest(test.id);
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            button.disabled = false;
+            button.textContent = '🚀 Run All 125 Tests';
+            hideLoading();
+        }
+        
+        async function runCriticalTests() {
+            stopRequested = false;
+            const criticalTests = testIndex.filter(t => t.priority === 'Critical');
+            
+            for (const test of criticalTests) {
+                if (stopRequested) break;
+                await runSingleTest(test.id);
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+        
+        async function runHighPriorityTests() {
+            stopRequested = false;
+            const highTests = testIndex.filter(t => t.priority === 'High' || t.priority === 'Critical');
+            
+            for (const test of highTests) {
+                if (stopRequested) break;
+                await runSingleTest(test.id);
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+        
+        async function runCategoryTests() {
+            const category = document.getElementById('categoryFilter').value;
+            if (!category) {
+                alert('Please select a category first');
+                return;
+            }
+            
+            stopRequested = false;
+            const categoryTests = testIndex.filter(t => t.category === category);
+            
+            for (const test of categoryTests) {
+                if (stopRequested) break;
+                await runSingleTest(test.id);
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+        
+        function stopAllTests() {
+            stopRequested = true;
+            runningTests.clear();
+            updateStatusBar();
+        }
+        
+        function clearResults() {
+            testResults.clear();
+            runningTests.clear();
+            
+            document.querySelectorAll('.test-card').forEach(card => {
+                card.className = 'test-card';
+                card.dataset.status = 'pending';
+                const resultDiv = card.querySelector('.test-result');
+                if (resultDiv) {
+                    resultDiv.className = 'test-result';
+                    resultDiv.innerHTML = '';
+                }
+            });
+            
+            updateStatusBar();
+        }
+        
+        function exportResults() {
+            if (testResults.size === 0) {
+                alert('No results to export');
+                return;
+            }
+            
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                summary: {
+                    total: testIndex.length,
+                    completed: testResults.size,
+                    passed: Array.from(testResults.values()).filter(r => r.status === 'passed').length,
+                    failed: Array.from(testResults.values()).filter(r => r.status === 'failed').length
+                },
+                results: Object.fromEntries(testResults)
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rawgle-test-results-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function toggleCompactView() {
+            compactView = !compactView;
+            const grid = document.getElementById('testGrid');
+            if (compactView) {
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
+            }
+        }
+        
+        function filterTests() {
+            const category = document.getElementById('categoryFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const search = document.getElementById('searchBox').value.toLowerCase();
+            
+            filteredTests = testIndex.filter(test => {
+                if (category && test.category !== category) return false;
+                if (priority && test.priority !== priority) return false;
+                if (search && !test.name.toLowerCase().includes(search) && 
+                    !test.id.includes(search)) return false;
+                
+                if (status) {
+                    const card = document.getElementById(`test-${test.id}`);
+                    if (card && card.dataset.status !== status) return false;
+                }
+                
+                return true;
+            });
+            
+            currentPage = 1;
+            initializeTestGrid();
+            updatePagination();
+        }
+        
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredTests.length / testsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => {
+                    currentPage = i;
+                    initializeTestGrid();
+                    updatePagination();
+                };
+                pagination.appendChild(btn);
+            }
+        }
+        
+        function updateStatusBar() {
+            const total = testIndex.length;
+            const running = runningTests.size;
+            const completed = testResults.size;
+            const passed = Array.from(testResults.values()).filter(r => r.status === 'passed').length;
+            const failed = Array.from(testResults.values()).filter(r => r.status === 'failed').length;
+            const pending = total - completed - running;
+            const successRate = completed > 0 ? Math.round((passed / completed) * 100) : 0;
+            
+            document.getElementById('totalTests').textContent = total;
+            document.getElementById('pendingTests').textContent = pending;
+            document.getElementById('runningTests').textContent = running;
+            document.getElementById('passedTests').textContent = passed;
+            document.getElementById('failedTests').textContent = failed;
+            document.getElementById('successRate').textContent = successRate + '%';
+            
+            const progress = (completed / total) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        function viewTestDetails(testId) {
+            const test = testIndex.find(t => t.id === testId);
+            if (test) {
+                alert(`Test ${test.id}: ${test.name}\nCategory: ${test.category}\nPriority: ${test.priority}\nFile: ${test.file}`);
+            }
+        }
+        
+        function showLoading() {
+            document.getElementById('loadingOverlay').className = 'loading-overlay show';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingOverlay').className = 'loading-overlay';
+        }
+        
+        // Make functions globally available
+        window.runSingleTest = runSingleTest;
+        window.runAllTests = runAllTests;
+        window.runCriticalTests = runCriticalTests;
+        window.runHighPriorityTests = runHighPriorityTests;
+        window.runCategoryTests = runCategoryTests;
+        window.stopAllTests = stopAllTests;
+        window.clearResults = clearResults;
+        window.exportResults = exportResults;
+        window.toggleCompactView = toggleCompactView;
+        window.filterTests = filterTests;
+        window.viewTestDetails = viewTestDetails;
+    </script>
+</body>
+</html>

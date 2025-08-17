@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network Debug Tool</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #00ff00; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #333; background: #2a2a2a; }
+        .error { border-color: #ff4444; background: #4a2a2a; }
+        .success { border-color: #44ff44; background: #2a4a2a; }
+        pre { white-space: pre-wrap; }
+        button { padding: 10px 20px; margin: 5px; background: #333; color: #00ff00; border: 1px solid #666; cursor: pointer; }
+        button:hover { background: #444; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Network Debug Tool</h1>
+    
+    <div id="browser-info"></div>
+    
+    <button onclick="runAllTests()">🚀 Run All Network Tests</button>
+    <button onclick="testWithXHR()">📡 Test with XMLHttpRequest</button>
+    <button onclick="testWithDifferentOrigin()">🌐 Test Different Origin</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        const API_BASE = 'https://rawgle-api.findrawdogfood.workers.dev';
+        const ADMIN_TOKEN = 'rawgle-admin-2025';
+        
+        // Show browser info
+        function showBrowserInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                vendor: navigator.vendor,
+                platform: navigator.platform,
+                language: navigator.language,
+                online: navigator.onLine,
+                cookieEnabled: navigator.cookieEnabled,
+                location: window.location.href,
+                protocol: window.location.protocol,
+                host: window.location.host,
+                origin: window.location.origin
+            };
+            
+            document.getElementById('browser-info').innerHTML = `
+                <div class="result">
+                    <h3>🖥️ Browser Environment</h3>
+                    <pre>${JSON.stringify(info, null, 2)}</pre>
+                </div>
+            `;
+        }
+        
+        function addResult(type, title, content) {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<h3>${title}</h3><pre>${content}</pre>`;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function runAllTests() {
+            clearResults();
+            
+            // Test 1: Basic connectivity
+            await testBasicConnectivity();
+            
+            // Test 2: CORS preflight
+            await testCORSPreflight();
+            
+            // Test 3: Actual request
+            await testDashboardRequest();
+            
+            // Test 4: Different methods
+            await testWithXHR();
+            
+            // Test 5: Security policies
+            await testSecurityPolicies();
+        }
+        
+        async function testBasicConnectivity() {
+            try {
+                addResult('', '🌐 Testing Basic Connectivity', 'Testing health endpoint...');
+                
+                const response = await fetch(`${API_BASE}/api/health`);
+                const data = await response.json();
+                
+                addResult('success', '✅ Basic Connectivity', 
+                    `Status: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`);
+                    
+            } catch (error) {
+                addResult('error', '❌ Basic Connectivity Failed', error.message);
+            }
+        }
+        
+        async function testCORSPreflight() {
+            try {
+                addResult('', '🔍 Testing CORS Preflight', 'Making OPTIONS request...');
+                
+                const response = await fetch(`${API_BASE}/api/test-management/dashboard`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'X-Admin-Token'
+                    }
+                });
+                
+                const headers = {};
+                for (let [key, value] of response.headers.entries()) {
+                    if (key.startsWith('access-control')) {
+                        headers[key] = value;
+                    }
+                }
+                
+                addResult('success', '✅ CORS Preflight', 
+                    `Status: ${response.status}\nCORS Headers:\n${JSON.stringify(headers, null, 2)}`);
+                    
+            } catch (error) {
+                addResult('error', '❌ CORS Preflight Failed', error.message);
+            }
+        }
+        
+        async function testDashboardRequest() {
+            try {
+                addResult('', '📊 Testing Dashboard Request', 'Making actual dashboard request...');
+                
+                const response = await fetch(`${API_BASE}/api/test-management/dashboard?t=${Date.now()}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': ADMIN_TOKEN
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('success', '🎉 Dashboard Request Success!', 
+                        `Status: ${response.status}\nData received: ${JSON.stringify(data.overview, null, 2)}`);
+                } else {
+                    const errorText = await response.text();
+                    addResult('error', '❌ Dashboard Request Failed', 
+                        `Status: ${response.status}\nError: ${errorText}`);
+                }
+                
+            } catch (error) {
+                addResult('error', '❌ Dashboard Request Exception', 
+                    `Error: ${error.message}\nStack: ${error.stack}`);
+            }
+        }
+        
+        async function testWithXHR() {
+            return new Promise((resolve) => {
+                addResult('', '📡 Testing with XMLHttpRequest', 'Using XMLHttpRequest instead of fetch...');
+                
+                const xhr = new XMLHttpRequest();
+                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            addResult('success', '✅ XMLHttpRequest Success', 
+                                `Status: ${xhr.status}\nResponse: ${xhr.responseText.substring(0, 200)}...`);
+                        } else {
+                            addResult('error', '❌ XMLHttpRequest Failed', 
+                                `Status: ${xhr.status}\nError: ${xhr.responseText}`);
+                        }
+                        resolve();
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    addResult('error', '❌ XMLHttpRequest Error', 'Network error occurred');
+                    resolve();
+                };
+                
+                xhr.open('GET', `${API_BASE}/api/test-management/dashboard?xhr=${Date.now()}`, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Admin-Token', ADMIN_TOKEN);
+                xhr.send();
+            });
+        }
+        
+        async function testSecurityPolicies() {
+            const policies = {
+                'Content Security Policy': document.querySelector('meta[http-equiv="Content-Security-Policy"]'),
+                'Mixed Content': window.location.protocol === 'https:' ? 'HTTPS page' : 'HTTP page',
+                'Referrer Policy': document.referrerPolicy || 'default',
+                'Feature Policy': document.featurePolicy ? 'Supported' : 'Not supported'
+            };
+            
+            addResult('', '🔒 Security Policies', JSON.stringify(policies, null, 2));
+        }
+        
+        async function testWithDifferentOrigin() {
+            try {
+                addResult('', '🌐 Testing Different Origin', 'Testing request without Origin header...');
+                
+                const response = await fetch(`${API_BASE}/api/test-management/dashboard?no-origin=${Date.now()}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Admin-Token': ADMIN_TOKEN
+                    },
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('success', '✅ No-Origin Request Success', 
+                        `This suggests CORS is working fine`);
+                } else {
+                    addResult('error', '❌ No-Origin Request Failed', 
+                        `Status: ${response.status}`);
+                }
+                
+            } catch (error) {
+                addResult('error', '❌ No-Origin Request Exception', error.message);
+            }
+        }
+        
+        // Initialize
+        showBrowserInfo();
+        
+        // Auto-run basic test
+        setTimeout(() => {
+            testBasicConnectivity();
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔍 Cross-Browser Debug Analysis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Monaco', 'Consolas', monospace; background: #1a1a2e; color: #eee; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel { background: #16213e; border: 1px solid #0f3460; border-radius: 8px; padding: 20px; }
+        .console { background: #0d1421; padding: 15px; border-radius: 6px; min-height: 300px; overflow-y: auto; font-size: 12px; line-height: 1.4; }
+        button { background: #e94560; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; margin: 5px; font-weight: bold; }
+        button:hover { background: #d63447; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .success { color: #4CAF50; }
+        .error { color: #F44336; }
+        .warning { color: #FF9800; }
+        .info { color: #2196F3; }
+        h1 { text-align: center; color: #e94560; margin-bottom: 30px; }
+        h2 { color: #f39c12; margin-bottom: 15px; border-bottom: 1px solid #0f3460; padding-bottom: 5px; }
+        .status-bar { background: #0f3460; padding: 10px; border-radius: 6px; margin-bottom: 20px; }
+        .metric { display: inline-block; margin-right: 20px; }
+        pre { background: #0d1421; padding: 10px; border-radius: 4px; overflow-x: auto; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Cross-Browser Debug Analysis</h1>
+        
+        <div class="status-bar">
+            <div class="metric">🌐 Browser: <span id="browser-name">Detecting...</span></div>
+            <div class="metric">📡 Status: <span id="connection-status">Testing...</span></div>
+            <div class="metric">⏱️ Started: <span id="start-time"></span></div>
+        </div>
+        
+        <div class="grid">
+            <div class="panel">
+                <h2>🎯 Test Controls</h2>
+                <button onclick="runCompleteAnalysis()">🚀 Run Complete Analysis</button>
+                <button onclick="testDirectConnection()">🔗 Test Direct Connection</button>
+                <button onclick="testWithDifferentMethods()">🔄 Test Different Methods</button>
+                <button onclick="clearLogs()">🗑️ Clear Logs</button>
+                <br><br>
+                <button onclick="testLocalServer()">🏠 Test Local Server</button>
+                <button onclick="testExternalAPI()">🌍 Test External API</button>
+                <button onclick="diagnoseNetworkStack()">📊 Network Stack Diagnosis</button>
+            </div>
+            
+            <div class="panel">
+                <h2>📊 Environment Analysis</h2>
+                <div id="env-info"></div>
+            </div>
+        </div>
+        
+        <div class="panel" style="margin-top: 20px;">
+            <h2>📋 Debug Console</h2>
+            <div class="console" id="debug-console"></div>
+        </div>
+        
+        <div class="grid" style="margin-top: 20px;">
+            <div class="panel">
+                <h2>🔬 Network Analysis</h2>
+                <div class="console" id="network-analysis"></div>
+            </div>
+            
+            <div class="panel">
+                <h2>🛡️ Security Analysis</h2>
+                <div class="console" id="security-analysis"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'https://rawgle-api.findrawdogfood.workers.dev';
+        const LOCAL_BASE = 'http://localhost:8080';
+        const ADMIN_TOKEN = 'rawgle-admin-2025';
+        let startTime = Date.now();
+        
+        // Initialize
+        document.getElementById('start-time').textContent = new Date().toISOString();
+        
+        function log(message, type = 'info', target = 'debug-console') {
+            const console = document.getElementById(target);
+            const timestamp = new Date().toISOString().substring(11, 23);
+            const className = type;
+            const line = document.createElement('div');
+            line.className = className;
+            line.innerHTML = `[${timestamp}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+            
+            // Also log to browser console for debugging
+            console.log(`[${target}] ${message}`);
+        }
+        
+        function clearLogs() {
+            document.getElementById('debug-console').innerHTML = '';
+            document.getElementById('network-analysis').innerHTML = '';
+            document.getElementById('security-analysis').innerHTML = '';
+        }
+        
+        async function detectBrowser() {
+            const ua = navigator.userAgent;
+            let browser = 'Unknown';
+            
+            if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
+            else if (ua.includes('Firefox')) browser = 'Firefox';
+            else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+            else if (ua.includes('Edg')) browser = 'Edge';
+            else if (ua.includes('Brave') || window.navigator.brave) browser = 'Brave';
+            
+            document.getElementById('browser-name').textContent = browser;
+            
+            const envInfo = document.getElementById('env-info');
+            envInfo.innerHTML = `
+                <div><strong>Browser:</strong> ${browser}</div>
+                <div><strong>User Agent:</strong> ${ua.substring(0, 60)}...</div>
+                <div><strong>Online:</strong> ${navigator.onLine}</div>
+                <div><strong>Cookies:</strong> ${navigator.cookieEnabled}</div>
+                <div><strong>Location:</strong> ${window.location.href}</div>
+                <div><strong>Protocol:</strong> ${window.location.protocol}</div>
+                <div><strong>Host:</strong> ${window.location.host}</div>
+                <div><strong>Fetch API:</strong> ${typeof fetch !== 'undefined'}</div>
+                <div><strong>WebSockets:</strong> ${typeof WebSocket !== 'undefined'}</div>
+                <div><strong>Service Workers:</strong> ${'serviceWorker' in navigator}</div>
+            `;
+            
+            log(`Browser detected: ${browser}`, 'info');
+            
+            // Check for Brave-specific properties
+            if (window.navigator.brave) {
+                log('🛡️ Brave browser detected with shields potentially active', 'warning');
+                log('Shields status can block cross-origin requests', 'warning');
+            }
+        }
+        
+        async function runCompleteAnalysis() {
+            clearLogs();
+            log('🚀 Starting complete cross-browser analysis...', 'info');
+            document.getElementById('connection-status').textContent = 'Testing...';
+            
+            try {
+                // Environment analysis
+                await detectBrowser();
+                await analyzeNetworkCapabilities();
+                await analyzeSecurityRestrictions();
+                
+                // Connection tests
+                await testDirectConnection();
+                await testWithDifferentMethods();
+                await testCORSBehavior();
+                await testLocalServer();
+                
+                log('✅ Complete analysis finished', 'success');
+                document.getElementById('connection-status').textContent = 'Analysis Complete';
+            } catch (error) {
+                log(`❌ Analysis failed: ${error.message}`, 'error');
+                document.getElementById('connection-status').textContent = 'Analysis Failed';
+            }
+        }
+        
+        async function analyzeNetworkCapabilities() {
+            log('📊 Analyzing network capabilities...', 'info', 'network-analysis');
+            
+            // Test basic connectivity to known working endpoints
+            const testEndpoints = [
+                'https://httpbin.org/get',
+                'https://api.github.com',
+                'https://jsonplaceholder.typicode.com/posts/1'
+            ];
+            
+            for (const endpoint of testEndpoints) {
+                try {
+                    const response = await fetch(endpoint, { cache: 'no-store' });
+                    log(`✅ ${endpoint}: ${response.status}`, 'success', 'network-analysis');
+                } catch (error) {
+                    log(`❌ ${endpoint}: ${error.message}`, 'error', 'network-analysis');
+                }
+            }
+            
+            // Test our specific API
+            try {
+                log('Testing our API health endpoint...', 'info', 'network-analysis');
+                const response = await fetch(`${API_BASE}/api/health`, { cache: 'no-store' });
+                log(`✅ API Health: ${response.status} - ${response.statusText}`, 'success', 'network-analysis');
+                
+                const data = await response.json();
+                log(`API Response: ${JSON.stringify(data)}`, 'info', 'network-analysis');
+            } catch (error) {
+                log(`❌ API Health failed: ${error.name} - ${error.message}`, 'error', 'network-analysis');
+                
+                // Detailed error analysis
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    log('🔍 "Failed to fetch" indicates network-level blocking', 'warning', 'network-analysis');
+                    log('Possible causes: CORS, firewall, DNS, SSL cert issues', 'info', 'network-analysis');
+                }
+            }
+        }
+        
+        async function analyzeSecurityRestrictions() {
+            log('🛡️ Analyzing security restrictions...', 'info', 'security-analysis');
+            
+            // Check Content Security Policy
+            const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+            if (cspMeta) {
+                log(`CSP found: ${cspMeta.content}`, 'warning', 'security-analysis');
+            } else {
+                log('No CSP meta tag found', 'success', 'security-analysis');
+            }
+            
+            // Check for mixed content issues
+            if (window.location.protocol === 'https:' && API_BASE.startsWith('http:')) {
+                log('❌ Mixed content: HTTPS page trying to access HTTP API', 'error', 'security-analysis');
+            } else if (window.location.protocol === 'http:' && API_BASE.startsWith('https:')) {
+                log('✅ HTTP to HTTPS requests should work', 'success', 'security-analysis');
+            } else {
+                log('✅ No mixed content issues detected', 'success', 'security-analysis');
+            }
+            
+            // Check referrer policy
+            const referrerPolicy = document.referrerPolicy || 'default';
+            log(`Referrer policy: ${referrerPolicy}`, 'info', 'security-analysis');
+            
+            // Check if running in secure context
+            log(`Secure context: ${window.isSecureContext}`, window.isSecureContext ? 'success' : 'warning', 'security-analysis');
+            
+            // Browser-specific security checks
+            if (window.navigator.brave) {
+                log('🛡️ Brave shields may block cross-origin requests', 'warning', 'security-analysis');
+                log('Try disabling shields for localhost domain', 'info', 'security-analysis');
+            }
+        }
+        
+        async function testDirectConnection() {
+            log('🔗 Testing direct connection to dashboard endpoint...', 'info');
+            
+            const testUrl = `${API_BASE}/api/test-management/dashboard?cross-browser-test=${Date.now()}`;
+            
+            try {
+                log(`Making request to: ${testUrl}`, 'info');
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    log('❌ Request aborted due to timeout (30s)', 'error');
+                }, 30000);
+                
+                const response = await fetch(testUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': ADMIN_TOKEN,
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    },
+                    signal: controller.signal,
+                    mode: 'cors',
+                    cache: 'no-store'
+                });
+                
+                clearTimeout(timeoutId);
+                
+                log(`✅ Response received: ${response.status} ${response.statusText}`, 'success');
+                
+                // Check response headers
+                const corsHeaders = {};
+                response.headers.forEach((value, key) => {
+                    if (key.startsWith('access-control')) {
+                        corsHeaders[key] = value;
+                    }
+                });
+                
+                if (Object.keys(corsHeaders).length > 0) {
+                    log(`CORS headers: ${JSON.stringify(corsHeaders, null, 2)}`, 'info');
+                } else {
+                    log('⚠️ No CORS headers found in response', 'warning');
+                }
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('🎉 SUCCESS! Dashboard API is working!', 'success');
+                    log(`Response data preview: ${JSON.stringify(data).substring(0, 200)}...`, 'success');
+                    document.getElementById('connection-status').textContent = 'Connected ✅';
+                } else {
+                    const errorText = await response.text();
+                    log(`❌ HTTP Error ${response.status}: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Connection failed: ${error.name} - ${error.message}`, 'error');
+                
+                if (error.name === 'AbortError') {
+                    log('Request timed out after 30 seconds', 'error');
+                } else if (error.message.includes('Failed to fetch')) {
+                    log('🚨 CRITICAL: "Failed to fetch" error detected', 'error');
+                    log('This typically indicates:', 'info');
+                    log('• Browser security policy blocking request', 'info');
+                    log('• Network firewall blocking request', 'info');
+                    log('• DNS resolution failure', 'info');
+                    log('• SSL certificate issues', 'info');
+                    log('• CORS preflight failure', 'info');
+                }
+                
+                document.getElementById('connection-status').textContent = 'Failed to Connect ❌';
+            }
+        }
+        
+        async function testWithDifferentMethods() {
+            log('🔄 Testing different request methods...', 'info');
+            
+            // Test 1: XMLHttpRequest
+            await testXMLHttpRequest();
+            
+            // Test 2: Fetch with different configurations
+            await testFetchVariations();
+            
+            // Test 3: Image loading test (no CORS)
+            await testImageLoading();
+        }
+        
+        function testXMLHttpRequest() {
+            return new Promise((resolve) => {
+                log('Testing XMLHttpRequest method...', 'info');
+                
+                const xhr = new XMLHttpRequest();
+                const testUrl = `${API_BASE}/api/health?xhr-test=${Date.now()}`;
+                
+                xhr.timeout = 15000;
+                
+                xhr.onload = function() {
+                    log(`✅ XHR Success: ${xhr.status} ${xhr.statusText}`, 'success');
+                    log(`XHR Response: ${xhr.responseText.substring(0, 100)}`, 'success');
+                    resolve();
+                };
+                
+                xhr.onerror = function() {
+                    log('❌ XHR Error event triggered', 'error');
+                    resolve();
+                };
+                
+                xhr.ontimeout = function() {
+                    log('❌ XHR Timeout (15s)', 'error');
+                    resolve();
+                };
+                
+                xhr.onabort = function() {
+                    log('❌ XHR Aborted', 'error');
+                    resolve();
+                };
+                
+                try {
+                    xhr.open('GET', testUrl, true);
+                    xhr.setRequestHeader('Cache-Control', 'no-cache');
+                    xhr.send();
+                    log(`XHR request sent to: ${testUrl}`, 'info');
+                } catch (error) {
+                    log(`❌ XHR Setup error: ${error.message}`, 'error');
+                    resolve();
+                }
+            });
+        }
+        
+        async function testFetchVariations() {
+            const variations = [
+                { name: 'No headers', options: {} },
+                { name: 'Basic headers', options: { headers: { 'Content-Type': 'application/json' } } },
+                { name: 'No-cors mode', options: { mode: 'no-cors' } },
+                { name: 'Include credentials', options: { credentials: 'include' } }
+            ];
+            
+            for (const variation of variations) {
+                try {
+                    log(`Testing fetch variation: ${variation.name}`, 'info');
+                    const response = await fetch(`${API_BASE}/api/health?variation=${Date.now()}`, {
+                        ...variation.options,
+                        cache: 'no-store'
+                    });
+                    
+                    if (variation.options.mode === 'no-cors') {
+                        log(`✅ ${variation.name}: Request completed (opaque response)`, 'success');
+                    } else {
+                        log(`✅ ${variation.name}: ${response.status} ${response.statusText}`, 'success');
+                    }
+                } catch (error) {
+                    log(`❌ ${variation.name}: ${error.message}`, 'error');
+                }
+            }
+        }
+        
+        async function testImageLoading() {
+            log('Testing image loading (no CORS required)...', 'info');
+            
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                
+                img.onload = function() {
+                    log('✅ Image loaded successfully (network is working)', 'success');
+                    resolve();
+                };
+                
+                img.onerror = function() {
+                    log('❌ Image failed to load', 'error');
+                    resolve();
+                };
+                
+                // Use a simple 1x1 pixel image endpoint
+                img.src = `${API_BASE}/api/health?format=image&_=${Date.now()}`;
+            });
+        }
+        
+        async function testCORSBehavior() {
+            log('🔍 Testing CORS behavior...', 'info');
+            
+            try {
+                // Preflight request
+                const preflightResponse = await fetch(`${API_BASE}/api/test-management/dashboard`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'X-Admin-Token, Content-Type'
+                    }
+                });
+                
+                log(`Preflight response: ${preflightResponse.status}`, preflightResponse.ok ? 'success' : 'error');
+                
+                const corsHeaders = {};
+                preflightResponse.headers.forEach((value, key) => {
+                    if (key.startsWith('access-control')) {
+                        corsHeaders[key] = value;
+                    }
+                });
+                
+                log(`CORS preflight headers: ${JSON.stringify(corsHeaders, null, 2)}`, 'info');
+                
+            } catch (error) {
+                log(`❌ CORS preflight failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLocalServer() {
+            log('🏠 Testing local server connectivity...', 'info');
+            
+            try {
+                const response = await fetch(`${LOCAL_BASE}/api/health`, { cache: 'no-store' });
+                log(`✅ Local server: ${response.status}`, 'success');
+            } catch (error) {
+                log(`❌ Local server: ${error.message}`, 'error');
+            }
+        }
+        
+        async function diagnoseNetworkStack() {
+            log('📊 Diagnosing network stack...', 'info', 'network-analysis');
+            
+            // Test DNS resolution
+            try {
+                const dnsTest = await fetch('https://1.1.1.1/dns-query?name=rawgle-api.findrawdogfood.workers.dev&type=A', {
+                    headers: { 'Accept': 'application/dns-json' }
+                });
+                const dnsData = await dnsTest.json();
+                log(`DNS resolution: ${dnsData.Answer?.length || 0} records found`, 'success', 'network-analysis');
+            } catch (error) {
+                log(`DNS test failed: ${error.message}`, 'error', 'network-analysis');
+            }
+            
+            // Test different ports/protocols
+            const testUrls = [
+                'https://rawgle-api.findrawdogfood.workers.dev',
+                'https://workers.dev',  // Test Cloudflare Workers domain
+                'https://cloudflare.com'  // Test main Cloudflare site
+            ];
+            
+            for (const url of testUrls) {
+                try {
+                    const response = await fetch(`${url}/?network-test=${Date.now()}`, { 
+                        cache: 'no-store',
+                        mode: 'no-cors'  // Avoid CORS issues for this test
+                    });
+                    log(`✅ ${url}: Reachable`, 'success', 'network-analysis');
+                } catch (error) {
+                    log(`❌ ${url}: ${error.message}`, 'error', 'network-analysis');
+                }
+            }
+        }
+        
+        // Auto-run analysis on page load
+        setTimeout(() => {
+            detectBrowser();
+        }, 500);
+        
+        // Add some real-time monitoring
+        window.addEventListener('online', () => log('🌐 Network connection restored', 'success'));
+        window.addEventListener('offline', () => log('🌐 Network connection lost', 'error'));
+    </script>
+</body>
+</html>

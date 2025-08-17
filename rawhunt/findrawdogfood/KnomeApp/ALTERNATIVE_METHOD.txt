@@ -1,0 +1,26 @@
+🚨 ALTERNATIVE: SKIP STEP 2 - DIRECT API KEY METHOD
+===================================================
+
+If you can't find the scheme editor, here's an easier way:
+
+🔧 DIRECT CODE METHOD:
+=====================
+1. In Xcode, open: Sources/Knome/Managers/ChatManager.swift
+2. Find this line (around line 11):
+   private let apiKey = ProcessInfo.processInfo.environment["OPENAI_API_KEY"] ?? ""
+
+3. Replace it with:
+   private let apiKey = "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"
+
+4. Save the file (⌘+S)
+5. Build & Run (⌘+R)
+
+✅ RESULT: 
+App will connect to OpenAI immediately and show 🟢 "LIVE" status!
+
+⚠️ NOTE: 
+This method hardcodes the API key in the code. For production apps, environment variables are preferred, but this works perfectly for testing!
+
+🎯 MUCH EASIER OPTION!
+======================
+This completely skips the scheme editor complexity and gets you running immediately.

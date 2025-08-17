@@ -1,0 +1,62 @@
+{
+  "name": "@gohunta/performance-testing",
+  "version": "1.0.0",
+  "description": "Comprehensive performance testing suite for GoHunta hunting platform",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node benchmarks/ci-performance-test.js",
+    "test:mobile": "node -e \"import('./mobile/mobile-performance-suite.js').then(m => new m.default().testGPSPerformance())\"",
+    "test:api": "node -e \"import('./api/api-performance-suite.js').then(m => new m.default().testEndpointPerformance())\"",
+    "test:pwa": "playwright test --config=playwright.config.js --grep PWA",
+    "test:edge": "node -e \"import('./edge/edge-performance-suite.js').then(m => new m.default().testWorkerPerformance())\"",
+    "test:scalability": "node -e \"import('./scalability/scalability-test-suite.js').then(m => new m.default().runLoadTests())\"",
+    "benchmark": "node benchmarks/performance-benchmark-runner.js",
+    "benchmark:ci": "node benchmarks/ci-performance-test.js",
+    "monitor:setup": "node monitoring/setup-monitoring.js",
+    "dashboard:grafana": "node monitoring/setup-grafana-dashboard.js",
+    "reports:generate": "node tools/generate-performance-report.js",
+    "reports:html": "node tools/generate-html-report.js",
+    "baseline:create": "node tools/create-baseline.js",
+    "baseline:compare": "node tools/compare-baseline.js"
+  },
+  "keywords": [
+    "performance",
+    "testing",
+    "hunting",
+    "mobile",
+    "pwa",
+    "edge",
+    "scalability",
+    "monitoring",
+    "benchmarks"
+  ],
+  "author": "GoHunta Performance Team",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.40.1",
+    "@playwright/test": "^1.40.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.53.0",
+    "prettier": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gohunta/performance-testing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gohunta/performance-testing/issues"
+  },
+  "homepage": "https://github.com/gohunta/performance-testing#readme",
+  "config": {
+    "api_base_url": "https://api.gohunta.com",
+    "frontend_base_url": "https://gohunta.com",
+    "test_timeout": 300000,
+    "report_format": "json,html,junit",
+    "monitoring_enabled": true
+  }
+}

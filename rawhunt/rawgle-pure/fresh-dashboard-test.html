@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fresh Dashboard Test - Cache Busted</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f8ff; }
+        .result { margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        button { padding: 12px 24px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ccc; border-radius: 3px; width: 300px; }
+        h1 { color: #2c3e50; }
+    </style>
+</head>
+<body>
+    <h1>🆕 Fresh Dashboard Test - CORS Cache Busted</h1>
+    
+    <div class="info">
+        <h3>🔄 This page bypasses browser CORS cache</h3>
+        <p><strong>API Base:</strong> <span id="api-base"></span></p>
+        <p><strong>Cache Buster:</strong> <span id="cache-buster"></span></p>
+        <p><strong>Admin Token:</strong> 
+           <input type="text" id="token-input" placeholder="rawgle-admin-2025"> 
+           <button class="btn-primary" onclick="setToken()">Set Token</button>
+        </p>
+    </div>
+    
+    <div>
+        <button class="btn-success" onclick="testWithCacheBust()">🚀 Test with Cache Bust</button>
+        <button class="btn-primary" onclick="forcePreflightReset()">🔄 Force CORS Reset</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        const API_BASE = 'https://rawgle-api.findrawdogfood.workers.dev';
+        const CACHE_BUSTER = Date.now();
+        let ADMIN_TOKEN = 'rawgle-admin-2025';
+        
+        document.getElementById('api-base').textContent = API_BASE;
+        document.getElementById('cache-buster').textContent = CACHE_BUSTER;
+        document.getElementById('token-input').value = ADMIN_TOKEN;
+        
+        function addResult(type, title, message, data = null) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `
+                <h4>${title}</h4>
+                <p>${message}</p>
+                ${data ? `<pre>${typeof data === 'string' ? data : JSON.stringify(data, null, 2)}</pre>` : ''}
+            `;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        function setToken() {
+            const token = document.getElementById('token-input').value.trim();
+            if (token) {
+                ADMIN_TOKEN = token;
+                addResult('success', '✅ Token Set', `Admin token updated: ${token}`);
+            }
+        }
+        
+        async function testWithCacheBust() {
+            clearResults();
+            addResult('info', '🔄 Cache Busted Test', 'Using cache busting techniques...');
+            
+            try {
+                // Method 1: Add cache buster to URL
+                const dashboardUrl = `${API_BASE}/api/test-management/dashboard?cb=${CACHE_BUSTER}&t=${Date.now()}`;
+                
+                addResult('info', '📍 Request Details', 
+                    `URL: ${dashboardUrl}\nToken: ${ADMIN_TOKEN}\nMethod: Fetch with cache bust`);
+                
+                const response = await fetch(dashboardUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': ADMIN_TOKEN,
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    },
+                    cache: 'no-store' // Force no cache
+                });
+                
+                addResult('info', '📊 Response Info', 
+                    `Status: ${response.status}\nOK: ${response.ok}\nHeaders count: ${response.headers.size}`);
+                
+                // Log response headers
+                let headerText = '';
+                for (let [key, value] of response.headers.entries()) {
+                    if (key.startsWith('access-control')) {
+                        headerText += `${key}: ${value}\n`;
+                    }
+                }
+                addResult('info', '🔒 CORS Headers', headerText || 'No CORS headers found');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('success', '🎉 SUCCESS!', 'Dashboard data loaded successfully!', data);
+                    
+                    addResult('success', '📈 Dashboard Summary', 
+                        `✅ Authentication: Working\n✅ CORS: Fixed\n✅ Data: ${JSON.stringify(data.overview)}`);
+                        
+                } else {
+                    const errorText = await response.text();
+                    addResult('error', '❌ HTTP Error', 
+                        `Status: ${response.status} ${response.statusText}`, errorText);
+                }
+                
+            } catch (error) {
+                addResult('error', '❌ Request Failed', 
+                    `Error: ${error.message}\nThis might still be a CORS cache issue.`);
+                
+                // Provide troubleshooting info
+                addResult('info', '🔧 Troubleshooting', 
+                    'If still failing:\n1. Try different browser\n2. Open incognito/private window\n3. Clear browser data for localhost\n4. Try hard refresh (Ctrl+Shift+R)');
+            }
+        }
+        
+        async function forcePreflightReset() {
+            clearResults();
+            addResult('info', '🔄 Forcing CORS Preflight Reset', 'Making OPTIONS request to reset CORS cache...');
+            
+            try {
+                // Make explicit OPTIONS request to reset CORS cache
+                const optionsResponse = await fetch(`${API_BASE}/api/test-management/dashboard?reset=${Date.now()}`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'X-Admin-Token, Content-Type'
+                    }
+                });
+                
+                addResult('success', '✅ CORS Preflight Reset', 
+                    `Status: ${optionsResponse.status}\nNow try the cache busted test.`);
+                
+            } catch (error) {
+                addResult('error', '❌ CORS Reset Failed', `Error: ${error.message}`);
+            }
+        }
+        
+        // Auto-run test on load
+        setTimeout(testWithCacheBust, 1000);
+    </script>
+</body>
+</html>

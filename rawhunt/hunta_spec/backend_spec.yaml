@@ -1,0 +1,9 @@
+name: Back-End Spec
+services:
+  - Auth (JWT)
+  - GPS Import / R2 file ingestion
+  - Profile CRUD via D1
+  - Dog training logs & events
+dev:
+  - Cloudflare Workers (Wrangler)
+  - Started in 'backend' Tmux window

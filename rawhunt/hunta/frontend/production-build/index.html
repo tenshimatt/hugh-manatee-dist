@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/hunta-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Elite dog hunting platform with offline-first wilderness compatibility" />
+    <meta name="keywords" content="hunting, dogs, GPS, training, community, offline" />
+    <meta name="theme-color" content="#2D5530" />
+    
+    <!-- Apple PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Hunta" />
+    
+    <title>Hunta - Elite Dog Hunting Platform</title>
+    
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        line-height: 1.6;
+        color: #1F2937;
+        background: linear-gradient(135deg, #F0F9F1 0%, #DCF2DE 100%);
+        min-height: 100vh;
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      
+      header {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 3rem 0;
+      }
+      
+      .logo {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #2D5530;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .tagline {
+        font-size: 1.5rem;
+        color: #374151;
+        margin-bottom: 1rem;
+        font-weight: 500;
+      }
+      
+      .subtitle {
+        font-size: 1.1rem;
+        color: #6B7280;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      
+      .status-banner {
+        background: linear-gradient(135deg, #10B981, #059669);
+        color: white;
+        padding: 1.5rem 3rem;
+        border-radius: 1rem;
+        display: inline-block;
+        margin: 2rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+      }
+      
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 4rem 0;
+      }
+      
+      .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #E5E7EB;
+      }
+      
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      }
+      
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      
+      .feature-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2D5530;
+        margin-bottom: 1rem;
+      }
+      
+      .feature-description {
+        color: #6B7280;
+        line-height: 1.7;
+      }
+      
+      .tech-stack {
+        background: white;
+        padding: 3rem;
+        border-radius: 1rem;
+        margin: 4rem 0;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      }
+      
+      .tech-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2D5530;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+      
+      .tech-item {
+        text-align: center;
+        padding: 1rem;
+      }
+      
+      .tech-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+      }
+      
+      .tech-value {
+        color: #059669;
+        font-weight: 500;
+      }
+      
+      .api-info {
+        background: #F0F9F1;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin: 3rem 0;
+        border-left: 4px solid #10B981;
+      }
+      
+      .api-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2D5530;
+        margin-bottom: 1rem;
+      }
+      
+      .api-endpoint {
+        font-family: 'Monaco', 'Consolas', monospace;
+        background: rgba(16, 185, 129, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        margin: 0.5rem 0;
+        display: inline-block;
+        color: #059669;
+        font-weight: 500;
+      }
+      
+      .cta-section {
+        text-align: center;
+        margin: 4rem 0;
+        padding: 3rem;
+        background: linear-gradient(135deg, #2D5530, #3A6B3E);
+        border-radius: 1rem;
+        color: white;
+      }
+      
+      .cta-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+      
+      .cta-text {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+      }
+      
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: #10B981;
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: background 0.3s ease;
+        margin: 0.5rem;
+      }
+      
+      .btn:hover {
+        background: #059669;
+      }
+      
+      .btn-outline {
+        background: transparent;
+        border: 2px solid white;
+      }
+      
+      .btn-outline:hover {
+        background: white;
+        color: #2D5530;
+      }
+      
+      footer {
+        text-align: center;
+        padding: 3rem 0;
+        color: #6B7280;
+        border-top: 1px solid #E5E7EB;
+        margin-top: 4rem;
+      }
+      
+      @media (max-width: 768px) {
+        .container { padding: 1rem; }
+        .logo { font-size: 3rem; }
+        .tagline { font-size: 1.2rem; }
+        .features-grid { grid-template-columns: 1fr; }
+        .tech-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">🎯 HUNTA</div>
+        <div class="tagline">Elite Dog Hunting Platform</div>
+        <div class="subtitle">
+          Offline-first wilderness compatibility for dog-assisted hunting enthusiasts
+        </div>
+        <div class="status-banner">
+          ✅ PRODUCTION DEPLOYMENT ACTIVE
+        </div>
+      </header>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🐕</span>
+          <div class="feature-title">Pack & Profile Management</div>
+          <div class="feature-description">
+            Complete dog profiles with breed info, health tracking, training levels, and microchip management. Build your hunting pack with detailed records.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🗺️</span>
+          <div class="feature-title">Hunt Route Planner</div>
+          <div class="feature-description">
+            GPS integration with GPX import/export, offline maps, elevation tracking, and wildlife spotting logs. Plan and record your hunting expeditions.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🏆</span>
+          <div class="feature-title">Trial & Event Listings</div>
+          <div class="feature-description">
+            Discover field trials, hunt tests, and training events. Register for competitions and connect with the hunting dog community.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <div class="feature-title">Gear Reviews & Loadouts</div>
+          <div class="feature-description">
+            Professional equipment reviews, custom loadout configurations, and recommendations from experienced hunters and trainers.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">📚</span>
+          <div class="feature-title">Ethics Knowledge Base</div>
+          <div class="feature-description">
+            Comprehensive hunting ethics, safety protocols, conservation practices, and best practices from expert contributors.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">📸</span>
+          <div class="feature-title">Brag Board & Journal</div>
+          <div class="feature-description">
+            Share hunting stories, training achievements, and photos. Document your journey with comprehensive training logs.
+          </div>
+        </div>
+      </div>
+
+      <div class="tech-stack">
+        <div class="tech-title">🚀 Production Infrastructure</div>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <div class="tech-label">Backend</div>
+            <div class="tech-value">Cloudflare Workers</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-label">Database</div>
+            <div class="tech-value">D1 SQLite (13 tables)</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-label">Storage</div>
+            <div class="tech-value">R2 Buckets</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-label">Cache</div>
+            <div class="tech-value">KV Store</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-label">Frontend</div>
+            <div class="tech-value">PWA + Offline Support</div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-label">Security</div>
+            <div class="tech-value">JWT + Role-based Access</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="api-info">
+        <div class="api-title">🔗 API Endpoints</div>
+        <div>Backend API: <span class="api-endpoint">https://hunta-backend-prod.findrawdogfood.workers.dev</span></div>
+        <div>Health Check: <span class="api-endpoint">/health</span></div>
+        <div>Authentication: <span class="api-endpoint">/api/auth/*</span></div>
+        <div>Core Modules: <span class="api-endpoint">/api/{users,dogs,routes,events,gear,ethics,posts,training}/*</span></div>
+      </div>
+
+      <div class="cta-section">
+        <div class="cta-title">Ready for the Field</div>
+        <div class="cta-text">
+          Built by elite developers who understand the hunting lifestyle. 
+          Designed for wilderness reliability and community expertise.
+        </div>
+        <a href="https://hunta-backend-prod.findrawdogfood.workers.dev/health" class="btn">Test API</a>
+        <a href="#" class="btn btn-outline">Documentation</a>
+      </div>
+
+      <footer>
+        <p>
+          <strong>Hunta Platform v1.0</strong> - Production Deployment Active<br>
+          Elite dog hunting platform with offline-first wilderness compatibility
+        </p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+          Backend: Cloudflare Workers + D1 + R2 + KV<br>
+          Frontend: PWA with Service Worker<br>
+          Status: ✅ Fully Operational
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      // Simple PWA install prompt
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install banner
+        const banner = document.createElement('div');
+        banner.innerHTML = `
+          <div style="position: fixed; bottom: 20px; left: 20px; right: 20px; background: #2D5530; color: white; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 1000;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span>📱 Install Hunta as an app for offline wilderness use</span>
+              <button onclick="installPWA()" style="background: #10B981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;">Install</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(banner);
+      });
+      
+      window.installPWA = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`PWA install: ${outcome}`);
+          deferredPrompt = null;
+        }
+      };
+      
+      // Test API connectivity
+      fetch('https://hunta-backend-prod.findrawdogfood.workers.dev/health')
+        .then(response => response.json())
+        .then(data => {
+          console.log('✅ Backend API healthy:', data);
+        })
+        .catch(error => {
+          console.log('⚠️ Backend API error:', error);
+        });
+    </script>
+  </body>
+</html>

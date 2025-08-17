@@ -1,0 +1,333 @@
+name: 🎯 Performance Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run performance tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      suites:
+        description: 'Test suites to run (comma-separated)'
+        default: 'mobile,api,pwa,edge,scalability'
+        required: false
+      baseline_url:
+        description: 'URL to download baseline from'
+        required: false
+      fail_on_regression:
+        description: 'Fail build on performance regression'
+        type: boolean
+        default: true
+
+env:
+  NODE_VERSION: '20'
+  API_BASE_URL: ${{ secrets.API_BASE_URL || 'https://api.gohunta.com' }}
+  FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL || 'https://gohunta.com' }}
+  PERFORMANCE_OUTPUT_DIR: './performance-reports'
+  PERFORMANCE_SUITES: ${{ github.event.inputs.suites || 'mobile,api,pwa,edge,scalability' }}
+  PERFORMANCE_BASELINE_URL: ${{ github.event.inputs.baseline_url }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+jobs:
+  performance-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    strategy:
+      matrix:
+        environment: [staging, production]
+      fail-fast: false
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2 # Need previous commit for comparison
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: |
+        npm ci
+        npx playwright install chromium
+    
+    - name: 🌐 Setup environment
+      run: |
+        echo "Setting up ${{ matrix.environment }} environment"
+        if [ "${{ matrix.environment }}" == "production" ]; then
+          echo "API_BASE_URL=https://api.gohunta.com" >> $GITHUB_ENV
+          echo "FRONTEND_BASE_URL=https://gohunta.com" >> $GITHUB_ENV
+        else
+          echo "API_BASE_URL=https://staging-api.gohunta.com" >> $GITHUB_ENV
+          echo "FRONTEND_BASE_URL=https://staging.gohunta.com" >> $GITHUB_ENV
+        fi
+    
+    - name: 🏃‍♀️ Pre-flight checks
+      run: |
+        echo "🔍 Checking API availability..."
+        curl -f $API_BASE_URL/health || exit 1
+        echo "🔍 Checking Frontend availability..."
+        curl -f -I $FRONTEND_BASE_URL || exit 1
+        echo "✅ Pre-flight checks passed"
+    
+    - name: 📊 Run performance tests
+      id: perf-tests
+      run: |
+        echo "🚀 Starting performance tests for ${{ matrix.environment }}"
+        node performance/benchmarks/ci-performance-test.js
+      env:
+        NODE_ENV: ${{ matrix.environment }}
+        CI: true
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: 📈 Analyze results
+      if: always()
+      run: |
+        echo "📊 Performance Results Summary:"
+        if [ -f "$PERFORMANCE_OUTPUT_DIR/performance-report-latest.json" ]; then
+          node -e "
+            const report = JSON.parse(require('fs').readFileSync('$PERFORMANCE_OUTPUT_DIR/performance-report-latest.json'));
+            console.log(\`Performance Score: \${report.summary.performance_score}/100\`);
+            console.log(\`Suites Passed: \${report.summary.passed_suites}/\${report.summary.total_suites}\`);
+            console.log(\`Critical Issues: \${report.summary.critical_issues.length}\`);
+            console.log(\`Overall Status: \${report.overall_pass ? 'PASSED' : 'FAILED'}\`);
+          "
+        else
+          echo "❌ Performance report not found"
+        fi
+    
+    - name: 💾 Upload performance reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-reports-${{ matrix.environment }}
+        path: ${{ env.PERFORMANCE_OUTPUT_DIR }}
+        retention-days: 30
+    
+    - name: 📊 Upload to GitHub Pages (Production only)
+      if: matrix.environment == 'production' && github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ${{ env.PERFORMANCE_OUTPUT_DIR }}
+        destination_dir: performance-reports
+        keep_files: false
+    
+    - name: 📝 Comment PR with results
+      if: github.event_name == 'pull_request' && matrix.environment == 'staging'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          const reportPath = path.join(process.env.PERFORMANCE_OUTPUT_DIR, 'performance-report-latest.json');
+          
+          if (!fs.existsSync(reportPath)) {
+            console.log('Performance report not found');
+            return;
+          }
+          
+          const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+          
+          const comment = `## 🎯 Performance Test Results
+          
+          **Overall Status:** ${report.overall_pass ? '✅ PASSED' : '❌ FAILED'}
+          **Performance Score:** ${report.summary.performance_score}/100
+          **Suites Passed:** ${report.summary.passed_suites}/${report.summary.total_suites}
+          
+          ### 📊 Key Metrics
+          ${Object.entries(report.summary.key_metrics || {}).map(([key, value]) => 
+            `- **${key}:** ${typeof value === 'number' ? value.toFixed(1) : value}`
+          ).join('\n')}
+          
+          ${report.summary.critical_issues.length > 0 ? `
+          ### ⚠️ Critical Issues
+          ${report.summary.critical_issues.slice(0, 5).map(issue => `- ${issue}`).join('\n')}
+          ` : ''}
+          
+          ${report.regression_analysis && report.regression_analysis.regressions.length > 0 ? `
+          ### 📉 Performance Regressions
+          ${report.regression_analysis.regressions.slice(0, 3).map(reg => 
+            `- **${reg.suite}/${reg.metric}:** ${reg.change.toFixed(1)}% regression`
+          ).join('\n')}
+          ` : ''}
+          
+          [View detailed report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+    
+    - name: 🚨 Fail on regression
+      if: github.event.inputs.fail_on_regression == 'true' || github.event.inputs.fail_on_regression == ''
+      run: |
+        if [ -f "$PERFORMANCE_OUTPUT_DIR/performance-report-latest.json" ]; then
+          PASSED=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$PERFORMANCE_OUTPUT_DIR/performance-report-latest.json')).overall_pass)")
+          if [ "$PASSED" != "true" ]; then
+            echo "❌ Performance tests failed - failing build"
+            exit 1
+          fi
+        fi
+
+  baseline-update:
+    runs-on: ubuntu-latest
+    needs: performance-tests
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📥 Download performance reports
+      uses: actions/download-artifact@v4
+      with:
+        name: performance-reports-production
+        path: ./performance-reports
+    
+    - name: 📊 Update performance baseline
+      run: |
+        if [ -f "./performance-reports/performance-report-latest.json" ]; then
+          echo "📊 Updating performance baseline"
+          
+          # Create baselines directory if it doesn't exist
+          mkdir -p ./performance/baselines
+          
+          # Copy latest report as new baseline
+          cp ./performance-reports/performance-report-latest.json ./performance/baselines/baseline-$(date +%Y%m%d).json
+          cp ./performance-reports/performance-report-latest.json ./performance/baselines/baseline-latest.json
+          
+          # Keep only last 10 baselines
+          ls -t ./performance/baselines/baseline-*.json | tail -n +11 | xargs -r rm
+        fi
+    
+    - name: 💾 Commit baseline updates
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        if [ -n "$(git status --porcelain)" ]; then
+          git add performance/baselines/
+          git commit -m "chore: update performance baseline [skip ci]"
+          git push
+        else
+          echo "No changes to commit"
+        fi
+
+  performance-monitoring:
+    runs-on: ubuntu-latest
+    needs: performance-tests
+    if: always()
+    
+    steps:
+    - name: 📥 Download performance reports
+      uses: actions/download-artifact@v4
+      with:
+        name: performance-reports-production
+        path: ./performance-reports
+    
+    - name: 📊 Send metrics to monitoring
+      run: |
+        if [ -f "./performance-reports/performance-report-latest.json" ] && [ -n "${{ secrets.DATADOG_API_KEY }}" ]; then
+          echo "📊 Sending metrics to Datadog"
+          
+          node -e "
+            const report = JSON.parse(require('fs').readFileSync('./performance-reports/performance-report-latest.json'));
+            const metrics = [];
+            
+            // Overall metrics
+            metrics.push({
+              metric: 'gohunta.performance.score',
+              points: [[Math.floor(Date.now() / 1000), report.summary.performance_score]],
+              tags: ['environment:production', 'branch:${{ github.ref_name }}']
+            });
+            
+            // Suite-specific metrics
+            Object.entries(report.suites).forEach(([suite, data]) => {
+              if (data.summary) {
+                Object.entries(data.summary).forEach(([metric, value]) => {
+                  if (typeof value === 'number') {
+                    metrics.push({
+                      metric: \`gohunta.performance.\${suite}.\${metric}\`,
+                      points: [[Math.floor(Date.now() / 1000), value]],
+                      tags: ['environment:production', 'suite:' + suite]
+                    });
+                  }
+                });
+              }
+            });
+            
+            // Send to Datadog
+            require('https').request({
+              hostname: 'api.datadoghq.com',
+              path: '/api/v1/series',
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'DD-API-KEY': '${{ secrets.DATADOG_API_KEY }}'
+              }
+            }, (res) => {
+              console.log('Datadog response:', res.statusCode);
+            }).write(JSON.stringify({ series: metrics }));
+          "
+        fi
+      env:
+        DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+    
+    - name: 🔔 Create GitHub issue for critical failures
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = `🚨 Performance Test Critical Failure - ${new Date().toISOString().split('T')[0]}`;
+          const body = `
+          ## Critical Performance Test Failure
+          
+          **Branch:** ${context.ref}
+          **Commit:** ${context.sha}
+          **Run:** [${context.runId}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+          
+          The performance test suite has failed critically. Please investigate immediately.
+          
+          ### Next Steps
+          - [ ] Review the performance test logs
+          - [ ] Identify root cause of failure
+          - [ ] Implement fixes
+          - [ ] Re-run performance tests
+          
+          **Auto-generated by GitHub Actions**
+          `;
+          
+          // Check if similar issue already exists
+          const existingIssues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            labels: 'performance,critical'
+          });
+          
+          const hasSimilarIssue = existingIssues.data.some(issue => 
+            issue.title.includes('Performance Test Critical Failure')
+          );
+          
+          if (!hasSimilarIssue) {
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['performance', 'critical', 'bug']
+            });
+          }

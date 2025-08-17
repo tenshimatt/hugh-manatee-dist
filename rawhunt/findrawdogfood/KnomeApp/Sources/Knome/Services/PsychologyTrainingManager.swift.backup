@@ -1,0 +1,552 @@
+//
+// PsychologyTrainingManager.swift - Specialized Psychology Training for Middle-Aged Men
+//
+import Foundation
+import SwiftUI
+
+// MARK: - Psychology Specialization
+struct PsychologySpecialization {
+    let targetDemographic = "Males aged 40-55"
+    let specializations: [String] = [
+        "Midlife transitions and identity crisis",
+        "Career dissatisfaction and professional stagnation",
+        "Relationship challenges and communication issues", 
+        "Parenting teenagers and young adults",
+        "Health anxiety and aging concerns",
+        "Financial stress and retirement planning",
+        "Loss of physical vitality and body image",
+        "Men's mental health stigma and emotional expression",
+        "Divorce, separation, and dating in midlife",
+        "Caring for aging parents",
+        "Purpose and meaning after achieving goals",
+        "Social isolation and friendship challenges"
+    ]
+}
+
+// MARK: - Training Context Manager
+@MainActor
+class PsychologyTrainingManager: ObservableObject {
+    
+    // MARK: - Core Training Components
+    private let contextBuilder = ContextBuilder()
+    private let responseFramework = TherapeuticResponseFramework()
+    private let commonChallenges = MidlifeChallengesDatabase()
+    private let interventionLibrary = InterventionLibrary()
+    
+    // MARK: - Specialized Training Prompt
+    func buildSpecializedSystemPrompt(userContext: UserContext? = nil) -> String {
+        var prompt = """
+        You are Dr. Knome, a highly experienced clinical psychologist specializing in men's mental health, particularly males aged 40-55. You have 20+ years of experience helping men navigate midlife transitions.
+
+        ## Your Expertise:
+        - Male psychology and masculinity research
+        - Midlife crisis and identity transitions  
+        - Career and purpose redefinition
+        - Relationship and communication patterns
+        - Health anxiety and aging concerns
+        - Emotional regulation and expression for men
+        - Cognitive Behavioral Therapy (CBT)
+        - Acceptance and Commitment Therapy (ACT)
+        - Solution-focused therapy approaches
+
+        ## Your Therapeutic Style:
+        - Warm, non-judgmental, and understanding
+        - Direct but compassionate communication
+        - Normalize common male experiences
+        - Challenge unhelpful thought patterns gently
+        - Provide practical, actionable strategies
+        - Respect traditional masculine values while encouraging growth
+        - Use relatable metaphors and examples
+
+        ## Common Issues You Address:
+
+        ### 1. MIDLIFE IDENTITY & PURPOSE
+        - "Who am I beyond my job/role as provider?"
+        - Feeling stuck or unfulfilled despite success
+        - Questioning life choices and paths not taken
+        - Loss of dreams or aspirations
+        - Finding new meaning and purpose
+
+        ### 2. CAREER & FINANCIAL STRESS  
+        - Plateau or stagnation in career advancement
+        - Being passed over for younger employees
+        - Industry changes and skill obsolescence
+        - Pressure to provide vs. personal fulfillment
+        - Retirement planning anxiety
+
+        ### 3. RELATIONSHIPS & COMMUNICATION
+        - Growing apart from spouse/partner
+        - Difficulty expressing emotions
+        - Communication breakdowns
+        - Intimacy and connection issues
+        - Dating after divorce/separation
+
+        ### 4. PARENTING CHALLENGES
+        - Relating to teenage/adult children
+        - Balancing discipline with friendship
+        - Children leaving home (empty nest)
+        - Generational differences in values
+        - Being a role model while struggling personally
+
+        ### 5. HEALTH & AGING CONCERNS
+        - Declining physical performance
+        - Health scares and mortality awareness
+        - Body image and fitness concerns
+        - Energy levels and vitality
+        - Medical issues affecting identity
+
+        ### 6. SOCIAL & EMOTIONAL ISOLATION
+        - Difficulty making/maintaining friendships
+        - Emotional suppression and expression
+        - Stigma around seeking help
+        - Loneliness despite being surrounded by people
+        - Competition vs. connection with other men
+
+        ## Your Response Framework:
+
+        ### 1. VALIDATE & NORMALIZE
+        - "What you're experiencing is incredibly common for men your age"
+        - "This doesn't make you weak or broken"
+        - Share relevant statistics or research when helpful
+
+        ### 2. EXPLORE & UNDERSTAND
+        - Ask open-ended questions to understand context
+        - Identify patterns and triggers  
+        - Explore underlying beliefs and values
+
+        ### 3. REFRAME & CHALLENGE
+        - Challenge cognitive distortions gently
+        - Offer alternative perspectives
+        - Help separate facts from fears
+
+        ### 4. PROVIDE PRACTICAL STRATEGIES
+        - Concrete, actionable steps
+        - Skills and tools they can use immediately
+        - Homework assignments and exercises
+        - Resources and recommendations
+
+        ### 5. ENCOURAGE & SUPPORT
+        - Acknowledge efforts and progress
+        - Provide hope and encouragement
+        - Emphasize strengths and resilience
+
+        ## Crisis Response Protocol:
+        For any mention of:
+        - Suicide or self-harm
+        - Substance abuse concerns
+        - Domestic violence
+        - Severe depression symptoms
+
+        IMMEDIATELY provide:
+        - National Suicide Prevention Lifeline: 988
+        - Crisis Text Line: Text HOME to 741741  
+        - Men's Crisis Helpline: 1-877-472-6287
+        - Encourage immediate professional help
+        - Express genuine concern and care
+
+        ## Communication Guidelines:
+        - Keep responses conversational and accessible
+        - Avoid clinical jargon unless explaining concepts
+        - Use "we" language to build partnership
+        - Match their communication style (formal vs. casual)
+        - Be patient with emotional expression - many men struggle with this
+        - Provide hope while being realistic
+        - Remember: progress over perfection
+
+        ## Key Principles:
+        1. Men often resist help due to societal conditioning
+        2. Practical solutions resonate more than abstract concepts  
+        3. Acknowledge the unique pressures men face
+        4. Respect their autonomy and decision-making
+        5. Focus on strengths and competencies
+        6. Address shame and vulnerability with care
+        7. Normalize the therapeutic process as strength, not weakness
+
+        ## Sample Interventions by Issue:
+
+        ### Career Stagnation:
+        - Values clarification exercises
+        - Skills assessment and development planning
+        - Network building strategies
+        - Side project exploration
+        - Mentorship opportunities
+
+        ### Relationship Issues:
+        - Communication skills training
+        - Emotional intelligence development
+        - Conflict resolution techniques
+        - Intimacy rebuilding exercises
+        - Couples therapy referrals when appropriate
+
+        ### Health Anxiety:
+        - Cognitive restructuring for catastrophic thinking
+        - Mindfulness and relaxation techniques
+        - Lifestyle modification planning
+        - Medical anxiety management
+        - Body acceptance work
+
+        ### Emotional Expression:
+        - Emotion identification and labeling
+        - Journaling techniques
+        - Gradual exposure to vulnerability
+        - Safe relationship practice
+        - Male support group recommendations
+
+        """
+        
+        // Add user-specific context if available
+        if let userContext = userContext {
+            prompt += "\n\n## Current User Context:\n"
+            prompt += contextBuilder.buildUserSpecificContext(userContext)
+        }
+        
+        prompt += """
+
+        Remember: You're not just providing advice - you're creating a safe space for men to explore their inner lives without judgment. Every interaction should feel supportive, understanding, and empowering.
+        """
+        
+        return prompt
+    }
+    
+    // MARK: - Response Enhancement
+    func enhanceResponse(originalResponse: String, userMessage: String, context: UserContext?) -> String {
+        // Analyze the user's message for specific concerns
+        let concerns = identifySpecificConcerns(userMessage)
+        let interventions = interventionLibrary.getRelevantInterventions(for: concerns)
+        
+        var enhancedResponse = originalResponse
+        
+        // Add specific interventions if relevant
+        if !interventions.isEmpty {
+            enhancedResponse += "\n\n## Specific Strategies for You:\n"
+            for intervention in interventions.prefix(3) { // Limit to 3 most relevant
+                enhancedResponse += "• \(intervention.description)\n"
+            }
+        }
+        
+        // Add follow-up questions to deepen engagement
+        let followUpQuestions = generateFollowUpQuestions(for: concerns)
+        if !followUpQuestions.isEmpty {
+            enhancedResponse += "\n\nTo help me understand better:\n"
+            enhancedResponse += followUpQuestions.prefix(2).joined(separator: "\n")
+        }
+        
+        return enhancedResponse
+    }
+    
+    private func identifySpecificConcerns(_ message: String) -> [MidlifeConcern] {
+        let lowercased = message.lowercased()
+        var concerns: [MidlifeConcern] = []
+        
+        // Career/Work concerns
+        if lowercased.contains(anyOf: ["job", "work", "career", "boss", "promotion", "unemployed", "fired"]) {
+            concerns.append(.careerStagnation)
+        }
+        
+        // Relationship concerns  
+        if lowercased.contains(anyOf: ["wife", "marriage", "relationship", "divorce", "dating", "lonely"]) {
+            concerns.append(.relationshipIssues)
+        }
+        
+        // Health concerns
+        if lowercased.contains(anyOf: ["health", "sick", "tired", "energy", "doctor", "pain", "aging"]) {
+            concerns.append(.healthAnxiety)
+        }
+        
+        // Parenting concerns
+        if lowercased.contains(anyOf: ["kids", "children", "teenager", "daughter", "son", "parenting"]) {
+            concerns.append(.parentingChallenges)
+        }
+        
+        // Identity/Purpose concerns
+        if lowercased.contains(anyOf: ["purpose", "meaning", "stuck", "unfulfilled", "identity", "who am i"]) {
+            concerns.append(.identityCrisis)
+        }
+        
+        // Financial concerns
+        if lowercased.contains(anyOf: ["money", "financial", "retirement", "debt", "afford", "budget"]) {
+            concerns.append(.financialStress)
+        }
+        
+        return concerns
+    }
+    
+    private func generateFollowUpQuestions(for concerns: [MidlifeConcern]) -> [String] {
+        var questions: [String] = []
+        
+        for concern in concerns {
+            switch concern {
+            case .careerStagnation:
+                questions.append("• What aspects of your work feel most unfulfilling right now?")
+                questions.append("• When did you last feel excited about a project or opportunity?")
+            case .relationshipIssues:
+                questions.append("• What's changed in your relationship dynamics recently?")
+                questions.append("• How comfortable are you expressing your needs and feelings?")
+            case .healthAnxiety:
+                questions.append("• How are these health concerns affecting your daily activities?")
+                questions.append("• What support do you have from healthcare providers?")
+            case .parentingChallenges:
+                questions.append("• What's the most challenging part of parenting for you right now?")
+                questions.append("• How has your relationship with your children evolved?")
+            case .identityCrisis:
+                questions.append("• What used to give you a sense of purpose and fulfillment?")
+                questions.append("• If you could change one thing about your life, what would it be?")
+            case .financialStress:
+                questions.append("• What specific financial concerns keep you up at night?")
+                questions.append("• How is financial stress affecting other areas of your life?")
+            }
+        }
+        
+        return Array(Set(questions)) // Remove duplicates
+    }
+}
+
+// MARK: - User Context
+struct UserContext {
+    let age: Int?
+    let location: String?
+    let relationshipStatus: String?
+    let hasChildren: Bool?
+    let employmentStatus: String?
+    let previousSessions: [SessionSummary]
+    let identifiedConcerns: [MidlifeConcern]
+    let preferredCommunicationStyle: CommunicationStyle
+    
+    enum CommunicationStyle {
+        case direct, gentle, analytical, supportive
+    }
+}
+
+// MARK: - Midlife Concerns
+enum MidlifeConcern: CaseIterable {
+    case identityCrisis
+    case careerStagnation  
+    case relationshipIssues
+    case parentingChallenges
+    case healthAnxiety
+    case financialStress
+    case socialIsolation
+    case purposeLoss
+    
+    var description: String {
+        switch self {
+        case .identityCrisis: return "Identity and self-definition challenges"
+        case .careerStagnation: return "Career plateau and professional dissatisfaction"
+        case .relationshipIssues: return "Marriage and relationship difficulties"
+        case .parentingChallenges: return "Parenting and family dynamics"
+        case .healthAnxiety: return "Health concerns and aging anxiety"
+        case .financialStress: return "Financial pressure and security concerns"
+        case .socialIsolation: return "Loneliness and social connection issues"
+        case .purposeLoss: return "Loss of meaning and direction"
+        }
+    }
+}
+
+// MARK: - Context Builder
+class ContextBuilder {
+    func buildUserSpecificContext(_ userContext: UserContext) -> String {
+        var context = ""
+        
+        if let age = userContext.age {
+            context += "User is \(age) years old. "
+        }
+        
+        if !userContext.identifiedConcerns.isEmpty {
+            context += "Primary concerns: \(userContext.identifiedConcerns.map { $0.description }.joined(separator: ", ")). "
+        }
+        
+        if !userContext.previousSessions.isEmpty {
+            context += "Previous session themes: \(userContext.previousSessions.map { $0.mainTheme }.joined(separator: ", ")). "
+        }
+        
+        context += "Communication style preference: \(userContext.preferredCommunicationStyle)."
+        
+        return context
+    }
+}
+
+// MARK: - Therapeutic Response Framework
+class TherapeuticResponseFramework {
+    
+    func processResponse(_ response: String, for concern: MidlifeConcern) -> String {
+        // Apply therapeutic frameworks based on concern type
+        switch concern {
+        case .identityCrisis:
+            return applyNarrativeTherapy(response)
+        case .careerStagnation:
+            return applySolutionFocusedApproach(response)
+        case .relationshipIssues:
+            return applyEmotionallyFocusedTherapy(response)
+        case .healthAnxiety:
+            return applyCognitiveRestructuring(response)
+        default:
+            return response
+        }
+    }
+    
+    private func applyNarrativeTherapy(_ response: String) -> String {
+        // Add narrative therapy elements
+        return response + "\n\nRemember, you are the author of your life story. This current chapter doesn't define the entire book."
+    }
+    
+    private func applySolutionFocusedApproach(_ response: String) -> String {
+        // Add solution-focused elements
+        return response + "\n\nLet's focus on small, achievable steps. What's one small thing you could try this week?"
+    }
+    
+    private func applyEmotionallyFocusedTherapy(_ response: String) -> String {
+        // Add EFT elements
+        return response + "\n\nUnderstanding and expressing your emotions is a sign of strength, not weakness."
+    }
+    
+    private func applyCognitiveRestructuring(_ response: String) -> String {
+        // Add CBT elements
+        return response + "\n\nLet's examine the evidence for and against these thoughts. What would you tell a good friend in this situation?"
+    }
+}
+
+// MARK: - Intervention Library
+class InterventionLibrary {
+    
+    private let interventions: [MidlifeConcern: [TherapeuticIntervention]] = [
+        .identityCrisis: [
+            TherapeuticIntervention(
+                name: "Values Clarification",
+                description: "Spend 15 minutes this week writing about what truly matters to you now, not what you thought should matter at 25.",
+                category: .selfReflection
+            ),
+            TherapeuticIntervention(
+                name: "Life Review Exercise",
+                description: "Write about 3 proudest moments from each decade of your life. What patterns do you see?",
+                category: .cognitive
+            )
+        ],
+        .careerStagnation: [
+            TherapeuticIntervention(
+                name: "Skills Inventory",
+                description: "List 10 skills you've developed in your career. Which ones energize you most?",
+                category: .behavioral
+            ),
+            TherapeuticIntervention(
+                name: "Informational Interviews", 
+                description: "Schedule one coffee meeting this month with someone in a role that interests you.",
+                category: .behavioral
+            )
+        ],
+        .relationshipIssues: [
+            TherapeuticIntervention(
+                name: "Daily Check-ins",
+                description: "Spend 10 minutes daily asking your partner about their day without offering solutions.",
+                category: .behavioral
+            ),
+            TherapeuticIntervention(
+                name: "Emotional Labeling",
+                description: "Practice naming your emotions before expressing them: 'I feel frustrated because...'",
+                category: .emotional
+            )
+        ]
+    ]
+    
+    func getRelevantInterventions(for concerns: [MidlifeConcern]) -> [TherapeuticIntervention] {
+        var relevantInterventions: [TherapeuticIntervention] = []
+        
+        for concern in concerns {
+            if let concernInterventions = interventions[concern] {
+                relevantInterventions.append(contentsOf: concernInterventions)
+            }
+        }
+        
+        return relevantInterventions
+    }
+}
+
+// MARK: - Therapeutic Intervention
+struct TherapeuticIntervention {
+    let name: String
+    let description: String
+    let category: InterventionCategory
+    
+    enum InterventionCategory {
+        case cognitive, behavioral, emotional, selfReflection, practical
+    }
+}
+
+// MARK: - Session Summary
+struct SessionSummary {
+    let date: Date
+    let mainTheme: String
+    let keyInsights: [String]
+    let homeworkAssigned: String?
+    let progressNoted: String?
+}
+
+// MARK: - Midlife Challenges Database
+class MidlifeChallengesDatabase {
+    
+    let commonChallenges: [String: [String]] = [
+        "Career & Work": [
+            "Feeling stuck in current role with no clear advancement path",
+            "Younger colleagues getting promoted while you plateau",
+            "Industry changes making your skills feel obsolete",
+            "Questioning if your work has meaning or just pays bills",
+            "Fear of starting over vs. staying in unfulfilling job",
+            "Pressure to be primary breadwinner limiting career choices"
+        ],
+        
+        "Marriage & Relationships": [
+            "Growing apart from spouse after years of focusing on kids/career",
+            "Communication has become functional rather than intimate",
+            "Different life goals emerging in midlife",
+            "Dealing with partner's midlife changes too",
+            "Rediscovering intimacy after years of routine",
+            "Navigating divorce and dating in your 40s/50s"
+        ],
+        
+        "Parenting": [
+            "Teenagers challenging your authority and values",
+            "Adult children still depending on you financially",
+            "Balancing being supportive vs. enabling independence", 
+            "Empty nest syndrome when kids leave home",
+            "Realizing you weren't the perfect parent you hoped to be",
+            "Generational differences in communication and values"
+        ],
+        
+        "Health & Aging": [
+            "First major health scare making mortality real",
+            "Declining energy and physical capabilities",
+            "Weight gain despite same habits that worked before",
+            "Sleep issues affecting mood and performance",
+            "Prostate, heart, or other age-related health concerns",
+            "Feeling like your body is betraying you"
+        ],
+        
+        "Identity & Purpose": [
+            "Achieving goals but feeling empty instead of fulfilled",
+            "Questioning who you are beyond your roles (husband, father, provider)",
+            "Wondering about roads not taken and opportunities missed",
+            "Feeling like you're just going through the motions",
+            "Loss of dreams and ambitions from younger years",
+            "Searching for meaning beyond material success"
+        ],
+        
+        "Social & Emotional": [
+            "Difficulty maintaining friendships with busy schedules",
+            "Feeling isolated despite being surrounded by people",
+            "Struggling to express emotions or ask for help",
+            "Competition with other men making genuine connection hard",
+            "Social media making you feel inadequate compared to others",
+            "Pressure to 'have it all figured out' at this age"
+        ]
+    ]
+    
+    func getChallengesFor(category: String) -> [String] {
+        return commonChallenges[category] ?? []
+    }
+}
+
+// MARK: - String Extension for Pattern Matching
+extension String {
+    func contains(anyOf strings: [String]) -> Bool {
+        return strings.contains { self.contains($0) }
+    }
+}

@@ -1,0 +1,393 @@
+//
+// CoreDataEntities.swift - Core Data Entity Definitions
+//
+import Foundation
+import CoreData
+
+// MARK: - ChatMessageEntity
+@objc(ChatMessageEntity)
+public class ChatMessageEntity: NSManagedObject {
+    
+}
+
+extension ChatMessageEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<ChatMessageEntity> {
+        return NSFetchRequest<ChatMessageEntity>(entityName: "ChatMessageEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var content: String?
+    @NSManaged public var isUser: Bool
+    @NSManaged public var timestamp: Date?
+    @NSManaged public var encryptedContent: Data? // For sensitive data encryption
+    @NSManaged public var metadata: String? // JSON string for additional metadata
+
+}
+
+extension ChatMessageEntity : Identifiable {
+
+}
+
+// MARK: - JournalEntryEntity
+@objc(JournalEntryEntity)
+public class JournalEntryEntity: NSManagedObject {
+
+}
+
+extension JournalEntryEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<JournalEntryEntity> {
+        return NSFetchRequest<JournalEntryEntity>(entityName: "JournalEntryEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var content: String?
+    @NSManaged public var mood: String?
+    @NSManaged public var timestamp: Date?
+    @NSManaged public var tags: String? // Comma-separated tags
+    @NSManaged public var encryptedContent: Data?
+    @NSManaged public var wordCount: Int32
+    @NSManaged public var sentiment: Double // Sentiment analysis score
+
+}
+
+extension JournalEntryEntity : Identifiable {
+
+}
+
+// MARK: - MoodEntryEntity
+@objc(MoodEntryEntity)
+public class MoodEntryEntity: NSManagedObject {
+
+}
+
+extension MoodEntryEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<MoodEntryEntity> {
+        return NSFetchRequest<MoodEntryEntity>(entityName: "MoodEntryEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var mood: String?
+    @NSManaged public var timestamp: Date?
+    @NSManaged public var notes: String?
+    @NSManaged public var intensity: Int16 // 1-10 scale
+    @NSManaged public var triggers: String? // Comma-separated triggers
+    @NSManaged public var context: String? // Location, situation, etc.
+
+}
+
+extension MoodEntryEntity : Identifiable {
+
+}
+
+// MARK: - SessionEntity
+@objc(SessionEntity)
+public class SessionEntity: NSManagedObject {
+
+}
+
+extension SessionEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<SessionEntity> {
+        return NSFetchRequest<SessionEntity>(entityName: "SessionEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var startTime: Date?
+    @NSManaged public var endTime: Date?
+    @NSManaged public var messageCount: Int32
+    @NSManaged public var sessionType: String? // chat, journal, mood_tracking
+    @NSManaged public var summary: String?
+    @NSManaged public var goals: String? // Session goals set by user
+    @NSManaged public var outcomes: String? // Session outcomes/insights
+
+}
+
+extension SessionEntity : Identifiable {
+
+}
+
+// MARK: - UserPreferenceEntity
+@objc(UserPreferenceEntity)
+public class UserPreferenceEntity: NSManagedObject {
+
+}
+
+extension UserPreferenceEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<UserPreferenceEntity> {
+        return NSFetchRequest<UserPreferenceEntity>(entityName: "UserPreferenceEntity")
+    }
+
+    @NSManaged public var key: String?
+    @NSManaged public var value: String?
+    @NSManaged public var type: String? // string, bool, int, double, date
+    @NSManaged public var lastModified: Date?
+
+}
+
+extension UserPreferenceEntity : Identifiable {
+
+}
+
+// MARK: - GoalEntity
+@objc(GoalEntity)
+public class GoalEntity: NSManagedObject {
+
+}
+
+extension GoalEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<GoalEntity> {
+        return NSFetchRequest<GoalEntity>(entityName: "GoalEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var title: String?
+    @NSManaged public var goalDescription: String?
+    @NSManaged public var targetDate: Date?
+    @NSManaged public var isCompleted: Bool
+    @NSManaged public var progress: Double // 0.0 to 1.0
+    @NSManaged public var category: String? // wellness, productivity, relationships, etc.
+    @NSManaged public var milestones: String? // JSON array of milestones
+    @NSManaged public var createdAt: Date?
+    @NSManaged public var completedAt: Date?
+
+}
+
+extension GoalEntity : Identifiable {
+
+}
+
+// MARK: - ReminderEntity
+@objc(ReminderEntity)
+public class ReminderEntity: NSManagedObject {
+
+}
+
+extension ReminderEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<ReminderEntity> {
+        return NSFetchRequest<ReminderEntity>(entityName: "ReminderEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var title: String?
+    @NSManaged public var message: String?
+    @NSManaged public var scheduledTime: Date?
+    @NSManaged public var repeatInterval: String? // daily, weekly, monthly
+    @NSManaged public var isEnabled: Bool
+    @NSManaged public var reminderType: String? // medication, appointment, check_in
+    @NSManaged public var notificationId: String?
+    @NSManaged public var lastTriggered: Date?
+
+}
+
+extension ReminderEntity : Identifiable {
+
+}
+
+// MARK: - InsightEntity
+@objc(InsightEntity)
+public class InsightEntity: NSManagedObject {
+
+}
+
+extension InsightEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<InsightEntity> {
+        return NSFetchRequest<InsightEntity>(entityName: "InsightEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var title: String?
+    @NSManaged public var content: String?
+    @NSManaged public var insightType: String? // pattern, trend, suggestion, achievement
+    @NSManaged public var generatedAt: Date?
+    @NSManaged public var relevanceScore: Double
+    @NSManaged public var isRead: Bool
+    @NSManaged public var sourceData: String? // Reference to data that generated this insight
+    @NSManaged public var actionable: Bool
+
+}
+
+extension InsightEntity : Identifiable {
+
+}
+
+// MARK: - AnalyticsEventEntity
+@objc(AnalyticsEventEntity)
+public class AnalyticsEventEntity: NSManagedObject {
+
+}
+
+extension AnalyticsEventEntity {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<AnalyticsEventEntity> {
+        return NSFetchRequest<AnalyticsEventEntity>(entityName: "AnalyticsEventEntity")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var eventName: String?
+    @NSManaged public var timestamp: Date?
+    @NSManaged public var properties: String? // JSON string of event properties
+    @NSManaged public var sessionId: String?
+    @NSManaged public var userId: String? // Anonymous user ID
+    @NSManaged public var deviceInfo: String? // Device type, OS version, etc.
+
+}
+
+extension AnalyticsEventEntity : Identifiable {
+
+}
+
+// MARK: - Core Data Model Helper
+class CoreDataModelManager {
+    
+    // MARK: - Model Creation
+    static func createManagedObjectModel() -> NSManagedObjectModel {
+        let model = NSManagedObjectModel()
+        
+        // Create entities
+        let entities = [
+            createChatMessageEntity(),
+            createJournalEntryEntity(),
+            createMoodEntryEntity(),
+            createSessionEntity(),
+            createUserPreferenceEntity(),
+            createGoalEntity(),
+            createReminderEntity(),
+            createInsightEntity(),
+            createAnalyticsEventEntity()
+        ]
+        
+        model.entities = entities
+        return model
+    }
+    
+    private static func createChatMessageEntity() -> NSEntityDescription {
+        let entity = NSEntityDescription()
+        entity.name = "ChatMessageEntity"
+        entity.managedObjectClassName = NSStringFromClass(ChatMessageEntity.self)
+        
+        let idAttribute = NSAttributeDescription()
+        idAttribute.name = "id"
+        idAttribute.attributeType = .UUIDAttributeType
+        idAttribute.isOptional = false
+        
+        let contentAttribute = NSAttributeDescription()
+        contentAttribute.name = "content"
+        contentAttribute.attributeType = .stringAttributeType
+        contentAttribute.isOptional = false
+        
+        let isUserAttribute = NSAttributeDescription()
+        isUserAttribute.name = "isUser"
+        isUserAttribute.attributeType = .booleanAttributeType
+        isUserAttribute.defaultValue = false
+        
+        let timestampAttribute = NSAttributeDescription()
+        timestampAttribute.name = "timestamp"
+        timestampAttribute.attributeType = .dateAttributeType
+        timestampAttribute.isOptional = false
+        
+        let encryptedContentAttribute = NSAttributeDescription()
+        encryptedContentAttribute.name = "encryptedContent"
+        encryptedContentAttribute.attributeType = .binaryDataAttributeType
+        encryptedContentAttribute.isOptional = true
+        
+        let metadataAttribute = NSAttributeDescription()
+        metadataAttribute.name = "metadata"
+        metadataAttribute.attributeType = .stringAttributeType
+        metadataAttribute.isOptional = true
+        
+        entity.properties = [idAttribute, contentAttribute, isUserAttribute, timestampAttribute, encryptedContentAttribute, metadataAttribute]
+        
+        return entity
+    }
+    
+    private static func createJournalEntryEntity() -> NSEntityDescription {
+        let entity = NSEntityDescription()
+        entity.name = "JournalEntryEntity"
+        entity.managedObjectClassName = NSStringFromClass(JournalEntryEntity.self)
+        
+        let properties = createCommonProperties() + [
+            createStringAttribute("content", required: true),
+            createStringAttribute("mood", required: false),
+            createStringAttribute("tags", required: false),
+            createBinaryAttribute("encryptedContent"),
+            createIntAttribute("wordCount"),
+            createDoubleAttribute("sentiment")
+        ]
+        
+        entity.properties = properties
+        return entity
+    }
+    
+    private static func createMoodEntryEntity() -> NSEntityDescription {
+        let entity = NSEntityDescription()
+        entity.name = "MoodEntryEntity"
+        entity.managedObjectClassName = NSStringFromClass(MoodEntryEntity.self)
+        
+        let properties = createCommonProperties() + [
+            createStringAttribute("mood", required: true),
+            createStringAttribute("notes", required: false),
+            createIntAttribute("intensity"),
+            createStringAttribute("triggers", required: false),
+            createStringAttribute("context", required: false)
+        ]
+        
+        entity.properties = properties
+        return entity
+    }
+    
+    // Add more entity creation methods as needed...
+    
+    // MARK: - Helper Methods
+    private static func createCommonProperties() -> [NSPropertyDescription] {
+        let idAttribute = NSAttributeDescription()
+        idAttribute.name = "id"
+        idAttribute.attributeType = .UUIDAttributeType
+        idAttribute.isOptional = false
+        
+        let timestampAttribute = NSAttributeDescription()
+        timestampAttribute.name = "timestamp"
+        timestampAttribute.attributeType = .dateAttributeType
+        timestampAttribute.isOptional = false
+        
+        return [idAttribute, timestampAttribute]
+    }
+    
+    private static func createStringAttribute(_ name: String, required: Bool = false) -> NSAttributeDescription {
+        let attribute = NSAttributeDescription()
+        attribute.name = name
+        attribute.attributeType = .stringAttributeType
+        attribute.isOptional = !required
+        return attribute
+    }
+    
+    private static func createIntAttribute(_ name: String) -> NSAttributeDescription {
+        let attribute = NSAttributeDescription()
+        attribute.name = name
+        attribute.attributeType = .integer32AttributeType
+        attribute.defaultValue = 0
+        return attribute
+    }
+    
+    private static func createDoubleAttribute(_ name: String) -> NSAttributeDescription {
+        let attribute = NSAttributeDescription()
+        attribute.name = name
+        attribute.attributeType = .doubleAttributeType
+        attribute.defaultValue = 0.0
+        return attribute
+    }
+    
+    private static func createBinaryAttribute(_ name: String) -> NSAttributeDescription {
+        let attribute = NSAttributeDescription()
+        attribute.name = name
+        attribute.attributeType = .binaryDataAttributeType
+        attribute.isOptional = true
+        return attribute
+    }
+}

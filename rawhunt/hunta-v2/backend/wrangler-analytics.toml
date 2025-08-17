@@ -1,0 +1,14 @@
+name = "hunta-live-analytics"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "production"
+JWT_SECRET = "hunta-production-secret-2025"
+
+# Note: Using local D1 database for demo - in production would use remote database
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "hunta-production"
+# database_id = "your-real-database-id"

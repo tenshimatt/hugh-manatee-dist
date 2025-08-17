@@ -1,0 +1,44 @@
+🔧 STEP 2: SET API KEY - DETAILED INSTRUCTIONS
+=============================================
+
+Can't find the scheme editor? Here's exactly where to look:
+
+📍 FINDING THE SCHEME DROPDOWN:
+==============================
+• Look at the TOP of Xcode window
+• Next to the ▶️ Play button (Build & Run button)
+• You'll see a dropdown that says "Knome" with a device name
+• It looks like: "Knome > iPhone 15 Pro"
+
+🎯 EXACT STEPS:
+==============
+1. Click on "Knome > iPhone 15 Pro" dropdown (top bar)
+2. Select "Edit Scheme..." from the dropdown menu
+3. A popup window opens called "Scheme Editor"
+4. On the LEFT side, make sure "Run" is selected (should be highlighted)
+5. On the RIGHT side, click the "Arguments" tab
+6. You'll see two sections:
+   - "Arguments Passed On Launch" 
+   - "Environment Variables" ← THIS ONE!
+
+7. Under "Environment Variables":
+   • Click the "+" button to add new variable
+   • Name: OPENAI_API_KEY
+   • Value: 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
+
+8. Click "Close" button
+
+🔍 ALTERNATIVE METHOD:
+=====================
+If you still can't find it:
+• Go to Xcode menu bar: Product → Scheme → Edit Scheme...
+• This opens the same popup window
+
+🚨 IMPORTANT:
+============
+Without this step, the app will stay in DEMO mode!
+The API key needs to be in Environment Variables for the app to use real OpenAI.
+
+💡 YOU'LL KNOW IT WORKED:
+========================
+When you run the app, you'll see 🟢 "LIVE" instead of 🟠 "DEMO" in the top-right corner.

@@ -1,0 +1,12 @@
+name: Front-End Spec
+components:
+  - Homepage
+  - Profile & Pack Manager
+  - Brag Board (media uploads)
+  - GPS Route Planner UI
+  - Mobile-first PWA shell
+  - Offline storage w/ R2 fallback
+  - Auto photo tagging via AI
+dev:
+  - Uses Vite
+  - Auto-run via Tmux-Orchestrator in 'frontend' window

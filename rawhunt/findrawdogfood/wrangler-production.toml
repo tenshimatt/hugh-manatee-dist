@@ -1,0 +1,31 @@
+name = "findrawdogfood"
+main = "src/production-index.js"
+compatibility_date = "2025-01-15"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "findrawdogfood-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+[env.production]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "findrawdogfood-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+[[env.production.r2_buckets]]
+binding = "ASSETS"
+bucket_name = "findrawdogfood-assets"
+
+# Custom domain routing
+[[env.production.routes]]
+pattern = "findrawdogfood.com/*"
+zone_name = "findrawdogfood.com"
+
+[[env.production.routes]]
+pattern = "www.findrawdogfood.com/*"
+zone_name = "findrawdogfood.com"

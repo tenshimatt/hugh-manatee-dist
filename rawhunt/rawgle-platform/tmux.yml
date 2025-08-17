@@ -1,0 +1,125 @@
+session_name: rawgle-platform
+start_directory: ./  # root of rawgle-platform
+
+windows:
+  # Main development window
+  - window_name: main-api
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - wrangler dev --local
+
+  # Test runners window
+  - window_name: unit-tests
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - npm test -- --watch
+      - shell_command:
+          - cd rawgle-pure
+          - npm run test:coverage
+
+  # Integration tests window
+  - window_name: integration-tests
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - cd rawgle-pure/tests
+          - npm run test:integration
+      - shell_command:
+          - cd rawgle-pure/tests
+          - npm run test:e2e
+
+  # Database and storage window
+  - window_name: database
+    layout: tiled
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - wrangler d1 execute rawgle-production --local --command "SELECT * FROM users LIMIT 10;"
+      - shell_command:
+          - cd rawgle-pure
+          - echo "R2 Storage Monitor"
+          - wrangler r2 object list rawgle-images
+      - shell_command:
+          - cd rawgle-pure
+          - echo "KV Monitor"
+          - wrangler kv:key list --namespace-id RAWGLE_KV --local
+
+  # Queue monitoring window
+  - window_name: queues
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - echo "Queue Monitor"
+          - wrangler queues consumer rawgle-jobs --local
+      - shell_command:
+          - cd rawgle-pure
+          - echo "Queue Metrics"
+          - watch -n 5 'wrangler queues metrics rawgle-jobs --local'
+
+  # Analytics and monitoring window
+  - window_name: analytics
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - echo "Durable Objects Monitor"
+          - wrangler tail --format json | jq '.outcome.logs[] | select(.message | contains("ANALYTICS"))'
+      - shell_command:
+          - cd rawgle-pure
+          - echo "Real-time Metrics"
+          - npm run monitor:metrics
+
+  # AI monitoring window
+  - window_name: ai-workers
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - echo "Workers AI Monitor"
+          - wrangler tail --format json | jq '.outcome.logs[] | select(.message | contains("AI"))'
+
+  # Security testing window
+  - window_name: security
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - npm run test:security
+      - shell_command:
+          - cd rawgle-pure
+          - npm run audit:dependencies
+
+  # Performance testing window
+  - window_name: performance
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - npm run test:load
+      - shell_command:
+          - cd rawgle-pure
+          - npm run test:stress
+
+  # Logs window
+  - window_name: logs
+    layout: even-vertical
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - wrangler tail --format pretty
+      - shell_command:
+          - cd rawgle-pure
+          - tail -f logs/test.log
+      - shell_command:
+          - cd rawgle-pure
+          - tail -f logs/error.log
+
+  # Shell window for manual commands
+  - window_name: shell
+    panes:
+      - shell_command:
+          - cd rawgle-pure
+          - echo "Ready for manual commands"

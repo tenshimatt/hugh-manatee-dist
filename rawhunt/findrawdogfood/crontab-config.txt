@@ -1,0 +1,20 @@
+# Crontab configuration for daily scraping
+# Edit with: crontab -e
+# View with: crontab -l
+
+# Run daily at 2:00 AM (when API limits reset)
+0 2 * * * cd /Users/mattwright/pandora/findrawdogfood && ./daily-workflow.sh
+
+# Alternative schedules (uncomment one):
+
+# Run every 12 hours at 2 AM and 2 PM
+# 0 2,14 * * * cd /Users/mattwright/pandora/findrawdogfood && ./daily-workflow.sh
+
+# Run Monday-Friday at 3 AM (weekdays only)
+# 0 3 * * 1-5 cd /Users/mattwright/pandora/findrawdogfood && ./daily-workflow.sh
+
+# Run twice daily: 6 AM and 6 PM
+# 0 6,18 * * * cd /Users/mattwright/pandora/findrawdogfood && ./daily-workflow.sh
+
+# For testing: Run every hour (remove after testing)
+# 0 * * * * cd /Users/mattwright/pandora/findrawdogfood && ./daily-workflow.sh

@@ -1,0 +1,17 @@
+🔧 BUILD FIX CHECKLIST - Follow in Order
+=====================================
+
+□ 1. QUIT XCODE COMPLETELY (⌘+Q)
+□ 2. Wait 10 seconds, then reopen Knome.xcodeproj  
+□ 3. File > Packages > Reset Package Caches
+□ 4. File > Packages > Resolve Package Versions
+□ 5. If OpenAI missing: File > Add Package Dependencies > https://github.com/MacPaw/OpenAI
+□ 6. Product > Clean Build Folder (⌘+Shift+K)
+□ 7. Product > Build (⌘+B)
+□ 8. If successful: Product > Run (⌘+R)
+
+FALLBACK OPTION:
+If still failing, use ChatManager_Fallback.swift (rename to ChatManager.swift)
+This gives you a working app in demo mode while you fix the OpenAI package.
+
+STATUS: Caches cleared, fallback ready, manual steps required

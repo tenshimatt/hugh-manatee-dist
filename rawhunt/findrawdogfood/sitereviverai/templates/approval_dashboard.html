@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindRawDogFood - Modernization Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 5px solid #8B4513;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .prospects-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .prospect-card {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 25px;
+            transition: background-color 0.3s;
+        }
+        
+        .prospect-card:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .prospect-card:last-child {
+            border-bottom: none;
+        }
+        
+        .prospect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .business-info {
+            flex-grow: 1;
+        }
+        
+        .business-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .business-location {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .score-badge {
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .score-badge.urgent { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }
+        .score-badge.high { background: linear-gradient(135deg, #fd7e14 0%, #e55a00 100%); }
+        .score-badge.medium { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #333; }
+        .score-badge.low { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); }
+        .score-badge.none { background: linear-gradient(135deg, #6c757d 0%, #545b62 100%); }
+        
+        .prospect-details {
+            margin-bottom: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            min-width: 120px;
+            color: #555;
+        }
+        
+        .detail-value {
+            color: #333;
+        }
+        
+        .website-link {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .website-link:hover {
+            text-decoration: underline;
+        }
+        
+        .issues-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .issues-list h4 {
+            margin: 0 0 10px 0;
+            color: #dc3545;
+            font-size: 1rem;
+        }
+        
+        .issues-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .issues-list li {
+            margin-bottom: 5px;
+            color: #666;
+        }
+        
+        .value-estimate {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+            text-align: center;
+        }
+        
+        .value-estimate strong {
+            color: #28a745;
+            font-size: 1.2rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .btn-approve {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+        }
+        
+        .btn-reject {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+        
+        .btn-review {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #333;
+        }
+        
+        .email-preview {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .email-preview pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: inherit;
+        }
+        
+        .priority-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .priority-urgent { background: #ffebee; color: #c62828; }
+        .priority-high { background: #fff3e0; color: #ef6c00; }
+        .priority-medium { background: #fffbf0; color: #f57c00; }
+        .priority-low { background: #e8f5e8; color: #2e7d32; }
+        .priority-none { background: #f5f5f5; color: #616161; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state h3 {
+            color: #8B4513;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .prospect-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .actions {
+                justify-content: center;
+            }
+            
+            .btn {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐕 FindRawDogFood</h1>
+        <p>Website Modernization Opportunities Dashboard</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total_analyzed or 0 }}</div>
+            <div class="stat-label">Total Analyzed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.approval_breakdown.get('pending', 0) }}</div>
+            <div class="stat-label">Pending Approval</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.approval_breakdown.get('approved', 0) }}</div>
+            <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.approval_breakdown.get('rejected', 0) }}</div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <a href="/export-approved" class="export-btn">
+            📊 Export Approved Prospects
+        </a>
+    </div>
+    
+    <div class="prospects-container">
+        {% if prospects %}
+            {% for prospect in prospects %}
+            <div class="prospect-card" id="prospect-{{ prospect.id }}">
+                <div class="prospect-header">
+                    <div class="business-info">
+                        <div class="business-name">{{ prospect.business_name }}</div>
+                        {% if prospect.city and prospect.state %}
+                        <div class="business-location">📍 {{ prospect.city }}, {{ prospect.state }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="score-badge {% if prospect.modernization_score >= 80 %}urgent{% elif prospect.modernization_score >= 60 %}high{% elif prospect.modernization_score >= 40 %}medium{% elif prospect.modernization_score >= 20 %}low{% else %}none{% endif %}">
+                        {{ prospect.modernization_score or 0 }}/100
+                    </div>
+                </div>
+                
+                <div class="prospect-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Website:</div>
+                        <div class="detail-value">
+                            <a href="{{ prospect.website_url }}" target="_blank" class="website-link">{{ prospect.website_url }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">Priority:</div>
+                        <div class="detail-value">
+                            <span class="priority-indicator priority-{{ prospect.rebuild_priority or 'none' }}">
+                                {{ (prospect.rebuild_priority or 'none').upper() }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {% if prospect.business_viability %}
+                    <div class="detail-row">
+                        <div class="detail-label">Business:</div>
+                        <div class="detail-value">{{ prospect.business_viability.title() }} Viability</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prospect.phone %}
+                    <div class="detail-row">
+                        <div class="detail-label">Phone:</div>
+                        <div class="detail-value">{{ prospect.phone }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">Analyzed:</div>
+                        <div class="detail-value">{{ prospect.processed_at }}</div>
+                    </div>
+                    
+                    {% if prospect.estimated_value %}
+                    <div class="value-estimate">
+                        <strong>💰 Estimated Project Value: {{ prospect.estimated_value }}</strong>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prospect.modernization_issues %}
+                    <div class="issues-list">
+                        <h4>🔍 Modernization Issues Found:</h4>
+                        <ul>
+                            {% for issue in prospect.modernization_issues %}
+                            <li>{{ issue }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prospect.outreach_email %}
+                    <details>
+                        <summary><strong>📧 Generated Outreach Email</strong></summary>
+                        <div class="email-preview">
+                            <pre>{{ prospect.outreach_email }}</pre>
+                        </div>
+                    </details>
+                    {% endif %}
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-approve" onclick="approveProspect({{ prospect.id }})">
+                        ✅ APPROVE FOR OUTREACH
+                    </button>
+                    <button class="btn btn-reject" onclick="rejectProspect({{ prospect.id }})">
+                        ❌ REJECT
+                    </button>
+                    <button class="btn btn-review" onclick="flagForReview({{ prospect.id }})">
+                        📝 NEEDS REVIEW
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <h3>No prospects pending approval</h3>
+                <p>Run the modernization analysis to find website rebuild opportunities</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        async function approveProspect(prospectId) {
+            const notes = prompt('Approval notes (optional):');
+            
+            const response = await fetch(`/api/approve/${prospectId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    approved_by: 'Matt Wright',
+                    notes: notes || ''
+                })
+            });
+            
+            if (response.ok) {
+                const card = document.getElementById(`prospect-${prospectId}`);
+                card.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+                card.style.border = '2px solid #28a745';
+                alert('✅ Prospect approved for outreach campaign!');
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        async function rejectProspect(prospectId) {
+            const notes = prompt('Rejection reason (required):');
+            if (!notes) return;
+            
+            const response = await fetch(`/api/reject/${prospectId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    rejected_by: 'Matt Wright',
+                    notes: notes
+                })
+            });
+            
+            if (response.ok) {
+                const card = document.getElementById(`prospect-${prospectId}`);
+                card.style.background = 'linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%)';
+                card.style.border = '2px solid #dc3545';
+                alert('❌ Prospect rejected.');
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        function flagForReview(prospectId) {
+            alert('📝 Flagged for additional review - will remain in pending queue.');
+            // You could implement this to add a review flag to the database
+        }
+    </script>
+</body>
+</html>

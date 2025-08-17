@@ -1,0 +1,462 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		10E905BD312BF3B72F7A5AC0 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A21BCF55102D238D6FAB69 /* Models.swift */; };
+		22E77FE1CCB83FA121E4164A /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53053CF21BD0130023B2266E /* ChatView.swift */; };
+		359AF986C3F8B2721896979E /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E22FF818DF5F69BF0D0E48 /* SubscriptionManager.swift */; };
+		72E3660E3912B60C4E9CB613 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56C993F358D95ECE6852451 /* Keychain.swift */; };
+		823064D866946EF4A0FFAA82 /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672B03B0B79502F89BDBF8C8 /* SubscriptionView.swift */; };
+		848947ED36F3A99F2862F716 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 8844FFEE535C304C6698A0F0 /* OpenAI */; };
+		8995561F255661137BDCCEAB /* EncryptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADC48B951475E36A4A804AB0 /* EncryptionManager.swift */; };
+		9624D3347FBC629343268D5B /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2284995D8ECDB91C828D33 /* MoreView.swift */; };
+		AEE00FC7BD7A4E814CD56DC5 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F133282C72DC33DA8B6352 /* AppState.swift */; };
+		BAAB07D1495A8D0CB51149B2 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D838252B676EDB724F07ED /* PrivacyPolicyView.swift */; };
+		C1DC1A302124E36718851A19 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF6520F65B8393A22212CB6 /* JournalView.swift */; };
+		C2E4B383443B09A3247AEDF4 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617CAA3B57CDA05FCD5E7634 /* ChatManager.swift */; };
+		E5AB3F4366D0509ED5CC10B6 /* FAQView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F11FD452775646672A22187 /* FAQView.swift */; };
+		ECAF7157B516FBE9311555A3 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71ECA37820BB3EE9CE70EAA5 /* OnboardingView.swift */; };
+		FC3CCAB7FC9ED68F8A3C7768 /* KnomeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF2C94467B3D9F8FD22CBFA /* KnomeApp.swift */; };
+		FD99AA1EA51CC7A14D35EF6F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CE10C5DFEC0A099F7C7700 /* ContentView.swift */; };
+		07AFF0F061814CD9ABA1 /* SimpleVoiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73EABC998A2E4E36940B /* SimpleVoiceManager.swift */; };
+		EFGH5678901234567890 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABCD1234567890ABCDEF /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		33F133282C72DC33DA8B6352 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		4EF2C94467B3D9F8FD22CBFA /* KnomeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnomeApp.swift; sourceTree = "<group>"; };
+		53053CF21BD0130023B2266E /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		55D838252B676EDB724F07ED /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
+		617CAA3B57CDA05FCD5E7634 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
+		672B03B0B79502F89BDBF8C8 /* SubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionView.swift; sourceTree = "<group>"; };
+		71ECA37820BB3EE9CE70EAA5 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		7F11FD452775646672A22187 /* FAQView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FAQView.swift; sourceTree = "<group>"; };
+		A0E22FF818DF5F69BF0D0E48 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		A506D8D72CDEE5F2F5C0312B /* Knome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Knome.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ADC48B951475E36A4A804AB0 /* EncryptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionManager.swift; sourceTree = "<group>"; };
+		BDF6520F65B8393A22212CB6 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
+		CF2284995D8ECDB91C828D33 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
+		D56C993F358D95ECE6852451 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		F5CE10C5DFEC0A099F7C7700 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F6A21BCF55102D238D6FAB69 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		73EABC998A2E4E36940B /* SimpleVoiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleVoiceManager.swift; sourceTree = "<group>"; };
+		ABCD1234567890ABCDEF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		400D0ADF506BAA1F3C0DBEFF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				848947ED36F3A99F2862F716 /* OpenAI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1234567890ABCDEF1234 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EFGH5678901234567890 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXGroup section */
+		2C1933CE8273D0870D333DEA /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				ADC48B951475E36A4A804AB0 /* EncryptionManager.swift */,
+				D56C993F358D95ECE6852451 /* Keychain.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		968E2F1982C0E0E5E7E7C43F /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FB85F63095E5D3E4F73352E0 /* Knome */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		C2002E12BB92DC88155613E3 = {
+			isa = PBXGroup;
+			children = (
+				968E2F1982C0E0E5E7E7C43F /* Sources */,
+				WXYZ9876543210FEDCBA /* Resources */,
+				E7569ACAC18749CE5257DC64 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		WXYZ9876543210FEDCBA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				ABCD1234567890ABCDEF /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		CEEB6AE64E79268285DDF27D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F6A21BCF55102D238D6FAB69 /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E7569ACAC18749CE5257DC64 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A506D8D72CDEE5F2F5C0312B /* Knome.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8A6F87549366F2EF107353E /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				33F133282C72DC33DA8B6352 /* AppState.swift */,
+				617CAA3B57CDA05FCD5E7634 /* ChatManager.swift */,
+				A0E22FF818DF5F69BF0D0E48 /* SubscriptionManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		F86E61D51EE904F98291B19F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				53053CF21BD0130023B2266E /* ChatView.swift */,
+				F5CE10C5DFEC0A099F7C7700 /* ContentView.swift */,
+				7F11FD452775646672A22187 /* FAQView.swift */,
+				BDF6520F65B8393A22212CB6 /* JournalView.swift */,
+				CF2284995D8ECDB91C828D33 /* MoreView.swift */,
+				71ECA37820BB3EE9CE70EAA5 /* OnboardingView.swift */,
+				55D838252B676EDB724F07ED /* PrivacyPolicyView.swift */,
+				672B03B0B79502F89BDBF8C8 /* SubscriptionView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FB85F63095E5D3E4F73352E0 /* Knome */ = {
+			isa = PBXGroup;
+			children = (
+				4EF2C94467B3D9F8FD22CBFA /* KnomeApp.swift */,
+				E8A6F87549366F2EF107353E /* Managers */,
+				CEEB6AE64E79268285DDF27D /* Models */,
+				106FC82F59834FD08FC0 /* Services */,
+				2C1933CE8273D0870D333DEA /* Utils */,
+				F86E61D51EE904F98291B19F /* Views */,
+			);
+			path = Knome;
+			sourceTree = "<group>";
+		};
+		106FC82F59834FD08FC0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				73EABC998A2E4E36940B /* SimpleVoiceManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C36600E0AF5D8429AB336B58 /* Knome */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 615942DF1EE0D6DF4DE8772D /* Build configuration list for PBXNativeTarget "Knome" */;
+			buildPhases = (
+				97F34961C7B94B9BEEA655C8 /* Sources */,
+				400D0ADF506BAA1F3C0DBEFF /* Frameworks */,
+				1234567890ABCDEF1234 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Knome;
+			packageProductDependencies = (
+				8844FFEE535C304C6698A0F0 /* OpenAI */,
+			);
+			productName = Knome;
+			productReference = A506D8D72CDEE5F2F5C0312B /* Knome.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		103A2C89583DCE4ED3BE0EF8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					C36600E0AF5D8429AB336B58 = {
+						DevelopmentTeam = DEMO123456;
+					};
+				};
+			};
+			buildConfigurationList = 3BF68B194495DBC0170FE565 /* Build configuration list for PBXProject "Knome" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C2002E12BB92DC88155613E3;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F3737237EDA2187020F3FA6F /* XCRemoteSwiftPackageReference "OpenAI" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C36600E0AF5D8429AB336B58 /* Knome */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		97F34961C7B94B9BEEA655C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEE00FC7BD7A4E814CD56DC5 /* AppState.swift in Sources */,
+				C2E4B383443B09A3247AEDF4 /* ChatManager.swift in Sources */,
+				22E77FE1CCB83FA121E4164A /* ChatView.swift in Sources */,
+				FD99AA1EA51CC7A14D35EF6F /* ContentView.swift in Sources */,
+				8995561F255661137BDCCEAB /* EncryptionManager.swift in Sources */,
+				E5AB3F4366D0509ED5CC10B6 /* FAQView.swift in Sources */,
+				C1DC1A302124E36718851A19 /* JournalView.swift in Sources */,
+				72E3660E3912B60C4E9CB613 /* Keychain.swift in Sources */,
+				FC3CCAB7FC9ED68F8A3C7768 /* KnomeApp.swift in Sources */,
+				10E905BD312BF3B72F7A5AC0 /* Models.swift in Sources */,
+				9624D3347FBC629343268D5B /* MoreView.swift in Sources */,
+				ECAF7157B516FBE9311555A3 /* OnboardingView.swift in Sources */,
+				BAAB07D1495A8D0CB51149B2 /* PrivacyPolicyView.swift in Sources */,
+				359AF986C3F8B2721896979E /* SubscriptionManager.swift in Sources */,
+				823064D866946EF4A0FFAA82 /* SubscriptionView.swift in Sources */,
+				07AFF0F061814CD9ABA1 /* SimpleVoiceManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		38C92C26A90838A70619C8FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = Knome.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.knome.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9296E891EAB023CF381F7237 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = DEMO123456;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		A72BEA697F50BA98E4ACA0B9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = Knome.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.knome.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CB24A031F822BD6686CB7D5D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = DEMO123456;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3BF68B194495DBC0170FE565 /* Build configuration list for PBXProject "Knome" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB24A031F822BD6686CB7D5D /* Debug */,
+				9296E891EAB023CF381F7237 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		615942DF1EE0D6DF4DE8772D /* Build configuration list for PBXNativeTarget "Knome" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38C92C26A90838A70619C8FD /* Debug */,
+				A72BEA697F50BA98E4ACA0B9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F3737237EDA2187020F3FA6F /* XCRemoteSwiftPackageReference "OpenAI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MacPaw/OpenAI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8844FFEE535C304C6698A0F0 /* OpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3737237EDA2187020F3FA6F /* XCRemoteSwiftPackageReference "OpenAI" */;
+			productName = OpenAI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 103A2C89583DCE4ED3BE0EF8 /* Project object */;
+}

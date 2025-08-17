@@ -1,0 +1,124 @@
+{
+  "name": "@gohunta/security-testing-suite",
+  "version": "1.0.0",
+  "description": "Comprehensive security testing suite for GoHunta.com hunting community platform",
+  "main": "tests/security-test-runner.js",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/security-test-runner.js",
+    "test:auth": "TEST_SUITES=authentication node tests/security-test-runner.js",
+    "test:api": "TEST_SUITES=api node tests/security-test-runner.js",
+    "test:data": "TEST_SUITES=data node tests/security-test-runner.js",
+    "test:pwa": "TEST_SUITES=pwa node tests/security-test-runner.js",
+    "test:infrastructure": "TEST_SUITES=infrastructure node tests/security-test-runner.js",
+    "test:ci": "npm test -- --exit-on-critical",
+    "report": "node scripts/generate-report.js",
+    "compliance": "node scripts/compliance-check.js",
+    "install-tools": "npm install -g @zap/zap-cli sqlmap nikto",
+    "penetration-test": "node scripts/penetration-test.js"
+  },
+  "keywords": [
+    "security",
+    "testing",
+    "penetration-testing",
+    "gohunta",
+    "hunting",
+    "vulnerability-assessment",
+    "owasp",
+    "gdpr",
+    "privacy",
+    "cloudflare",
+    "workers"
+  ],
+  "author": "GoHunta.com Security Team",
+  "license": "MIT",
+  "dependencies": {
+    "chai": "^4.3.10",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^21.3.8",
+    "jsonwebtoken": "^9.0.2",
+    "speakeasy": "^2.0.0",
+    "qrcode": "^1.5.3",
+    "sharp": "^0.32.6",
+    "exifreader": "^4.14.1",
+    "dompurify": "^3.0.5",
+    "jsdom": "^22.1.0",
+    "form-data": "^4.0.0",
+    "validator": "^13.11.0",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.52.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gohunta/security-testing-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gohunta/security-testing-suite/issues"
+  },
+  "homepage": "https://github.com/gohunta/security-testing-suite#readme",
+  "config": {
+    "test": {
+      "timeout": 300000,
+      "parallel": true,
+      "reporter": "spec"
+    },
+    "security": {
+      "fail-on-critical": true,
+      "fail-on-high": false,
+      "max-execution-time": 3600000
+    }
+  },
+  "eslintConfig": {
+    "extends": ["airbnb-base"],
+    "env": {
+      "node": true,
+      "es2022": true,
+      "mocha": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "off",
+      "max-len": ["error", { "code": 120 }],
+      "class-methods-use-this": "off"
+    }
+  },
+  "nyc": {
+    "exclude": [
+      "tests/**",
+      "reports/**",
+      "node_modules/**"
+    ],
+    "reporter": [
+      "text",
+      "html",
+      "json"
+    ],
+    "report-dir": "./reports/coverage"
+  },
+  "directories": {
+    "test": "tests",
+    "doc": "reports"
+  },
+  "files": [
+    "tests/",
+    "config/",
+    "tools/",
+    "reports/",
+    "policies/",
+    "README.md"
+  ]
+}

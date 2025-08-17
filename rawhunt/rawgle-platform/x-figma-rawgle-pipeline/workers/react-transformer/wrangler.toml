@@ -1,0 +1,17 @@
+name = "react-transformer"
+main = "src/index.js"
+compatibility_date = "2024-01-15"
+workers_dev = true
+
+[env.production]
+route = "react-transformer.your-domain.com/*"
+
+[[kv_namespaces]]
+binding = "REACT_COMPONENTS"
+id = "your_react_components_kv_id"
+
+[vars]
+ENVIRONMENT = "production"
+
+# Secrets (set via wrangler secret put)
+# OPENAI_API_KEY = "sk-..."

@@ -1,0 +1,38 @@
+name = "superluxe-dashboard-api"
+main = "workers/dashboard-api.ts"
+compatibility_date = "2025-01-24"
+
+[env.production]
+name = "superluxe-dashboard-api"
+
+# Database binding (reuse existing D1 database)
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "findrawdogfood-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+# KV binding for bot state
+[[env.production.kv_namespaces]]
+binding = "BOT_STATE"
+id = "6edfbf1637414a7d9ed20fa934f265ff"
+
+# Environment variables
+[env.production.vars]
+ENVIRONMENT = "production"
+DASHBOARD_URL = "https://superluxe-dashboard.pages.dev"
+
+# Development environment
+[env.dev]
+name = "superluxe-dashboard-api-dev"
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "findrawdogfood-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+[[env.dev.kv_namespaces]]
+binding = "BOT_STATE"
+id = "affdd39ccf8045d6a4758cf98a1fdac7"
+
+[env.dev.vars]
+ENVIRONMENT = "development"

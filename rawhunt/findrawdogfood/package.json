@@ -1,0 +1,34 @@
+{
+  "name": "findrawdogfood",
+  "version": "1.0.0",
+  "description": "Raw dog food supplier API with location search",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:setup": "./scripts/setup-db.sh",
+    "db:import": "./scripts/import-batches.sh",
+    "db:reset": "./scripts/reset-db.sh",
+    "db:fix": "./scripts/fix-remote-db.sh",
+    "scrape": "node google-places-scraper.js",
+    "scrape:daily": "node google-places-scraper.js"
+  },
+  "keywords": [
+    "raw-dog-food",
+    "pet-supplies",
+    "cloudflare-workers",
+    "d1-database"
+  ],
+  "author": "Matt Wright",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.25.0"
+  },
+  "dependencies": {
+    "axios": "^1.10.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^17.2.0",
+    "lodash": "^4.17.21",
+    "node-fetch": "^3.3.2"
+  }
+}

@@ -1,0 +1,142 @@
+/**
+ * GoHunta.com Color System
+ * Hunting-optimized color palette with earth tones and high visibility options
+ */
+
+:root {
+  /* Primary - Hunter Orange for safety & recognition */
+  --primary-50: #fff4e6;
+  --primary-100: #ffe4cc;
+  --primary-200: #ffcc99;
+  --primary-300: #ffb366;
+  --primary-400: #ff9933;
+  --primary-500: #ff7700; /* Main Hunter Orange */
+  --primary-600: #e66a00;
+  --primary-700: #cc5e00;
+  --primary-800: #b35200;
+  --primary-900: #993d00;
+  --primary-950: #662900;
+
+  /* Secondary - Forest Green for outdoor environment */
+  --secondary-50: #f0f9f0;
+  --secondary-100: #e1f3e1;
+  --secondary-200: #c3e6c3;
+  --secondary-300: #94d694;
+  --secondary-400: #5cbf5c;
+  --secondary-500: #228b22; /* Main Forest Green */
+  --secondary-600: #1e7a1e;
+  --secondary-700: #1a6b1a;
+  --secondary-800: #175c17;
+  --secondary-900: #134e13;
+  --secondary-950: #0a2b0a;
+
+  /* Neutral - Natural earth tones */
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f4;
+  --neutral-200: #e7e5e4;
+  --neutral-300: #d6d3d1;
+  --neutral-400: #a8a29e;
+  --neutral-500: #78716c;
+  --neutral-600: #57534e;
+  --neutral-700: #44403c;
+  --neutral-800: #292524;
+  --neutral-900: #1c1917;
+  --neutral-950: #0c0a09;
+
+  /* Status Colors - Field condition indicators */
+  --success: #10b981;  /* GPS lock, successful save, good conditions */
+  --success-light: #d1fae5;
+  --success-dark: #047857;
+  
+  --warning: #f59e0b;  /* Poor signal, caution, weather warning */
+  --warning-light: #fef3c7;
+  --warning-dark: #d97706;
+  
+  --error: #ef4444;    /* Failed upload, danger, emergency */
+  --error-light: #fecaca;
+  --error-dark: #dc2626;
+  
+  --info: #3b82f6;     /* Tips, information, help */
+  --info-light: #dbeafe;
+  --info-dark: #2563eb;
+
+  /* Hunting-Specific Theme Colors */
+  --camouflage: #6b5b5a;     /* Camouflage pattern base */
+  --leather: #8b4513;        /* Leather gear color */
+  --field-tan: #d2b48c;      /* Field/tan color */
+  --dawn-light: #ffd700;     /* Dawn/sunrise indicator */
+  --dusk-purple: #663399;    /* Dusk/evening indicator */
+  --water-blue: #4682b4;     /* Water/lake indicator */
+  --blood-trail: #8b0000;    /* Blood trail tracking */
+
+  /* High Contrast Mode (for bright sunlight) */
+  --hc-background: #ffffff;
+  --hc-text: #000000;
+  --hc-primary: #ff0000;     /* Bright red for visibility */
+  --hc-secondary: #000080;   /* Navy blue for contrast */
+  --hc-border: #000000;
+}
+
+/* Color Usage Classes */
+.text-primary { color: var(--primary-500); }
+.text-secondary { color: var(--secondary-500); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-info { color: var(--info); }
+
+.bg-primary { background-color: var(--primary-500); }
+.bg-secondary { background-color: var(--secondary-500); }
+.bg-success { background-color: var(--success); }
+.bg-warning { background-color: var(--warning); }
+.bg-error { background-color: var(--error); }
+.bg-info { background-color: var(--info); }
+
+/* Hunting Context Colors */
+.text-camouflage { color: var(--camouflage); }
+.text-leather { color: var(--leather); }
+.text-field-tan { color: var(--field-tan); }
+.text-dawn { color: var(--dawn-light); }
+.text-dusk { color: var(--dusk-purple); }
+.text-water { color: var(--water-blue); }
+
+.bg-camouflage { background-color: var(--camouflage); }
+.bg-leather { background-color: var(--leather); }
+.bg-field-tan { background-color: var(--field-tan); }
+.bg-dawn { background-color: var(--dawn-light); }
+.bg-dusk { background-color: var(--dusk-purple); }
+.bg-water { background-color: var(--water-blue); }
+
+/* High Contrast Mode Override */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-500: var(--hc-primary);
+    --secondary-500: var(--hc-secondary);
+    --neutral-50: var(--hc-background);
+    --neutral-900: var(--hc-text);
+  }
+}
+
+/* Dark Theme Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neutral-50: #1c1917;
+    --neutral-100: #292524;
+    --neutral-200: #44403c;
+    --neutral-300: #57534e;
+    --neutral-400: #78716c;
+    --neutral-500: #a8a29e;
+    --neutral-600: #d6d3d1;
+    --neutral-700: #e7e5e4;
+    --neutral-800: #f5f5f4;
+    --neutral-900: #fafafa;
+  }
+}
+
+/* Color Blind Friendly Alternatives */
+.colorblind-safe {
+  /* Use patterns/shapes in addition to color */
+  --success-pattern: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8.5 13.5l-3-3-1.5 1.5 4.5 4.5 9-9-1.5-1.5z' fill='%23000'/%3E%3C/svg%3E");
+  --warning-pattern: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 2L2 18h16L10 2zm0 4l5 10H5l5-10z' fill='%23000'/%3E%3C/svg%3E");
+  --error-pattern: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 110-12 6 6 0 010 12zm-1-5V7h2v4H9zm0 2v2h2v-2H9z' fill='%23000'/%3E%3C/svg%3E");
+}

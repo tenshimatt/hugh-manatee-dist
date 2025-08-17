@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindRawDogFood - Manual Analysis Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #8B4513;
+        }
+        
+        .header h1 {
+            color: #8B4513;
+            margin-bottom: 10px;
+        }
+        
+        .supplier-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            border-color: #8B4513;
+            outline: none;
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+        
+        .analyze-btn:disabled {
+            background: #ccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        
+        .preset-suppliers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .preset-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .preset-card:hover {
+            border-color: #8B4513;
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
+        }
+        
+        .preset-card h3 {
+            color: #8B4513;
+            margin: 0 0 10px 0;
+        }
+        
+        .preset-card .website {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .preset-card .details {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .results-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .analysis-result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .analysis-result.success {
+            border-left: 5px solid #28a745;
+        }
+        
+        .analysis-result.error {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8B4513;
+            margin: 10px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8B4513;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .email-preview {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐕 FindRawDogFood Analysis Tool</h1>
+            <p>Manual website analysis for real suppliers</p>
+        </div>
+        
+        <h2>🎯 Test These 3 Specific Suppliers</h2>
+        <div class="preset-suppliers">
+            <div class="preset-card" onclick="loadPreset('jakeblues')">
+                <h3>Jake & Blues</h3>
+                <a href="https://jakeandblues.com/" class="website" target="_blank">https://jakeandblues.com/</a>
+                <div class="details">Expected: High-scoring, established business</div>
+            </div>
+            
+            <div class="preset-card" onclick="loadPreset('pawson')">
+                <h3>Pawson Chicago</h3>
+                <a href="https://pawsonchicon.com/" class="website" target="_blank">https://pawsonchicon.com/</a>
+                <div class="details">Expected: High-scoring, modern site</div>
+            </div>
+            
+            <div class="preset-card" onclick="loadPreset('qualitypaws')">
+                <h3>Quality Paws</h3>
+                <a href="https://www.qualitypaws.com/" class="website" target="_blank">https://www.qualitypaws.com/</a>
+                <div class="details">Expected: Rebuild opportunity</div>
+            </div>
+        </div>
+        
+        <div class="supplier-form">
+            <h3>Manual Analysis</h3>
+            <div class="form-group">
+                <label for="businessName">Business Name:</label>
+                <input type="text" id="businessName" placeholder="Enter business name">
+            </div>
+            
+            <div class="form-group">
+                <label for="websiteUrl">Website URL:</label>
+                <input type="url" id="websiteUrl" placeholder="https://example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" placeholder="City">
+            </div>
+            
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" id="state" placeholder="State">
+            </div>
+            
+            <button class="analyze-btn" onclick="analyzeWebsite()" id="analyzeBtn">
+                🔍 Analyze Website
+            </button>
+        </div>
+        
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h3>Analysis Results</h3>
+            <div id="resultsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Preset supplier data
+        const presets = {
+            jakeblues: {
+                name: 'Jake & Blues',
+                website: 'https://jakeandblues.com/',
+                city: 'Austin',
+                state: 'TX'
+            },
+            pawson: {
+                name: 'Pawson Chicago', 
+                website: 'https://pawsonchicon.com/',
+                city: 'Chicago',
+                state: 'IL'
+            },
+            qualitypaws: {
+                name: 'Quality Paws',
+                website: 'https://www.qualitypaws.com/',
+                city: 'Unknown',
+                state: 'US'
+            }
+        };
+        
+        function loadPreset(key) {
+            const preset = presets[key];
+            document.getElementById('businessName').value = preset.name;
+            document.getElementById('websiteUrl').value = preset.website;
+            document.getElementById('city').value = preset.city;
+            document.getElementById('state').value = preset.state;
+        }
+        
+        async function analyzeWebsite() {
+            const businessName = document.getElementById('businessName').value;
+            const websiteUrl = document.getElementById('websiteUrl').value;
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            
+            if (!businessName || !websiteUrl) {
+                alert('Please fill in business name and website URL');
+                return;
+            }
+            
+            // Show loading state
+            const btn = document.getElementById('analyzeBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            btn.disabled = true;
+            btn.textContent = '🔄 Analyzing...';
+            
+            resultsSection.style.display = 'block';
+            resultsContainer.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Analyzing ${businessName}...</p>
+                    <p>This may take 30-60 seconds for real OpenAI analysis</p>
+                </div>
+            `;
+            
+            try {
+                // Call the backend analysis
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        business_name: businessName,
+                        website_url: websiteUrl,
+                        city: city,
+                        state: state
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Analysis failed: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                displayResults(result);
+                
+            } catch (error) {
+                console.error('Analysis error:', error);
+                resultsContainer.innerHTML = `
+                    <div class="analysis-result error">
+                        <h4>❌ Analysis Failed</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>This is a manual testing interface. To run real analysis:</p>
+                        <ol>
+                            <li>Use the Python script: <code>python3 real_production_test.py</code></li>
+                            <li>Or run individual analysis via command line</li>
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            // Reset button
+            btn.disabled = false;
+            btn.textContent = '🔍 Analyze Website';
+        }
+        
+        function displayResults(result) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            resultsContainer.innerHTML = `
+                <div class="analysis-result success">
+                    <h4>✅ ${result.business_name} Analysis Complete</h4>
+                    <div class="score">Score: ${result.analysis_score}/100</div>
+                    <p><strong>Business Potential:</strong> ${result.business_potential.toUpperCase()}</p>
+                    <p><strong>Website:</strong> <a href="${result.website_url}" target="_blank">${result.website_url}</a></p>
+                    
+                    <h5>🔍 Technical Issues Found:</h5>
+                    <ul>
+                        ${result.technical_issues.map(issue => `<li>${issue}</li>`).join('')}
+                    </ul>
+                    
+                    <h5>✅ Strengths:</h5>
+                    <ul>
+                        ${result.strengths.map(strength => `<li>${strength}</li>`).join('')}
+                    </ul>
+                    
+                    <h5>📧 Generated Outreach Email:</h5>
+                    <div class="email-preview">
+                        ${result.outreach_email.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Auto-load first preset for easy testing
+        window.addEventListener('load', function() {
+            loadPreset('jakeblues');
+        });
+    </script>
+</body>
+</html>

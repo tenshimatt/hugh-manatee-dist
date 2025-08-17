@@ -1,0 +1,158 @@
+# Rawgle Platform - Cloudflare Workers Configuration
+
+name = "rawgle-api"
+main = "workers/api/src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Account and routing configuration
+account_id = "YOUR_ACCOUNT_ID"
+workers_dev = false
+route = { pattern = "api.rawgle.com/*", zone_id = "YOUR_ZONE_ID" }
+
+# Environment variables
+[env.production.vars]
+ENVIRONMENT = "production"
+OPENAI_API_KEY = "YOUR_OPENAI_KEY"
+SENDGRID_API_KEY = "YOUR_SENDGRID_KEY"
+STRIPE_SECRET_KEY = "YOUR_STRIPE_KEY"
+SENTRY_DSN = "YOUR_SENTRY_DSN"
+
+# Secrets (use wrangler secret put)
+# SUPABASE_URL
+# SUPABASE_ANON_KEY
+# SUPABASE_SERVICE_KEY
+# JWT_SECRET
+
+# KV Namespaces
+[[env.production.kv_namespaces]]
+binding = "KV_CACHE"
+id = "YOUR_KV_NAMESPACE_ID"
+
+[[env.production.kv_namespaces]]
+binding = "SESSION_STORE"
+id = "YOUR_SESSION_NAMESPACE_ID"
+
+[[env.production.kv_namespaces]]
+binding = "RATE_LIMITER"
+id = "YOUR_RATE_LIMITER_ID"
+
+# Durable Objects
+[[env.production.durable_objects.bindings]]
+name = "RECOMMENDATION_ENGINE"
+class_name = "RecommendationEngine"
+script_name = "rawgle-api"
+
+[[env.production.durable_objects.bindings]]
+name = "CHAT_ROOMS"
+class_name = "ChatRoom"
+script_name = "rawgle-api"
+
+[[env.production.durable_objects.bindings]]
+name = "ANALYTICS_AGGREGATOR"
+class_name = "AnalyticsAggregator"
+script_name = "rawgle-api"
+
+# R2 Buckets
+[[env.production.r2_buckets]]
+binding = "R2_MEDIA"
+bucket_name = "rawgle-media"
+
+[[env.production.r2_buckets]]
+binding = "R2_BACKUPS"
+bucket_name = "rawgle-backups"
+
+[[env.production.r2_buckets]]
+binding = "R2_EXPORTS"
+bucket_name = "rawgle-exports"
+
+# D1 Database
+[[env.production.d1_databases]]
+binding = "D1_EDGE"
+database_name = "rawgle-edge"
+database_id = "YOUR_D1_DATABASE_ID"
+
+# Service bindings for microservices
+[[env.production.services]]
+binding = "AUTH_SERVICE"
+service = "rawgle-auth"
+
+[[env.production.services]]
+binding = "PAYMENT_SERVICE"
+service = "rawgle-payments"
+
+[[env.production.services]]
+binding = "NOTIFICATION_SERVICE"
+service = "rawgle-notifications"
+
+# Analytics Engine
+[[env.production.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "rawgle_analytics"
+
+# Queues
+[[env.production.queues.producers]]
+binding = "ORDER_QUEUE"
+queue = "order-processing"
+
+[[env.production.queues.producers]]
+binding = "EMAIL_QUEUE"
+queue = "email-notifications"
+
+[[env.production.queues.consumers]]
+queue = "order-processing"
+max_batch_size = 10
+max_batch_timeout = 30
+
+# Development environment
+[env.development.vars]
+ENVIRONMENT = "development"
+DEBUG = "true"
+
+[[env.development.kv_namespaces]]
+binding = "KV_CACHE"
+id = "DEV_KV_NAMESPACE_ID"
+
+[[env.development.r2_buckets]]
+binding = "R2_MEDIA"
+bucket_name = "rawgle-media-dev"
+
+# Build configuration
+[build]
+command = "npm run build"
+cwd = "workers/api"
+watch_paths = ["workers/api/src"]
+
+[build.upload]
+format = "modules"
+dir = "workers/api/dist"
+main = "index.js"
+
+# Observability
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
+# Limits and usage
+[limits]
+cpu_ms = 50
+memory_mb = 128
+
+[usage_model]
+default = "bundled"
+
+# Compatibility flags
+compatibility_flags = ["nodejs_compat", "streams_enable_constructors", "transformstream_enable_standard_constructor"]
+
+# Tail consumers for logging
+[[tail_consumers]]
+service = "rawgle-logger"
+
+# Migrations for Durable Objects
+[[migrations]]
+tag = "v1"
+new_classes = ["RecommendationEngine", "ChatRoom", "AnalyticsAggregator"]
+
+[[migrations]]
+tag = "v2"
+renamed_classes = [{from = "ChatRoomBeta", to = "ChatRoom"}]
+deleted_classes = ["DeprecatedAnalytics"]

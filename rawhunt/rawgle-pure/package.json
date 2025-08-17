@@ -1,0 +1,65 @@
+{
+  "name": "rawgle-pure",
+  "version": "1.0.0",
+  "description": "Pure Cloudflare implementation of Rawgle platform",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy",
+    "test": "vitest",
+    "test:unit": "vitest run --dir tests/unit",
+    "test:integration": "vitest run --dir tests/integration",
+    "test:e2e": "playwright test",
+    "test:coverage": "vitest run --coverage",
+    "test:security": "npm audit && eslint . --ext .js,.ts && snyk test",
+    "test:load": "echo 'Install k6 globally: brew install k6 or npm install -g k6' && k6 run tests/performance/load-test.js",
+    "test:stress": "echo 'Install k6 globally: brew install k6 or npm install -g k6' && k6 run tests/performance/stress-test.js",
+    "test:managed": "node scripts/test-runner.js",
+    "test:managed:unit": "node scripts/test-runner.js unit",
+    "test:managed:integration": "node scripts/test-runner.js integration",
+    "test:managed:e2e": "node scripts/test-runner.js e2e",
+    "test:managed:security": "node scripts/test-runner.js security",
+    "test:managed:performance": "node scripts/test-runner.js performance",
+    "test:managed:all": "node scripts/test-runner.js all",
+    "test:dashboard": "echo 'Open test-management-ui.html in your browser or serve it via a local server'",
+    "audit:dependencies": "npm audit --audit-level=moderate",
+    "monitor:metrics": "node scripts/monitor-metrics.js",
+    "lint": "eslint . --ext .js,.ts",
+    "format": "prettier --write '**/*.{js,ts,json,md}'"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "d1",
+    "r2",
+    "kv",
+    "ai"
+  ],
+  "author": "Rawgle Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240815.0",
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-security": "^1.7.1",
+    "miniflare": "^3.20231218.0",
+    "prettier": "^3.1.1",
+    "snyk": "^1.1266.0",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.29.0"
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
+    "@solana/web3.js": "^1.87.6",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+asyncio
+aiohttp==3.9.0
+beautifulsoup4==4.12.2
+openai==1.3.0
+requests==2.31.0
+selenium==4.15.0
+lighthouse-python==1.0.0
+Pillow==10.1.0
+python-dotenv==1.0.0
+sendgrid==6.11.0
+stripe==7.8.0
+playwright==1.40.0
+pyppeteer==1.0.2

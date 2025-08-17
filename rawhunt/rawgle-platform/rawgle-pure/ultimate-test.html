@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ultimate Dashboard Test - Fixed</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 25px; margin: 20px 0; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); }
+        .success { background: rgba(76, 175, 80, 0.2); border-color: rgba(76, 175, 80, 0.5); }
+        .error { background: rgba(244, 67, 54, 0.2); border-color: rgba(244, 67, 54, 0.5); }
+        .info { background: rgba(33, 150, 243, 0.2); border-color: rgba(33, 150, 243, 0.5); }
+        button { background: linear-gradient(45deg, #FF6B6B, #4ECDC4); color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; margin: 10px 5px; font-weight: bold; transition: transform 0.2s; }
+        button:hover { transform: translateY(-2px); }
+        input { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 12px; border-radius: 8px; color: white; width: 100%; max-width: 300px; }
+        input::placeholder { color: rgba(255,255,255,0.7); }
+        pre { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 12px; margin: 10px 0; }
+        .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; margin: 5px; }
+        .status.online { background: #4CAF50; }
+        .status.offline { background: #F44336; }
+        h1 { text-align: center; font-size: 2.5em; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        h2 { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Ultimate Dashboard Test</h1>
+        
+        <div class="card info" id="config">
+            <h2>🔧 Configuration</h2>
+            <p><strong>API:</strong> https://rawgle-api.findrawdogfood.workers.dev</p>
+            <p><strong>Token:</strong> <input type="text" id="token" value="rawgle-admin-2025" placeholder="Admin token"></p>
+            <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+            <div style="margin-top: 15px;">
+                <button onclick="runUltimateTest()">🚀 Ultimate Test</button>
+                <button onclick="clearAll()">🗑️ Clear Results</button>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+        
+        <div class="card" style="margin-top: 30px;">
+            <h2>🎯 What This Test Does</h2>
+            <ul>
+                <li>✅ Tests API connectivity</li>
+                <li>✅ Verifies CORS headers</li>
+                <li>✅ Tests authentication</li>
+                <li>✅ Uses multiple request methods</li>
+                <li>✅ Bypasses all caching</li>
+                <li>✅ Shows detailed error info</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'https://rawgle-api.findrawdogfood.workers.dev';
+        let testResults = [];
+        
+        document.getElementById('timestamp').textContent = new Date().toISOString();
+        
+        function addResult(type, title, message, data = null) {
+            const results = document.getElementById('results');
+            const card = document.createElement('div');
+            card.className = `card ${type}`;
+            
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            
+            card.innerHTML = `
+                <h2>${icon} ${title}</h2>
+                <p>${message}</p>
+                ${data ? `<pre>${typeof data === 'string' ? data : JSON.stringify(data, null, 2)}</pre>` : ''}
+            `;
+            
+            results.appendChild(card);
+            testResults.push({ type, title, message, data, timestamp: new Date().toISOString() });
+        }
+        
+        function clearAll() {
+            document.getElementById('results').innerHTML = '';
+            testResults = [];
+        }
+        
+        async function runUltimateTest() {
+            clearAll();
+            const token = document.getElementById('token').value.trim() || 'rawgle-admin-2025';
+            const timestamp = Date.now();
+            
+            addResult('info', 'Test Started', `Running comprehensive dashboard test with token: ${token}`);
+            
+            // Test 1: Basic connectivity
+            await testBasicConnectivity();
+            
+            // Test 2: CORS preflight  
+            await testCORSPreflight();
+            
+            // Test 3: Authentication test
+            await testAuthentication(token, timestamp);
+            
+            // Test 4: Dashboard data
+            await testDashboardData(token, timestamp);
+            
+            // Test 5: Browser compatibility
+            await testBrowserCompatibility();
+            
+            // Final summary
+            showFinalSummary();
+        }
+        
+        async function testBasicConnectivity() {
+            try {
+                const response = await fetch(`${API_BASE}/api/health`, {
+                    cache: 'no-store'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('success', 'Basic Connectivity', `API is online and responding`, data);
+                } else {
+                    addResult('error', 'Basic Connectivity', `API returned ${response.status}`);
+                }
+            } catch (error) {
+                addResult('error', 'Basic Connectivity', `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCORSPreflight() {
+            try {
+                const response = await fetch(`${API_BASE}/api/test-management/dashboard`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'X-Admin-Token'
+                    }
+                });
+                
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                    if (key.startsWith('access-control')) {
+                        headers[key] = value;
+                    }
+                });
+                
+                const hasAdminToken = headers['access-control-allow-headers']?.includes('X-Admin-Token');
+                
+                if (response.ok && hasAdminToken) {
+                    addResult('success', 'CORS Preflight', 'CORS headers are correct, X-Admin-Token is allowed', headers);
+                } else {
+                    addResult('error', 'CORS Preflight', 'CORS configuration issue', {
+                        status: response.status,
+                        hasAdminToken,
+                        headers
+                    });
+                }
+            } catch (error) {
+                addResult('error', 'CORS Preflight', `CORS test failed: ${error.message}`);
+            }
+        }
+        
+        async function testAuthentication(token, timestamp) {
+            // Test without token
+            try {
+                const response = await fetch(`${API_BASE}/api/test-management/dashboard?auth-test=${timestamp}`, {
+                    cache: 'no-store'
+                });
+                
+                if (response.status === 403) {
+                    addResult('success', 'Authentication Security', 'Correctly blocks requests without admin token');
+                } else {
+                    addResult('error', 'Authentication Security', `Should block unauthorized requests but got ${response.status}`);
+                }
+            } catch (error) {
+                addResult('error', 'Authentication Security', `Auth test failed: ${error.message}`);
+            }
+        }
+        
+        async function testDashboardData(token, timestamp) {
+            try {
+                const response = await fetch(`${API_BASE}/api/test-management/dashboard?ultimate-test=${timestamp}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': token,
+                        'Cache-Control': 'no-cache'
+                    },
+                    cache: 'no-store'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('success', 'Dashboard Data', '🎉 SUCCESS! Dashboard API is working perfectly!', {
+                        overview: data.overview,
+                        trendsCount: data.trends.length,
+                        responseTime: 'Fast'
+                    });
+                } else {
+                    const errorData = await response.text();
+                    addResult('error', 'Dashboard Data', `Dashboard request failed: ${response.status}`, {
+                        status: response.status,
+                        error: errorData
+                    });
+                }
+            } catch (error) {
+                addResult('error', 'Dashboard Data', `Dashboard request failed: ${error.message}`, {
+                    name: error.name,
+                    stack: error.stack?.substring(0, 200)
+                });
+            }
+        }
+        
+        async function testBrowserCompatibility() {
+            const info = {
+                userAgent: navigator.userAgent,
+                browser: getBrowserName(),
+                online: navigator.onLine,
+                cookies: navigator.cookieEnabled,
+                location: window.location.href,
+                fetchSupported: typeof fetch !== 'undefined',
+                corsSupported: true // All modern browsers support CORS
+            };
+            
+            addResult('info', 'Browser Compatibility', 'Browser environment analysis', info);
+        }
+        
+        function getBrowserName() {
+            const agent = navigator.userAgent;
+            if (agent.includes('Chrome')) return 'Chrome';
+            if (agent.includes('Firefox')) return 'Firefox';
+            if (agent.includes('Safari')) return 'Safari';
+            if (agent.includes('Edge')) return 'Edge';
+            return 'Unknown';
+        }
+        
+        function showFinalSummary() {
+            const successes = testResults.filter(r => r.type === 'success').length;
+            const errors = testResults.filter(r => r.type === 'error').length;
+            const total = successes + errors;
+            
+            if (errors === 0) {
+                addResult('success', 'FINAL RESULT: ALL TESTS PASSED! 🎉', 
+                    'The dashboard should now work perfectly in the main interface. The API connection, CORS, and authentication are all working correctly.');
+            } else if (successes > errors) {
+                addResult('info', 'FINAL RESULT: Mostly Working', 
+                    `${successes}/${total} tests passed. Some issues detected but core functionality should work.`);
+            } else {
+                addResult('error', 'FINAL RESULT: Issues Detected', 
+                    `${errors}/${total} tests failed. Check the specific error messages above.`);
+            }
+        }
+        
+        // Auto-run test on page load
+        setTimeout(runUltimateTest, 1000);
+    </script>
+</body>
+</html>

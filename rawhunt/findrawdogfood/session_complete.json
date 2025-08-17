@@ -1,0 +1,19 @@
+{
+  "apiKeys": [
+    {
+      "key": "AIzaSyAaitGKLzY7PuyYYWLNifeQEqxfaWzncfg",
+      "account": "tenshimatt@gmail.com",
+      "dailyLimit": 1000,
+      "used": 125
+    },
+    {
+      "key": "AIzaSyBnvRVRCE8ixANqhHCS99MQtlUBmlFr7Mk",
+      "account": "mw@samuelandcotrading.com",
+      "dailyLimit": 950,
+      "used": 0
+    }
+  ],
+  "currentKeyIndex": 0,
+  "totalResults": 113,
+  "lastUpdated": "2025-07-23T08:18:13.084Z"
+}

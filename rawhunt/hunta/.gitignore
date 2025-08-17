@@ -1,0 +1,118 @@
+# Dependencies
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.vite/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+universal.log
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Wrangler
+.wrangler/
+wrangler.toml.bak
+
+# Local database files
+*.db
+*.sqlite
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Deployment artifacts
+deployment-report.md
+
+# Notion integration secrets
+notion_token.txt
+
+# Test reports
+reports/
+test-results/
+playwright-report/
+
+# PWA service worker cache
+sw.js.map
+
+# Media uploads (use R2 in production)
+uploads/
+media/
+
+# Backup files
+*.bak
+*.backup
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Storybook build outputs
+storybook-static/
+
+# Package manager lock files (keep one)
+package-lock.json
+yarn.lock
+
+# Secrets and keys
+*.pem
+*.key
+*.crt
+*.cert
+
+# Local development
+.local/

@@ -1,0 +1,51 @@
+name = "hunta-backend"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Production environment
+[env.production]
+name = "hunta-backend-prod"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+JWT_SECRET = "hunta-production-secret-2025"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "hunta-production"
+database_id = "hunta-prod-db-id"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "hunta-cache-prod"
+
+[[env.production.r2_buckets]]
+binding = "MEDIA"
+bucket_name = "hunta-media-prod"
+
+# Staging environment
+[env.staging]
+name = "hunta-backend-staging"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+JWT_SECRET = "hunta-staging-secret-2025"
+
+# Development defaults
+[vars]
+ENVIRONMENT = "development"
+JWT_SECRET = "hunta-dev-secret-2025"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hunta-development"
+database_id = "hunta-dev-db-id"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "hunta-cache-dev"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "hunta-media-dev"

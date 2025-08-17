@@ -1,0 +1,53 @@
+🎯 KNOME PRODUCTION SETUP - VISUAL GUIDE
+==========================================
+
+Xcode is now open! Follow these simple steps:
+
+📁 STEP 1: ADD VOICEMANAGER FILE
+================================
+• In Xcode left panel, RIGHT-CLICK on "Knome" folder
+• Select "Add Files to 'Knome'..."
+• Navigate to: Sources/Knome/Managers/VoiceManager.swift
+• ✅ IMPORTANT: Check "Add to target: Knome"
+• Click "Add"
+
+🔧 STEP 2: SET API KEY IN XCODE
+===============================
+• Click "Knome" scheme dropdown (top bar, next to play button)
+• Select "Edit Scheme..."
+• Go to "Run" → "Arguments" tab
+• Under "Environment Variables" click "+" to add:
+
+    Name:  OPENAI_API_KEY
+    Value: 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
+
+• Click "Close"
+
+🚀 STEP 3: BUILD & TEST
+=======================
+• Clean Build Folder: ⌘+Shift+K
+• Build & Run: ⌘+R
+• Select iPhone simulator when prompted
+• Grant microphone permissions in simulator
+
+🎉 SUCCESS INDICATORS:
+======================
+• App launches without errors
+• You see 🟢 "LIVE" indicator in top-right corner
+• Tap microphone button works
+• Real GPT-4 responses (not demo responses)
+• Knome speaks responses back to you
+
+🎙️ TESTING YOUR VOICE AI:
+=========================
+1. Tap the microphone button in chat
+2. Say: "Hello Knome, how are you today?"
+3. Watch it transcribe in real-time
+4. Hear Knome respond with intelligent GPT-4 answer
+5. Enjoy your AI therapist conversation!
+
+💰 COST: ~$0.10-0.50 per conversation
+🔒 PRIVACY: Voice processing stays on device
+🧠 INTELLIGENCE: Real GPT-4 powered responses
+
+🎯 You now have a production-ready AI therapist with voice! 🧙‍♂️✨

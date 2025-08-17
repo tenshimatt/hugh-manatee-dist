@@ -1,0 +1,170 @@
+{
+  "timestamp": "2025-08-14T12:30:27.841Z",
+  "api_url": "https://rawgle-backend.your-subdomain.workers.dev",
+  "frontend_url": "https://afc39a6e.rawgle-frontend.pages.dev",
+  "tests": {
+    "CORS Configuration": {
+      "status": "FAIL",
+      "subtests": {
+        "preflight_request": {
+          "status": "FAIL",
+          "status_code": 404,
+          "response_time_ms": 91,
+          "cors_headers": {
+            "access-control-allow-origin": null,
+            "access-control-allow-methods": null,
+            "access-control-allow-headers": null
+          }
+        },
+        "origin_header": {
+          "status": "FAIL",
+          "expected": "https://afc39a6e.rawgle-frontend.pages.dev",
+          "actual": null
+        },
+        "methods_header": {
+          "status": "FAIL",
+          "value": null
+        },
+        "cors_request": {
+          "status": "FAIL",
+          "status_code": 404,
+          "cors_origin": null
+        }
+      }
+    },
+    "API Response Format": {
+      "status": "FAIL",
+      "subtests": {
+        "format__health": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/health reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        },
+        "format__": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/ reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        },
+        "format__api/docs": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/api/docs reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        }
+      }
+    },
+    "Authentication Flow": {
+      "status": "FAIL",
+      "subtests": {
+        "protected_endpoint_401": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/api/pets reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        },
+        "invalid_token_401": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/api/pets reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        }
+      }
+    },
+    "Error Handling": {
+      "status": "FAIL",
+      "subtests": {
+        "not_found_404": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/nonexistent-endpoint reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        }
+      }
+    },
+    "Health Endpoints": {
+      "status": "FAIL",
+      "subtests": {
+        "health__health": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/health reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        },
+        "health__health/frontend": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/health/frontend reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        }
+      }
+    },
+    "Public Endpoints": {
+      "status": "FAIL",
+      "subtests": {
+        "public__api_community_posts": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/api/community/posts reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        },
+        "public__api_products": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/api/products reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        },
+        "public__api_suppliers": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/api/suppliers reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        },
+        "public__api_community_categories": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/api/community/categories reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        }
+      }
+    },
+    "Content Types": {
+      "status": "FAIL",
+      "subtests": {
+        "json_content_type": {
+          "status": "FAIL",
+          "content_type": "text/html; charset=UTF-8"
+        }
+      }
+    },
+    "Rate Limiting": {
+      "status": "PASS",
+      "subtests": {
+        "rate_limit_headers": {
+          "status": "PASS",
+          "headers_present": false,
+          "headers": {
+            "remaining": null,
+            "limit": null,
+            "reset": null
+          }
+        }
+      }
+    },
+    "Platform Headers": {
+      "status": "FAIL",
+      "subtests": {
+        "platform_recognition": {
+          "status": "FAIL",
+          "error": "invalid json response body at https://rawgle-backend.your-subdomain.workers.dev/health reason: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+        }
+      }
+    },
+    "Response Performance": {
+      "status": "PASS",
+      "subtests": {
+        "perf__health": {
+          "status": "PASS",
+          "response_time_ms": 14,
+          "threshold_ms": 1000,
+          "within_threshold": true
+        },
+        "perf__api_docs": {
+          "status": "PASS",
+          "response_time_ms": 20,
+          "threshold_ms": 2000,
+          "within_threshold": true
+        },
+        "perf__api_community_posts": {
+          "status": "PASS",
+          "response_time_ms": 15,
+          "threshold_ms": 3000,
+          "within_threshold": true
+        }
+      }
+    }
+  },
+  "summary": {
+    "total": 10,
+    "passed": 2,
+    "failed": 8,
+    "warnings": 0
+  }
+}

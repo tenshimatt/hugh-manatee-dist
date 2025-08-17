@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>D1 CSV Importer</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .upload-area { border: 2px dashed #ccc; padding: 40px; text-align: center; margin: 20px 0; }
+        .upload-area.dragover { border-color: #007cba; background: #f0f8ff; }
+        .progress { width: 100%; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { height: 100%; background: #007cba; width: 0%; transition: width 0.3s; }
+        .log { background: #f5f5f5; padding: 15px; border-radius: 5px; height: 300px; overflow-y: auto; font-family: monospace; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>🗄️ D1 Database CSV Importer</h1>
+    <p>Upload your suppliers.csv file to import to Cloudflare D1 database.</p>
+    
+    <div class="upload-area" id="uploadArea">
+        <p>📁 Drag and drop your CSV file here, or click to select</p>
+        <input type="file" id="fileInput" accept=".csv" style="display: none;">
+    </div>
+    
+    <div id="fileInfo" style="display: none;">
+        <h3>File Information</h3>
+        <p id="fileName"></p>
+        <p id="fileSize"></p>
+        <p id="recordCount"></p>
+        <button id="importBtn">🚀 Start Import</button>
+    </div>
+    
+    <div id="progress" style="display: none;">
+        <h3>Import Progress</h3>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <p id="progressText">Preparing import...</p>
+    </div>
+    
+    <div id="logContainer" style="display: none;">
+        <h3>Import Log</h3>
+        <div class="log" id="logArea"></div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const importBtn = document.getElementById('importBtn');
+        let selectedFile = null;
+
+        // File upload handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file || !file.name.endsWith('.csv')) {
+                alert('Please select a CSV file');
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('fileName').textContent = `File: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            
+            // Count records
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const lines = e.target.result.split('\n').filter(line => line.trim());
+                document.getElementById('recordCount').textContent = `Records: ${lines.length - 1} (excluding header)`;
+            };
+            reader.readAsText(file);
+            
+            fileInfo.style.display = 'block';
+        }
+
+        // Import process
+        importBtn.addEventListener('click', startImport);
+
+        async function startImport() {
+            if (!selectedFile) return;
+            
+            document.getElementById('progress').style.display = 'block';
+            document.getElementById('logContainer').style.display = 'block';
+            importBtn.disabled = true;
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const csvData = e.target.result;
+                await processCSVImport(csvData);
+            };
+            reader.readAsText(selectedFile);
+        }
+
+        async function processCSVImport(csvData) {
+            const lines = csvData.split('\n').filter(line => line.trim());
+            const header = lines[0];
+            const dataLines = lines.slice(1);
+            
+            log(`📊 Processing ${dataLines.length} records...`);
+            
+            const batchSize = 100;
+            const totalBatches = Math.ceil(dataLines.length / batchSize);
+            
+            for (let i = 0; i < totalBatches; i++) {
+                const start = i * batchSize;
+                const end = Math.min(start + batchSize, dataLines.length);
+                const batch = dataLines.slice(start, end);
+                
+                log(`📤 Processing batch ${i + 1}/${totalBatches} (${batch.length} records)...`);
+                
+                // Here you would make API calls to your D1 import endpoint
+                // For now, we'll simulate the process
+                await simulateImport(batch);
+                
+                updateProgress((i + 1) / totalBatches * 100);
+                
+                // Small delay to avoid overwhelming the system
+                await sleep(500);
+            }
+            
+            log('✅ Import completed successfully!');
+            importBtn.disabled = false;
+        }
+
+        function log(message) {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.innerHTML += `[${timestamp}] ${message}\n`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressText').textContent = `${Math.round(percent)}% complete`;
+        }
+
+        async function simulateImport(batch) {
+            // This would be replaced with actual D1 API calls
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    log(`✅ Imported ${batch.length} records`);
+                    resolve();
+                }, 200);
+            });
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>

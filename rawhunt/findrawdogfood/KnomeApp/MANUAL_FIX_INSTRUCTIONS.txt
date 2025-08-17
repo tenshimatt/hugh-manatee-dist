@@ -1,0 +1,44 @@
+🚨 KNOME BUILD FIX - MANUAL INSTRUCTIONS
+==========================================
+
+The build errors are caused by:
+1. VoiceManager not being included in Xcode project
+2. OpenAI dependency conflicts
+
+🔧 QUICK FIX STEPS:
+
+1️⃣ OPEN XCODE PROJECT:
+   cd /Users/mattwright/pandora/findrawdogfood/KnomeApp
+   open Knome.xcodeproj
+
+2️⃣ ADD VOICEMANAGER FILE:
+   • In Xcode left panel, RIGHT-CLICK on "Knome" folder
+   • Select "Add Files to 'Knome'..."
+   • Navigate to: Sources/Knome/Managers/VoiceManager.swift
+   • ✅ Make sure "Add to target: Knome" is CHECKED
+   • Click "Add"
+
+3️⃣ REMOVE OPENAI REFERENCES:
+   • In Xcode, go to Project Navigator
+   • Select "Knome" project (top level)
+   • Select "Knome" target
+   • Go to "Package Dependencies" tab
+   • If you see "OpenAI" package, select it and click "−" (minus) to remove
+
+4️⃣ CLEAN & BUILD:
+   • Clean Build Folder: ⌘+Shift+K
+   • Build & Run: ⌘+R
+
+✅ EXPECTED RESULT:
+   • No more "Cannot find VoiceManager" error
+   • No more OpenAI module errors
+   • Voice chat works with mic button
+
+🎙️ VOICE FEATURES READY:
+   • Tap mic button to speak
+   • Real-time transcription
+   • Auto-TTS responses
+   • Natural conversation flow
+
+If still having issues, the VoiceManager.swift file is here:
+/Users/mattwright/pandora/findrawdogfood/KnomeApp/Sources/Knome/Managers/VoiceManager.swift

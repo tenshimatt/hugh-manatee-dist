@@ -1,0 +1,11 @@
+
+ ⛅️ wrangler 4.25.0
+───────────────────
+✅ Successfully created DB 'claude-voice-db' in region WEUR
+Created your new D1 database.
+
+[[d1_databases]]
+binding = "DB"
+database_name = "claude-voice-db"
+database_id = "5136b158-087e-4ac2-94e5-6f1dc7e0e480"
+

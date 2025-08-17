@@ -1,0 +1,356 @@
+/**
+ * GoHunta.com Responsive Grid System
+ * Mobile-first grid optimized for hunting content and field use
+ */
+
+:root {
+  /* Container max-widths */
+  --container-sm: 640px;   /* Small tablets */
+  --container-md: 768px;   /* Tablets */
+  --container-lg: 1024px;  /* Small laptops */
+  --container-xl: 1280px;  /* Desktop */
+  --container-2xl: 1536px; /* Large desktop */
+
+  /* Breakpoints - aligned with common hunting device sizes */
+  --mobile-small: 320px;  /* iPhone SE, older Android */
+  --mobile: 375px;        /* iPhone 13 mini */
+  --mobile-large: 414px;  /* iPhone 13 Pro Max */
+  --tablet: 768px;        /* iPad mini */
+  --tablet-large: 1024px; /* iPad Pro */
+  --desktop: 1280px;      /* Desktop monitors */
+  --desktop-large: 1536px; /* Large monitors */
+
+  /* Grid columns */
+  --grid-columns: 12;
+
+  /* Gutter spacing */
+  --grid-gutter: var(--space-4);      /* 16px default gutter */
+  --grid-gutter-lg: var(--space-8);   /* 32px large screen gutter */
+}
+
+/* Container Base */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+/* Container Responsive Sizes */
+@media (min-width: 640px) {
+  .container {
+    max-width: var(--container-sm);
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-md);
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-lg);
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: var(--container-xl);
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: var(--container-2xl);
+  }
+}
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--grid-gutter);
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.grid-cols-8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.grid-cols-9 { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+.grid-cols-10 { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+.grid-cols-11 { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+.grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+
+/* Column Spanning */
+.col-span-1 { grid-column: span 1 / span 1; }
+.col-span-2 { grid-column: span 2 / span 2; }
+.col-span-3 { grid-column: span 3 / span 3; }
+.col-span-4 { grid-column: span 4 / span 4; }
+.col-span-5 { grid-column: span 5 / span 5; }
+.col-span-6 { grid-column: span 6 / span 6; }
+.col-span-7 { grid-column: span 7 / span 7; }
+.col-span-8 { grid-column: span 8 / span 8; }
+.col-span-9 { grid-column: span 9 / span 9; }
+.col-span-10 { grid-column: span 10 / span 10; }
+.col-span-11 { grid-column: span 11 / span 11; }
+.col-span-12 { grid-column: span 12 / span 12; }
+.col-span-full { grid-column: 1 / -1; }
+
+/* Responsive Grid Classes - Mobile */
+@media (min-width: 375px) {
+  .mobile\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .mobile\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mobile\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  
+  .mobile\:col-span-1 { grid-column: span 1 / span 1; }
+  .mobile\:col-span-2 { grid-column: span 2 / span 2; }
+  .mobile\:col-span-3 { grid-column: span 3 / span 3; }
+  .mobile\:col-span-full { grid-column: 1 / -1; }
+}
+
+/* Responsive Grid Classes - Tablet */
+@media (min-width: 768px) {
+  .tablet\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .tablet\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tablet\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tablet\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .tablet\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  
+  .tablet\:col-span-1 { grid-column: span 1 / span 1; }
+  .tablet\:col-span-2 { grid-column: span 2 / span 2; }
+  .tablet\:col-span-3 { grid-column: span 3 / span 3; }
+  .tablet\:col-span-4 { grid-column: span 4 / span 4; }
+  .tablet\:col-span-6 { grid-column: span 6 / span 6; }
+  .tablet\:col-span-full { grid-column: 1 / -1; }
+  
+  .grid {
+    gap: var(--grid-gutter-lg);
+  }
+}
+
+/* Responsive Grid Classes - Desktop */
+@media (min-width: 1024px) {
+  .desktop\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .desktop\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .desktop\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .desktop\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .desktop\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .desktop\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .desktop\:grid-cols-8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .desktop\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  
+  .desktop\:col-span-1 { grid-column: span 1 / span 1; }
+  .desktop\:col-span-2 { grid-column: span 2 / span 2; }
+  .desktop\:col-span-3 { grid-column: span 3 / span 3; }
+  .desktop\:col-span-4 { grid-column: span 4 / span 4; }
+  .desktop\:col-span-6 { grid-column: span 6 / span 6; }
+  .desktop\:col-span-8 { grid-column: span 8 / span 8; }
+  .desktop\:col-span-12 { grid-column: span 12 / span 12; }
+  .desktop\:col-span-full { grid-column: 1 / -1; }
+}
+
+/* Flexbox Grid Alternative for older browsers */
+.flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: calc(-1 * var(--grid-gutter) / 2);
+  margin-right: calc(-1 * var(--grid-gutter) / 2);
+}
+
+.flex-grid > * {
+  padding-left: calc(var(--grid-gutter) / 2);
+  padding-right: calc(var(--grid-gutter) / 2);
+  margin-bottom: var(--grid-gutter);
+}
+
+/* Flexbox Column Classes */
+.flex-1 { flex: 1 1 0%; }
+.flex-2 { flex: 2 2 0%; }
+.flex-3 { flex: 3 3 0%; }
+.flex-4 { flex: 4 4 0%; }
+
+.flex-col-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+.flex-col-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+.flex-col-3 { flex: 0 0 25%; max-width: 25%; }
+.flex-col-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+.flex-col-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+.flex-col-6 { flex: 0 0 50%; max-width: 50%; }
+.flex-col-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+.flex-col-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+.flex-col-9 { flex: 0 0 75%; max-width: 75%; }
+.flex-col-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+.flex-col-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+.flex-col-12 { flex: 0 0 100%; max-width: 100%; }
+
+/* Hunting-Specific Layout Patterns */
+
+/* Hunt Log Card Grid */
+.hunt-log-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .hunt-log-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hunt-log-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-8);
+  }
+}
+
+/* Dog Profile Grid */
+.dog-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 414px) {
+  .dog-profile-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .dog-profile-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dog-profile-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Quick Stats Grid - for dashboard */
+.quick-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .quick-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+/* Equipment Grid */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .equipment-grid {
+    gap: var(--space-6);
+  }
+}
+
+/* Map and Content Layout */
+.map-content-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  height: 100vh;
+}
+
+@media (min-width: 768px) and (orientation: landscape) {
+  .map-content-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .map-content-layout {
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-8);
+  }
+}
+
+/* GPS Coordinate Display Grid */
+.gps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+}
+
+/* Field Form Layout */
+.field-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--form-element-spacing);
+}
+
+@media (min-width: 414px) {
+  .field-form-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+  
+  .field-form-grid .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Accessibility and Performance */
+@supports (display: subgrid) {
+  .subgrid {
+    display: subgrid;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: no-preference) {
+  .grid-animate {
+    transition: grid-template-columns 0.3s ease-out;
+  }
+}
+
+/* High contrast adjustments */
+@media (prefers-contrast: high) {
+  .grid > *,
+  .flex-grid > * {
+    border: 1px solid var(--neutral-300);
+  }
+}
+
+/* Print styles */
+@media print {
+  .container {
+    max-width: none;
+    padding: 0;
+  }
+  
+  .grid {
+    display: block;
+  }
+  
+  .grid > * {
+    margin-bottom: var(--space-4);
+    break-inside: avoid;
+  }
+}

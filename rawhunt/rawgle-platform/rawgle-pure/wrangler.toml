@@ -1,0 +1,111 @@
+name = "rawgle-api"
+main = "src/index.js"
+compatibility_date = "2024-08-12"
+compatibility_flags = ["nodejs_compat"]
+minify = true
+
+# Worker settings
+# [build]
+# command = "npm run build"
+# cwd = "."
+# watch_dir = "src"
+
+# All D1 databases
+[[d1_databases]]
+binding = "DB"
+database_name = "rawgle-production"
+database_id = "2b486c2b-15b2-4b75-ba00-6ecd6124944b"
+
+# All KV namespaces
+[[kv_namespaces]]
+binding = "RAWGLE_KV"
+id = "76d631ee10d149e295a6ab076c40d0b6"
+preview_id = "76d631ee10d149e295a6ab076c40d0b6"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "2f26e521c3124418b5d3f1fc8dec7819"
+preview_id = "2f26e521c3124418b5d3f1fc8dec7819"
+
+# All R2 buckets
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "rawgle-images"
+preview_bucket_name = "rawgle-images-preview"
+
+[[r2_buckets]]
+binding = "REPORTS"
+bucket_name = "rawgle-reports"
+preview_bucket_name = "rawgle-reports-preview"
+
+# All Queues - Disabled for free tier
+# [[queues.producers]]
+# binding = "RAWGLE_QUEUE"
+# queue = "rawgle-jobs"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "ANALYTICS"
+class_name = "AnalyticsDurableObject"
+
+# Durable Object Migrations
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AnalyticsDurableObject"]
+
+# Workers AI
+[ai]
+binding = "AI"
+
+# Cron triggers - Disabled for free tier (limit exceeded)
+# [triggers]
+# crons = ["0 1 * * *", "0 */6 * * *", "*/15 * * * *"]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+SOLANA_MASTER_WALLET = "E9mnWdbp97pGaUTGRP743KhppWkYzkagWo7JM3hRJsHA"
+PAWS_EXCHANGE_RATE = "1000"
+API_VERSION = "v1"
+LOG_LEVEL = "info"
+RATE_LIMIT_PER_MINUTE = "60"
+MAX_PAYLOAD_SIZE = "10485760"
+SESSION_TIMEOUT_HOURS = "24"
+MAX_DAILY_PAWS = "500"
+
+# Placement
+[placement]
+mode = "smart"
+
+# Limits - Disabled for free tier
+# [limits]
+# cpu_ms = 30000
+
+# Analytics - Disabled for free tier
+# [[analytics_engine_datasets]]
+# binding = "ANALYTICS_DATASET"
+# dataset = "rawgle_analytics"
+
+# Hyperdrive (for external database connections if needed)
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "${HYPERDRIVE_ID}"
+
+# Observability
+[observability]
+enabled = true
+head_sampling_rate = 0.01
+
+# Dev environment
+[env.development]
+vars = { ENVIRONMENT = "development", LOG_LEVEL = "debug" }
+
+# Staging environment
+[env.staging]
+name = "rawgle-api-staging"
+vars = { ENVIRONMENT = "staging", LOG_LEVEL = "info" }
+
+# Production environment
+[env.production]
+name = "rawgle-api-production"
+vars = { ENVIRONMENT = "production", LOG_LEVEL = "warn" }

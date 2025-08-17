@@ -1,0 +1,36 @@
+name = "rawgle-com"
+main = "src/rawgle-worker.js"
+compatibility_date = "2024-03-08"
+
+# Production environment for RAWGLE.COM
+[env.production]
+name = "rawgle-com-production"
+routes = [
+  { pattern = "rawgle.com/*", zone_name = "rawgle.com" },
+  { pattern = "www.rawgle.com/*", zone_name = "rawgle.com" }
+]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "findrawdogfood-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+# Development environment
+[env.development]
+name = "rawgle-com-dev"
+
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "findrawdogfood-db-dev"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+# Environment variables (add your API keys here if needed)
+[env.production.vars]
+ENVIRONMENT = "production"
+PRIMARY_DOMAIN = "rawgle.com"
+LEGACY_DOMAIN = "findrawdogfood.com"
+
+[env.development.vars]
+ENVIRONMENT = "development"
+PRIMARY_DOMAIN = "rawgle.com"
+LEGACY_DOMAIN = "findrawdogfood.com"

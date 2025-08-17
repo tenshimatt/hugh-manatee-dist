@@ -1,0 +1,5 @@
+# API redirects to backend worker
+/api/* https://hunta-backend-prod.findrawdogfood.workers.dev/api/:splat 200
+
+# SPA fallback for client-side routing
+/* /index.html 200

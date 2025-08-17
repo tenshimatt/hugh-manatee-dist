@@ -1,0 +1,45 @@
+{
+  "name": "rawgle-backend",
+  "version": "1.0.0",
+  "description": "Rawgle Platform Backend API - Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:security": "vitest run tests/security",
+    "test:performance": "artillery run tests/performance/load-test.yml",
+    "test:e2e": "playwright test",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:security && npm run test:e2e",
+    "test:ci": "cross-env CI=true npm run test:coverage && npm run test:security && npm run test:performance",
+    "db:migrate": "wrangler d1 migrations apply rawgle-db",
+    "db:migrate:local": "wrangler d1 migrations apply rawgle-db --local",
+    "db:create": "wrangler d1 create rawgle-db",
+    "setup:test-db": "npm run db:migrate:local"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.22.4",
+    "itty-router": "^4.0.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231025.0",
+    "vitest": "^1.0.0",
+    "wrangler": "^3.15.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "supertest": "^6.3.3",
+    "msw": "^2.0.11",
+    "faker": "^6.6.6",
+    "@faker-js/faker": "^8.0.0",
+    "artillery": "^2.0.0",
+    "playwright": "^1.40.0",
+    "@playwright/test": "^1.40.0",
+    "cross-env": "^7.0.3",
+    "wait-on": "^7.0.1"
+  }
+}

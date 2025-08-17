@@ -1,0 +1,312 @@
+# Artillery.js load testing configuration for Rawgle platform
+config:
+  target: 'http://localhost:8787'
+  phases:
+    # Warm-up phase
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm-up"
+    
+    # Ramp-up phase
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp-up"
+    
+    # Sustained load phase
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load"
+    
+    # Peak load phase
+    - duration: 60
+      arrivalRate: 50
+      rampTo: 100
+      name: "Peak load"
+    
+    # Cool-down phase
+    - duration: 30
+      arrivalRate: 100
+      rampTo: 10
+      name: "Cool-down"
+
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      User-Agent: 'Artillery Load Test'
+
+  variables:
+    # Test user credentials
+    testEmail: 'loadtest@example.com'
+    testPassword: 'LoadTest123!'
+    
+    # Test data
+    categories:
+      - 'veterinary'
+      - 'grooming'
+      - 'boarding'
+      - 'training'
+      - 'food'
+      - 'toys'
+    
+    locations:
+      - { lat: 40.7128, lng: -74.0060, name: 'New York' }
+      - { lat: 34.0522, lng: -118.2437, name: 'Los Angeles' }
+      - { lat: 41.8781, lng: -87.6298, name: 'Chicago' }
+      - { lat: 29.7604, lng: -95.3698, name: 'Houston' }
+      - { lat: 33.4484, lng: -112.0740, name: 'Phoenix' }
+
+  plugins:
+    expect: {}
+    metrics-by-endpoint: {}
+    
+scenarios:
+  # Public API endpoints (no authentication required)
+  - name: "Public browsing flow"
+    weight: 40
+    flow:
+      # Health check
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+            - hasProperty: "status"
+          
+      # Browse suppliers without filters
+      - get:
+          url: "/api/suppliers"
+          qs:
+            page: 1
+            limit: 20
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.suppliers"
+            
+      # Search suppliers by category
+      - get:
+          url: "/api/suppliers"
+          qs:
+            category: "{{ $randomString(categories) }}"
+            page: 1
+            limit: 20
+          expect:
+            - statusCode: 200
+            
+      # Geographic search
+      - get:
+          url: "/api/suppliers/nearby"
+          qs:
+            latitude: "{{ $randomString(locations).lat }}"
+            longitude: "{{ $randomString(locations).lng }}"
+            radius: 10
+          expect:
+            - statusCode: 200
+            
+      # Get supplier categories
+      - get:
+          url: "/api/suppliers/categories"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.categories"
+            
+      # Get specific supplier details
+      - get:
+          url: "/api/suppliers/1"
+          expect:
+            - statusCode: 200
+
+  # Authentication flow
+  - name: "User authentication flow"
+    weight: 20
+    flow:
+      # User registration
+      - post:
+          url: "/api/auth/register"
+          json:
+            email: "{{ $guid }}@loadtest.com"
+            password: "{{ testPassword }}"
+            firstName: "Load"
+            lastName: "Test"
+            phoneNumber: "+1555{{ $randomInt(1000000, 9999999) }}"
+          capture:
+            - json: "$.data.token"
+              as: "authToken"
+          expect:
+            - statusCode: 201
+            - hasProperty: "data.token"
+            
+      # Get user profile
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.user"
+            
+      # Update profile
+      - put:
+          url: "/api/auth/profile"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            firstName: "Updated"
+            lastName: "User"
+          expect:
+            - statusCode: 200
+
+  # PAWS system flow
+  - name: "PAWS operations flow"
+    weight: 15
+    flow:
+      # Login first
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.data.token"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+            
+      # Check PAWS balance
+      - get:
+          url: "/api/paws/balance"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.balance"
+            
+      # Get transaction history
+      - get:
+          url: "/api/paws/transactions"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            page: 1
+            limit: 10
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.transactions"
+            
+      # Get leaderboard
+      - get:
+          url: "/api/paws/leaderboard"
+          qs:
+            limit: 10
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.leaderboard"
+
+  # Order and review flow
+  - name: "Order and review flow"
+    weight: 15
+    flow:
+      # Login
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.data.token"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+            
+      # Create an order
+      - post:
+          url: "/api/orders"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            supplierId: 1
+            serviceType: "grooming"
+            description: "Load test order"
+            amount: "{{ $randomInt(25, 150) }}.99"
+            scheduledDate: "2024-01-01T10:00:00Z"
+          capture:
+            - json: "$.data.order.id"
+              as: "orderId"
+          expect:
+            - statusCode: 201
+            
+      # Get user orders
+      - get:
+          url: "/api/orders"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.orders"
+            
+      # Submit a review
+      - post:
+          url: "/api/reviews"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            supplierId: 1
+            orderId: "{{ orderId }}"
+            rating: "{{ $randomInt(3, 5) }}"
+            title: "Load test review"
+            content: "This is a load test review for supplier testing."
+          expect:
+            - statusCode: 201
+
+  # High-frequency read operations
+  - name: "High-frequency reads"
+    weight: 10
+    flow:
+      # Multiple rapid supplier searches
+      - loop:
+          count: 5
+          over:
+            - get:
+                url: "/api/suppliers"
+                qs:
+                  search: "{{ $randomString(['vet', 'grooming', 'boarding', 'pet', 'care']) }}"
+                  page: "{{ $randomInt(1, 3) }}"
+                  limit: 20
+                expect:
+                  - statusCode: 200
+                  
+            - get:
+                url: "/api/suppliers/nearby"
+                qs:
+                  latitude: "{{ $randomString(locations).lat }}"
+                  longitude: "{{ $randomString(locations).lng }}"
+                  radius: "{{ $randomInt(5, 25) }}"
+                expect:
+                  - statusCode: 200
+
+# Performance thresholds and expectations
+expectations:
+  # Response time expectations
+  - http.response_time:
+      p95: 500  # 95% of responses under 500ms
+      p99: 1000 # 99% of responses under 1000ms
+      
+  # Error rate expectations
+  - http.codes.200:
+      min: 90   # At least 90% successful responses
+      
+  - http.codes.400:
+      max: 5    # No more than 5% client errors
+      
+  - http.codes.500:
+      max: 1    # No more than 1% server errors
+
+# Custom metrics to track
+metrics:
+  - name: "auth_response_time"
+    unit: "ms"
+    
+  - name: "search_response_time"
+    unit: "ms"
+    
+  - name: "paws_operation_time"
+    unit: "ms"

@@ -1,0 +1,52 @@
+# Unified Platform Configuration
+name = "unified-platform"
+main = "src/index.js"
+compatibility_date = "2024-08-14"
+node_compat = true
+
+[env.development]
+name = "unified-platform-dev"
+vars = { ENVIRONMENT = "development", PLATFORM_MODE = "multi-tenant" }
+
+[env.staging]
+name = "unified-platform-staging"
+vars = { ENVIRONMENT = "staging", PLATFORM_MODE = "multi-tenant" }
+
+[env.production]
+name = "unified-platform-prod"
+vars = { ENVIRONMENT = "production", PLATFORM_MODE = "multi-tenant" }
+routes = [
+  { pattern = "api.rawgle.com/*", zone_name = "rawgle.com" },
+  { pattern = "api.gohunta.com/*", zone_name = "gohunta.com" }
+]
+
+# Shared Database
+[[d1_databases]]
+binding = "DB"
+database_name = "unified-platform-db"
+database_id = "unified-platform-database-id"
+
+# KV Storage for sessions, cache
+[[kv_namespaces]]
+binding = "KV"
+id = "unified-platform-kv-id"
+preview_id = "unified-platform-kv-preview-id"
+
+# R2 for file storage
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "unified-platform-storage"
+
+# Queue for background processing
+[[queues]]
+binding = "QUEUE"
+queue = "unified-platform-queue"
+
+# Durable Objects for real-time features
+[[durable_objects.bindings]]
+name = "ANALYTICS"
+class_name = "AnalyticsCounter"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["AnalyticsCounter"]

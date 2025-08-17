@@ -1,0 +1,8 @@
+name = "create-test-records"
+main = "create-test-records-worker.js"
+compatibility_date = "2024-03-08"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "findrawdogfood-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"

@@ -1,0 +1,647 @@
+//
+// AdvancedVoiceManager.swift - Enhanced Voice Features with AI Processing
+//
+import Foundation
+import Speech
+import AVFoundation
+import Combine
+import NaturalLanguage
+
+// MARK: - Voice Recognition State
+enum VoiceRecognitionState {
+    case idle
+    case listening
+    case processing
+    case speaking
+    case error(VoiceError)
+}
+
+// MARK: - Voice Errors
+enum VoiceError: Error, LocalizedError {
+    case permissionDenied
+    case recognitionUnavailable
+    case audioEngineError
+    case processingTimeout
+    case networkError
+    case unknownError(Error)
+    
+    var errorDescription: String? {
+        switch self {
+        case .permissionDenied:
+            return "Microphone permission is required for voice features"
+        case .recognitionUnavailable:
+            return "Speech recognition is not available"
+        case .audioEngineError:
+            return "Audio engine error occurred"
+        case .processingTimeout:
+            return "Voice processing timed out"
+        case .networkError:
+            return "Network error during voice processing"
+        case .unknownError(let error):
+            return error.localizedDescription
+        }
+    }
+}
+
+// MARK: - Voice Settings
+struct VoiceSettings: Codable {
+    var isEnabled: Bool = true
+    var speechRate: Float = 0.5
+    var speechPitch: Float = 1.0
+    var speechVolume: Float = 1.0
+    var preferredVoice: String?
+    var language: String = "en-US"
+    var enableContinuousListening: Bool = false
+    var noiseReduction: Bool = true
+    var autoDetectLanguage: Bool = false
+    var emotionalToneDetection: Bool = true
+    var confidenceThreshold: Float = 0.6
+    var timeoutDuration: TimeInterval = 30.0
+}
+
+// MARK: - Voice Analysis Result
+struct VoiceAnalysisResult {
+    let text: String
+    let confidence: Float
+    let sentiment: SentimentScore?
+    let emotion: EmotionAnalysis?
+    let intent: IntentAnalysis?
+    let keywords: [String]
+    let language: String?
+    let processingTime: TimeInterval
+}
+
+struct SentimentScore {
+    let polarity: Double // -1.0 to 1.0
+    let confidence: Double
+    let label: SentimentLabel
+    
+    enum SentimentLabel {
+        case positive, negative, neutral
+    }
+}
+
+struct EmotionAnalysis {
+    let dominantEmotion: String
+    let emotions: [String: Double] // emotion -> confidence
+    let arousal: Double // 0.0 to 1.0 (calm to excited)
+    let valence: Double // -1.0 to 1.0 (negative to positive)
+}
+
+struct IntentAnalysis {
+    let intent: String
+    let confidence: Double
+    let entities: [String: String] // entity type -> value
+}
+
+// MARK: - Advanced Voice Manager
+@MainActor
+class AdvancedVoiceManager: ObservableObject {
+    
+    // MARK: - Published Properties
+    @Published var state: VoiceRecognitionState = .idle
+    @Published var recognizedText = ""
+    @Published var isListening = false
+    @Published var isSpeaking = false
+    @Published var currentVolume: Float = 0.0
+    @Published var settings = VoiceSettings()
+    @Published var lastAnalysis: VoiceAnalysisResult?
+    @Published var availableVoices: [AVSpeechSynthesisVoice] = []
+    
+    // MARK: - Core Components
+    private let speechRecognizer: SFSpeechRecognizer
+    private let audioEngine = AVAudioEngine()
+    private let speechSynthesizer = AVSpeechSynthesizer()
+    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recognitionTask: SFSpeechRecognitionTask?
+    private var audioSession = AVAudioSession.sharedInstance()
+    
+    // MARK: - Analysis Components
+    private lazy var nlProcessor = NaturalLanguageProcessor()
+    private lazy var emotionAnalyzer = EmotionAnalyzer()
+    private lazy var intentClassifier = IntentClassifier()
+    
+    // MARK: - State Management
+    private var currentVoiceInput = ""
+    private var processingStartTime: Date?
+    private var continuousListeningTimer: Timer?
+    private var volumeTimer: Timer?
+    
+    init() {
+        self.speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: settings.language))!
+        
+        setupAudioSession()
+        loadAvailableVoices()
+        loadSettings()
+        setupSpeechSynthesizer()
+    }
+    
+    // MARK: - Setup Methods
+    private func setupAudioSession() {
+        do {
+            try audioSession.setCategory(.playAndRecord, mode: .measurement, options: .duckOthers)
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("❌ Audio session setup error: \(error)")
+        }
+    }
+    
+    private func loadAvailableVoices() {
+        availableVoices = AVSpeechSynthesisVoice.speechVoices()
+            .filter { $0.language.hasPrefix(String(settings.language.prefix(2))) }
+            .sorted { $0.name < $1.name }
+        
+        // Set default voice if none selected
+        if settings.preferredVoice == nil, let firstVoice = availableVoices.first {
+            settings.preferredVoice = firstVoice.identifier
+        }
+    }
+    
+    private func setupSpeechSynthesizer() {
+        speechSynthesizer.delegate = self
+    }
+    
+    // MARK: - Permission Management
+    func requestPermissions() async -> Bool {
+        // Request speech recognition permission
+        let speechStatus = await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { status in
+                continuation.resume(returning: status)
+            }
+        }
+        
+        guard speechStatus == .authorized else {
+            state = .error(.permissionDenied)
+            return false
+        }
+        
+        // Request microphone permission
+        let microphoneGranted = await withCheckedContinuation { continuation in
+            audioSession.requestRecordPermission { granted in
+                continuation.resume(returning: granted)
+            }
+        }
+        
+        guard microphoneGranted else {
+            state = .error(.permissionDenied)
+            return false
+        }
+        
+        return true
+    }
+    
+    // MARK: - Voice Recognition
+    func startListening() async {
+        guard await requestPermissions() else { return }
+        guard !audioEngine.isRunning else { return }
+        
+        do {
+            try startRecording()
+            state = .listening
+            isListening = true
+            startVolumeMonitoring()
+            
+            if settings.enableContinuousListening {
+                startContinuousListening()
+            }
+        } catch {
+            state = .error(.audioEngineError)
+        }
+    }
+    
+    func stopListening() {
+        audioEngine.stop()
+        audioEngine.inputNode.removeTap(onBus: 0)
+        
+        recognitionRequest?.endAudio()
+        recognitionRequest = nil
+        recognitionTask?.cancel()
+        recognitionTask = nil
+        
+        state = .idle
+        isListening = false
+        stopVolumeMonitoring()
+        stopContinuousListening()
+    }
+    
+    private func startRecording() throws {
+        recognitionTask?.cancel()
+        recognitionTask = nil
+        
+        let inputNode = audioEngine.inputNode
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        
+        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+        guard let recognitionRequest = recognitionRequest else {
+            throw VoiceError.audioEngineError
+        }
+        
+        recognitionRequest.shouldReportPartialResults = true
+        recognitionRequest.requiresOnDeviceRecognition = false
+        
+        // Apply noise reduction if enabled
+        if settings.noiseReduction {
+            recognitionRequest.contextualStrings = ["wellness", "mood", "anxiety", "depression", "therapy", "journal"]
+        }
+        
+        processingStartTime = Date()
+        
+        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
+            guard let self = self else { return }
+            
+            if let result = result {
+                Task { @MainActor in
+                    self.recognizedText = result.bestTranscription.formattedString
+                    self.currentVoiceInput = result.bestTranscription.formattedString
+                    
+                    if result.isFinal {
+                        await self.processRecognizedText(self.currentVoiceInput)
+                    }
+                }
+            }
+            
+            if let error = error {
+                Task { @MainActor in
+                    self.state = .error(.unknownError(error))
+                    self.stopListening()
+                }
+            }
+        }
+        
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            self.recognitionRequest?.append(buffer)
+            
+            // Update volume level
+            Task { @MainActor in
+                self.updateVolumeLevel(from: buffer)
+            }
+        }
+        
+        audioEngine.prepare()
+        try audioEngine.start()
+    }
+    
+    // MARK: - Advanced Text Processing
+    private func processRecognizedText(_ text: String) async {
+        guard !text.isEmpty else { return }
+        
+        state = .processing
+        let startTime = Date()
+        
+        do {
+            // Natural language processing
+            let sentiment = await nlProcessor.analyzeSentiment(text)
+            let emotion = await emotionAnalyzer.analyzeEmotion(text)
+            let intent = await intentClassifier.classifyIntent(text)
+            let keywords = await nlProcessor.extractKeywords(text)
+            let language = await nlProcessor.detectLanguage(text)
+            
+            let processingTime = Date().timeIntervalSince(startTime)
+            
+            let analysis = VoiceAnalysisResult(
+                text: text,
+                confidence: 0.9, // You would get this from the speech recognition result
+                sentiment: sentiment,
+                emotion: emotion,
+                intent: intent,
+                keywords: keywords,
+                language: language,
+                processingTime: processingTime
+            )
+            
+            lastAnalysis = analysis
+            
+            // Store analysis for insights
+            await storeVoiceAnalysis(analysis)
+            
+            state = .idle
+            
+        } catch {
+            state = .error(.processingTimeout)
+        }
+    }
+    
+    private func storeVoiceAnalysis(_ analysis: VoiceAnalysisResult) async {
+        // Store in Core Data for later analysis and insights
+        CoreDataStack.shared.performBackgroundTask { context in
+            let entity = NSEntityDescription.insertNewObject(forEntityName: "AnalyticsEventEntity", into: context) as! AnalyticsEventEntity
+            entity.id = UUID()
+            entity.eventName = "voice_input"
+            entity.timestamp = Date()
+            entity.sessionId = UUID().uuidString // You'd track sessions properly
+            
+            let properties: [String: Any] = [
+                "text": analysis.text,
+                "confidence": analysis.confidence,
+                "sentiment_polarity": analysis.sentiment?.polarity ?? 0,
+                "dominant_emotion": analysis.emotion?.dominantEmotion ?? "unknown",
+                "intent": analysis.intent?.intent ?? "unknown",
+                "keywords": analysis.keywords,
+                "language": analysis.language ?? "unknown",
+                "processing_time": analysis.processingTime
+            ]
+            
+            if let jsonData = try? JSONSerialization.data(withJSONObject: properties),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                entity.properties = jsonString
+            }
+            
+            CoreDataStack.shared.saveBackground(context)
+        }
+    }
+    
+    // MARK: - Text-to-Speech
+    func speak(_ text: String, priority: AVSpeechUtterance.Priority = .default) {
+        guard settings.isEnabled else { return }
+        
+        let utterance = AVSpeechUtterance(string: text)
+        
+        // Apply voice settings
+        utterance.rate = settings.speechRate
+        utterance.pitchMultiplier = settings.speechPitch
+        utterance.volume = settings.speechVolume
+        
+        // Set preferred voice
+        if let voiceId = settings.preferredVoice,
+           let voice = AVSpeechSynthesisVoice(identifier: voiceId) {
+            utterance.voice = voice
+        } else {
+            utterance.voice = AVSpeechSynthesisVoice(language: settings.language)
+        }
+        
+        // Add SSML-like emotional context if available
+        if let emotion = lastAnalysis?.emotion {
+            adjustSpeechForEmotion(utterance, emotion: emotion)
+        }
+        
+        isSpeaking = true
+        state = .speaking
+        speechSynthesizer.speak(utterance)
+    }
+    
+    private func adjustSpeechForEmotion(_ utterance: AVSpeechUtterance, emotion: EmotionAnalysis) {
+        // Adjust speech parameters based on detected emotion
+        switch emotion.dominantEmotion.lowercased() {
+        case "sad", "depressed":
+            utterance.rate *= 0.8 // Slower
+            utterance.pitchMultiplier *= 0.9 // Lower pitch
+        case "excited", "happy":
+            utterance.rate *= 1.2 // Faster
+            utterance.pitchMultiplier *= 1.1 // Higher pitch
+        case "angry", "frustrated":
+            utterance.rate *= 1.1 // Slightly faster
+            utterance.volume *= 0.9 // Slightly quieter
+        case "anxious", "worried":
+            utterance.rate *= 0.9 // Slightly slower
+            // Add pauses for calming effect
+        default:
+            break // Use default settings
+        }
+    }
+    
+    func stopSpeaking() {
+        speechSynthesizer.stopSpeaking(at: .immediate)
+        isSpeaking = false
+        if state == .speaking {
+            state = .idle
+        }
+    }
+    
+    // MARK: - Continuous Listening
+    private func startContinuousListening() {
+        continuousListeningTimer = Timer.scheduledTimer(withTimeInterval: settings.timeoutDuration, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            
+            Task { @MainActor in
+                if self.isListening && self.currentVoiceInput.isEmpty {
+                    self.stopListening()
+                    
+                    // Restart listening after a short break
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        Task {
+                            await self.startListening()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func stopContinuousListening() {
+        continuousListeningTimer?.invalidate()
+        continuousListeningTimer = nil
+    }
+    
+    // MARK: - Volume Monitoring
+    private func startVolumeMonitoring() {
+        volumeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            // Volume level is updated in the audio tap callback
+        }
+    }
+    
+    private func stopVolumeMonitoring() {
+        volumeTimer?.invalidate()
+        volumeTimer = nil
+        currentVolume = 0.0
+    }
+    
+    private func updateVolumeLevel(from buffer: AVAudioPCMBuffer) {
+        guard let channelData = buffer.floatChannelData else { return }
+        
+        let channelDataValue = channelData.pointee
+        let channelDataValueArray = stride(from: 0,
+                                          to: Int(buffer.frameLength),
+                                          by: buffer.stride).map { channelDataValue[$0] }
+        
+        let rms = sqrt(channelDataValueArray.map { $0 * $0 }.reduce(0, +) / Float(channelDataValueArray.count))
+        let avgPower = 20 * log10(rms)
+        
+        // Convert to 0-1 scale
+        let normalizedPower = max(0, min(1, (avgPower + 80) / 80))
+        currentVolume = normalizedPower
+    }
+    
+    // MARK: - Settings Management
+    func updateSettings(_ newSettings: VoiceSettings) {
+        settings = newSettings
+        saveSettings()
+        
+        // Update speech recognizer if language changed
+        if let newRecognizer = SFSpeechRecognizer(locale: Locale(identifier: settings.language)) {
+            speechRecognizer.delegate = nil
+            // Update speechRecognizer reference would require refactoring to make it mutable
+        }
+        
+        loadAvailableVoices()
+    }
+    
+    private func loadSettings() {
+        if let data = UserDefaults.standard.data(forKey: "voiceSettings"),
+           let decoded = try? JSONDecoder().decode(VoiceSettings.self, from: data) {
+            settings = decoded
+        }
+    }
+    
+    private func saveSettings() {
+        if let encoded = try? JSONEncoder().encode(settings) {
+            UserDefaults.standard.set(encoded, forKey: "voiceSettings")
+        }
+    }
+    
+    // MARK: - Voice Commands
+    func processVoiceCommand(_ text: String) -> VoiceCommand? {
+        let lowercased = text.lowercased()
+        
+        // Simple command recognition - in production, use more sophisticated NLP
+        if lowercased.contains("stop") || lowercased.contains("pause") {
+            return .stop
+        } else if lowercased.contains("mood") || lowercased.contains("feeling") {
+            return .trackMood
+        } else if lowercased.contains("journal") || lowercased.contains("write") {
+            return .openJournal
+        } else if lowercased.contains("help") || lowercased.contains("what can you do") {
+            return .showHelp
+        } else if lowercased.contains("settings") || lowercased.contains("preferences") {
+            return .openSettings
+        }
+        
+        return nil
+    }
+}
+
+// MARK: - Voice Commands
+enum VoiceCommand {
+    case stop
+    case trackMood
+    case openJournal
+    case showHelp
+    case openSettings
+    case startConversation
+}
+
+// MARK: - AVSpeechSynthesizerDelegate
+extension AdvancedVoiceManager: AVSpeechSynthesizerDelegate {
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        isSpeaking = true
+        state = .speaking
+    }
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        isSpeaking = false
+        state = .idle
+    }
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        isSpeaking = false
+        state = .idle
+    }
+}
+
+// MARK: - Natural Language Processing Classes (Simplified)
+class NaturalLanguageProcessor {
+    func analyzeSentiment(_ text: String) async -> SentimentScore? {
+        let tagger = NLTagger(tagSchemes: [.sentimentScore])
+        tagger.string = text
+        
+        let (sentiment, _) = tagger.tag(at: text.startIndex, unit: .paragraph, scheme: .sentimentScore)
+        
+        if let sentimentValue = sentiment?.rawValue, let score = Double(sentimentValue) {
+            let label: SentimentScore.SentimentLabel
+            if score > 0.1 {
+                label = .positive
+            } else if score < -0.1 {
+                label = .negative
+            } else {
+                label = .neutral
+            }
+            
+            return SentimentScore(polarity: score, confidence: abs(score), label: label)
+        }
+        
+        return nil
+    }
+    
+    func extractKeywords(_ text: String) async -> [String] {
+        let tagger = NLTagger(tagSchemes: [.nameType])
+        tagger.string = text
+        
+        var keywords: [String] = []
+        let range = text.startIndex..<text.endIndex
+        
+        tagger.enumerateTags(in: range, unit: .word, scheme: .nameType) { tag, tokenRange in
+            if tag != nil {
+                keywords.append(String(text[tokenRange]))
+            }
+            return true
+        }
+        
+        return keywords
+    }
+    
+    func detectLanguage(_ text: String) async -> String? {
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(text)
+        return recognizer.dominantLanguage?.rawValue
+    }
+}
+
+class EmotionAnalyzer {
+    func analyzeEmotion(_ text: String) async -> EmotionAnalysis? {
+        // Simplified emotion analysis - in production, use ML models
+        let emotionKeywords: [String: [String]] = [
+            "happy": ["happy", "joy", "excited", "great", "wonderful", "amazing"],
+            "sad": ["sad", "depressed", "down", "upset", "disappointed"],
+            "anxious": ["anxious", "worried", "nervous", "scared", "afraid"],
+            "angry": ["angry", "frustrated", "mad", "annoyed", "irritated"],
+            "calm": ["calm", "peaceful", "relaxed", "serene", "tranquil"]
+        ]
+        
+        var emotionScores: [String: Double] = [:]
+        let lowercasedText = text.lowercased()
+        
+        for (emotion, keywords) in emotionKeywords {
+            let score = keywords.reduce(0) { total, keyword in
+                return total + (lowercasedText.contains(keyword) ? 1 : 0)
+            }
+            emotionScores[emotion] = Double(score)
+        }
+        
+        guard let dominantEmotion = emotionScores.max(by: { $0.value < $1.value }) else {
+            return nil
+        }
+        
+        return EmotionAnalysis(
+            dominantEmotion: dominantEmotion.key,
+            emotions: emotionScores,
+            arousal: 0.5, // Would be calculated properly
+            valence: dominantEmotion.key == "happy" ? 0.8 : dominantEmotion.key == "sad" ? -0.8 : 0.0
+        )
+    }
+}
+
+class IntentClassifier {
+    func classifyIntent(_ text: String) async -> IntentAnalysis? {
+        // Simplified intent classification
+        let intents: [String: [String]] = [
+            "mood_tracking": ["feeling", "mood", "emotional", "how am i"],
+            "journal_entry": ["write", "journal", "record", "note"],
+            "question": ["what", "how", "why", "when", "where", "who"],
+            "help_request": ["help", "support", "assist", "guidance"],
+            "greeting": ["hello", "hi", "good morning", "good evening"]
+        ]
+        
+        let lowercasedText = text.lowercased()
+        
+        for (intent, keywords) in intents {
+            if keywords.contains(where: { lowercasedText.contains($0) }) {
+                return IntentAnalysis(
+                    intent: intent,
+                    confidence: 0.8,
+                    entities: [:] // Would extract entities properly
+                )
+            }
+        }
+        
+        return IntentAnalysis(intent: "general", confidence: 0.5, entities: [:])
+    }
+}

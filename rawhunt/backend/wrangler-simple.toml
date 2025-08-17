@@ -1,0 +1,50 @@
+name = "rawgle-backend"
+main = "src/index-simple.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "rawgle-production-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+# Production environment
+[env.production]
+name = "rawgle-backend-prod"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "rawgle-production-db"
+database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
+
+[env.production.vars]
+JWT_SECRET = "production-jwt-secret-key"
+ENVIRONMENT = "production"
+BCRYPT_ROUNDS = "12"
+RATE_LIMIT_WINDOW = "60"
+RATE_LIMIT_MAX_REQUESTS = "100"
+PAWS_EARNING_RATES = '{"order_completion": 10, "review_submission": 5, "referral": 25}'
+API_VERSION = "v1"
+
+# Staging environment
+[env.staging]
+name = "rawgle-backend-staging"
+
+[env.staging.vars]
+JWT_SECRET = "staging-jwt-secret-key"
+ENVIRONMENT = "staging"
+BCRYPT_ROUNDS = "12"
+RATE_LIMIT_WINDOW = "60"
+RATE_LIMIT_MAX_REQUESTS = "100"
+PAWS_EARNING_RATES = '{"order_completion": 10, "review_submission": 5, "referral": 25}'
+API_VERSION = "v1"
+
+# Development/default environment
+[vars]
+JWT_SECRET = "dev-jwt-secret-key-change-in-production"
+BCRYPT_ROUNDS = "12"
+RATE_LIMIT_WINDOW = "60"
+RATE_LIMIT_MAX_REQUESTS = "100"
+PAWS_EARNING_RATES = '{"order_completion": 10, "review_submission": 5, "referral": 25}'
+API_VERSION = "v1"

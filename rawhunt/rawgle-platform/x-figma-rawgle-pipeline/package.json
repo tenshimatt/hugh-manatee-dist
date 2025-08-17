@@ -1,0 +1,28 @@
+{
+  "name": "figma-rawgle-pipeline",
+  "version": "1.0.0",
+  "description": "Cloudflare-native pipeline for converting Figma templates to React applications deployed on Rawgle.com",
+  "scripts": {
+    "setup": "./scripts/setup-environment.sh",
+    "deploy": "./scripts/complete-deployment.sh",
+    "dev:orchestrator": "cd workers/cf-orchestrator && wrangler dev",
+    "dev:transformer": "cd workers/react-transformer && wrangler dev",
+    "deploy:all": "npm run deploy:orchestrator && npm run deploy:transformer",
+    "deploy:orchestrator": "cd workers/cf-orchestrator && wrangler deploy",
+    "deploy:transformer": "cd workers/react-transformer && wrangler deploy"
+  },
+  "keywords": [
+    "figma",
+    "react",
+    "cloudflare",
+    "workers",
+    "durable-objects",
+    "automation",
+    "rawgle"
+  ],
+  "author": "Architect-GPT",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

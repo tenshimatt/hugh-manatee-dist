@@ -22,6 +22,27 @@ import { aiMedicalRouter } from './routes/ai-medical.js';
 // Create main router
 const router = Router();
 
+// Root endpoint - API welcome message
+router.get('/', async (request, env) => {
+  return new Response(JSON.stringify({
+    name: 'Rawgle Platform API',
+    version: env.API_VERSION || 'v1',
+    status: 'online',
+    environment: env.ENVIRONMENT || 'development',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      api_info: '/api',
+      metrics: '/metrics',
+      documentation: 'https://docs.rawgle.com/api'
+    },
+    message: 'Welcome to the Rawgle Platform API! 🐾'
+  }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' }
+  });
+});
+
 // Basic health check endpoint
 router.get('/health', async (request, env) => {
   return new Response(JSON.stringify({
