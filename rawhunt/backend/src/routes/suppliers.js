@@ -22,17 +22,35 @@ suppliersRouter.get('/', async (request, env) => {
 
     // Parse query parameters
     const url = new URL(request.url);
-    const searchParams = {
-      category: url.searchParams.get('category'),
-      latitude: url.searchParams.get('latitude') ? parseFloat(url.searchParams.get('latitude')) : undefined,
-      longitude: url.searchParams.get('longitude') ? parseFloat(url.searchParams.get('longitude')) : undefined,
-      radius: url.searchParams.get('radius') ? parseFloat(url.searchParams.get('radius')) : 10,
-      priceRange: url.searchParams.get('priceRange'),
-      rating: url.searchParams.get('rating') ? parseFloat(url.searchParams.get('rating')) : undefined,
-      search: url.searchParams.get('search'),
-      page: url.searchParams.get('page') ? parseInt(url.searchParams.get('page')) : 1,
-      limit: url.searchParams.get('limit') ? parseInt(url.searchParams.get('limit')) : 20
-    };
+    const searchParams = {};
+    
+    // Only include parameters that are actually provided
+    const category = url.searchParams.get('category');
+    if (category) searchParams.category = category;
+    
+    const latitude = url.searchParams.get('latitude');
+    if (latitude) searchParams.latitude = parseFloat(latitude);
+    
+    const longitude = url.searchParams.get('longitude');
+    if (longitude) searchParams.longitude = parseFloat(longitude);
+    
+    const radius = url.searchParams.get('radius');
+    searchParams.radius = radius ? parseFloat(radius) : 10;
+    
+    const priceRange = url.searchParams.get('priceRange');
+    if (priceRange) searchParams.priceRange = priceRange;
+    
+    const rating = url.searchParams.get('rating');
+    if (rating) searchParams.rating = parseFloat(rating);
+    
+    const search = url.searchParams.get('search');
+    if (search) searchParams.search = search;
+    
+    const page = url.searchParams.get('page');
+    searchParams.page = page ? parseInt(page) : 1;
+    
+    const limit = url.searchParams.get('limit');
+    searchParams.limit = limit ? parseInt(limit) : 20;
 
     // Validate search parameters
     const validatedParams = ValidationUtils.validateRequest(supplierSearchSchema, searchParams);
