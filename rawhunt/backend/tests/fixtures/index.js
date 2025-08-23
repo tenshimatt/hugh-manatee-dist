@@ -318,18 +318,27 @@ export class RequestFactory {
   static create(method, url, options = {}) {
     const { body, headers = {}, ...requestOptions } = options;
     
-    const request = new Request(url, {
+    // Convert relative URLs to absolute URLs for testing
+    const baseUrl = 'http://localhost:8787';
+    const absoluteUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
+    
+    const requestInit = {
       method,
       headers: {
         'Content-Type': 'application/json',
         ...headers
       },
-      body: body ? JSON.stringify(body) : undefined,
       ...requestOptions
-    });
+    };
 
-    // Add helper methods for testing
-    request.json = async () => body || {};
+    // Add body only for methods that support it
+    if (body && ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
+      requestInit.body = JSON.stringify(body);
+    }
+
+    const request = new Request(absoluteUrl, requestInit);
+    
+    // Add request ID for tracking
     request.id = faker.string.uuid();
     
     return request;
