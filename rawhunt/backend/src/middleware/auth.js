@@ -78,6 +78,52 @@ export async function requireAuth(request, env) {
   return auth;
 }
 
+/**
+ * BYPASS-ENABLED authentication for development/testing
+ * Respects BYPASS_AUTH environment variable
+ */
+export async function requireAuthWithBypassCheck(request, env) {
+  // Check if authentication bypass is enabled
+  if (env.BYPASS_AUTH === 'true') {
+    console.log('AUTH BYPASS ENABLED - Creating mock user for PAWS access');
+    
+    // Create a mock user for bypass mode
+    const mockUser = {
+      id: 1,
+      email: 'bypass@localhost.dev',
+      first_name: 'Bypass',
+      last_name: 'User',
+      paws_balance: 1000,
+      is_admin: true,
+      has_admin_access: true,
+      admin_bypass_active: true,
+      role: 'admin'
+    };
+    
+    return { 
+      user: mockUser, 
+      token: 'bypass-token-for-development',
+      bypass_mode: true 
+    };
+  }
+  
+  // Fall back to normal authentication
+  console.log('BYPASS_AUTH not enabled, using normal auth. BYPASS_AUTH:', env.BYPASS_AUTH, 'ENVIRONMENT:', env.ENVIRONMENT);
+  const auth = await authenticateUser(request, env);
+  
+  if (auth.error) {
+    return new Response(JSON.stringify({ 
+      error: auth.error,
+      code: 'UNAUTHORIZED'
+    }), {
+      status: auth.status,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  return auth;
+}
+
 export async function requireAdmin(request, env) {
   const auth = await authenticateUser(request, env);
   
@@ -168,8 +214,8 @@ export function checkAdminAccess(user, env) {
     return true;
   }
 
-  // Method 3: Development bypass - any authenticated user gets admin access
-  if (env.ENVIRONMENT === 'development' || env.BYPASS_AUTH === 'true') {
+  // Method 3: Bypass mode check - only when explicitly enabled
+  if (env.BYPASS_AUTH === 'true') {
     return true;
   }
 

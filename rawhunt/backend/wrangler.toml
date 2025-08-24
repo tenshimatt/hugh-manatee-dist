@@ -29,7 +29,7 @@ binding = "CACHE"
 id = "c53c6240247746f48374f5fc20af1f0c"
 
 [env.production.vars]
-JWT_SECRET = "rawgle-prod-2024-ultra-secure-jwt-key-v1-9dcf8539"
+# JWT_SECRET should be set via: wrangler secret put JWT_SECRET --env production
 ENVIRONMENT = "production"
 BYPASS_AUTH = "true"
 BCRYPT_ROUNDS = "14"
@@ -45,7 +45,7 @@ API_VERSION = "v1"
 name = "rawgle-backend-staging"
 
 [env.staging.vars]
-JWT_SECRET = "staging-jwt-secret-key"
+# JWT_SECRET should be set via: wrangler secret put JWT_SECRET --env staging
 ENVIRONMENT = "staging"
 BYPASS_AUTH = "true"
 BCRYPT_ROUNDS = "12"
@@ -58,7 +58,7 @@ API_VERSION = "v1"
 
 # Development/default environment
 [vars]
-JWT_SECRET = "dev-jwt-secret-key-change-in-production"
+# JWT_SECRET should be set via: wrangler secret put JWT_SECRET
 ENVIRONMENT = "development"
 BYPASS_AUTH = "true"
 BCRYPT_ROUNDS = "12"
@@ -67,4 +67,4 @@ RATE_LIMIT_MAX_REQUESTS = "100"
 PAWS_EARNING_RATES = '{"order_completion": 10, "review_submission": 5, "referral": 25}'
 API_VERSION = "v1"
 # Claude AI Configuration - Add your ANTHROPIC_API_KEY here for development
-# ANTHROPIC_API_KEY = "sk-ant-api03-your-dev-key-here"
+# ANTHROPIC_API_KEY should be set via: wrangler secret put ANTHROPIC_API_KEY
