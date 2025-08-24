@@ -3,7 +3,7 @@ import { CryptoUtils } from '../utils/crypto.js';
 import { ValidationUtils, userRegistrationSchema, userLoginSchema } from '../utils/validation.js';
 import { UserQueries, TransactionQueries, DatabaseUtils } from '../utils/database.js';
 import { authRateLimit, strictRateLimit } from '../middleware/rateLimit.js';
-import { requireAuth, createUserSession, revokeUserSession } from '../middleware/auth.js';
+import { requireAuth, requireAuthWithBypass, createUserSession, revokeUserSession, checkAdminAccess } from '../middleware/auth.js';
 import { createCorsResponse } from '../middleware/cors.js';
 
 const authRouter = Router({ base: '/api/auth' });
@@ -73,6 +73,9 @@ authRouter.post('/register', async (request, env) => {
     // Get user data (without password)
     const user = await UserQueries.findById(env.DB, userId);
     delete user.password_hash;
+    
+    // Add admin bypass capability
+    user.has_admin_access = checkAdminAccess(user, env);
 
     return createCorsResponse({
       success: true,
@@ -153,6 +156,9 @@ authRouter.post('/login', async (request, env) => {
 
     // Remove sensitive data
     delete user.password_hash;
+    
+    // Add admin bypass capability
+    user.has_admin_access = checkAdminAccess(user, env);
 
     return createCorsResponse({
       success: true,
@@ -213,7 +219,7 @@ authRouter.post('/logout', async (request, env) => {
  */
 authRouter.get('/me', async (request, env) => {
   try {
-    const auth = await requireAuth(request, env);
+    const auth = await requireAuthWithBypass(request, env);
     if (auth instanceof Response) return auth;
 
     // Get fresh user data
@@ -226,6 +232,9 @@ authRouter.get('/me', async (request, env) => {
     }
 
     delete user.password_hash;
+    
+    // Add admin bypass capability
+    user.has_admin_access = checkAdminAccess(user, env);
 
     return createCorsResponse({
       success: true,

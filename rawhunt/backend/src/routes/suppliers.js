@@ -28,14 +28,15 @@ suppliersRouter.get('/', async (request, env) => {
     const category = url.searchParams.get('category');
     if (category) searchParams.category = category;
     
-    const latitude = url.searchParams.get('latitude');
-    if (latitude) searchParams.latitude = parseFloat(latitude);
+    // Support both lat/lng (frontend standard) and latitude/longitude (legacy)
+    const lat = url.searchParams.get('lat') || url.searchParams.get('latitude');
+    if (lat) searchParams.latitude = parseFloat(lat);
     
-    const longitude = url.searchParams.get('longitude');
-    if (longitude) searchParams.longitude = parseFloat(longitude);
+    const lng = url.searchParams.get('lng') || url.searchParams.get('longitude');
+    if (lng) searchParams.longitude = parseFloat(lng);
     
     const radius = url.searchParams.get('radius');
-    searchParams.radius = radius ? parseFloat(radius) : 10;
+    searchParams.radius = radius ? parseFloat(radius) : 10; // Default 10 miles
     
     const priceRange = url.searchParams.get('priceRange');
     if (priceRange) searchParams.priceRange = priceRange;
@@ -58,41 +59,65 @@ suppliersRouter.get('/', async (request, env) => {
     // Search suppliers
     const suppliers = await SupplierQueries.search(env.DB, validatedParams);
 
-    // Parse JSON fields
+    // Map production schema to frontend expected format
     const processedSuppliers = suppliers.map(supplier => ({
-      ...supplier,
-      specialties: supplier.specialties ? JSON.parse(supplier.specialties) : [],
-      businessHours: supplier.business_hours ? JSON.parse(supplier.business_hours) : {},
-      images: supplier.images ? JSON.parse(supplier.images) : []
+      id: supplier.id,
+      name: supplier.name,
+      address: supplier.address,
+      latitude: supplier.latitude, 
+      longitude: supplier.longitude,
+      phone_number: supplier.phone_number,
+      website: supplier.website,
+      city: supplier.city,
+      state: supplier.state,
+      place_type: supplier.place_type,
+      // Map to frontend expected field names
+      location_address: supplier.address,
+      location_latitude: supplier.latitude,
+      location_longitude: supplier.longitude,
+      contact_phone: supplier.phone_number,
+      rating_average: supplier.rating || 0,
+      rating_count: supplier.user_ratings_total || 0,
+      category: supplier.place_type || 'Pet Store',
+      description: supplier.place_type || 'Pet Store',
+      specialties: [],
+      businessHours: {},
+      images: [],
+      distance: supplier.distance ? Math.round(supplier.distance * 0.621371 * 100) / 100 : null // Convert km to miles and round
     }));
 
-    // Get total count for pagination
-    let countQuery = `
-      SELECT COUNT(*) as total 
-      FROM rawgle_suppliers s 
-      WHERE s.is_active = 1
-    `;
+    // Count query matching the main query logic
+    let countQuery;
     const countParams = [];
 
-    if (validatedParams.category) {
-      countQuery += ' AND s.category = ?';
-      countParams.push(validatedParams.category);
-    }
-
-    if (validatedParams.rating) {
-      countQuery += ' AND s.rating_average >= ?';
-      countParams.push(validatedParams.rating);
-    }
-
-    if (validatedParams.priceRange) {
-      countQuery += ' AND s.price_range = ?';
-      countParams.push(validatedParams.priceRange);
-    }
-
-    if (validatedParams.search) {
-      countQuery += ' AND (s.name LIKE ? OR s.description LIKE ? OR s.specialties LIKE ?)';
-      const searchTerm = DatabaseUtils.escapeSearchTerm(validatedParams.search);
-      countParams.push(searchTerm, searchTerm, searchTerm);
+    if (validatedParams.latitude && validatedParams.longitude) {
+      const earthRadiusKm = 6371;
+      const radiusKm = (validatedParams.radius || 10) * 1.60934; // Convert miles to km
+      
+      countQuery = `
+        SELECT COUNT(*) as total FROM suppliers s
+        WHERE (${earthRadiusKm} * acos(cos(radians(?)) * cos(radians(s.latitude)) * 
+               cos(radians(s.longitude) - radians(?)) + sin(radians(?)) * 
+               sin(radians(s.latitude)))) <= ?
+      `;
+      
+      countParams.push(
+        validatedParams.latitude, validatedParams.longitude, validatedParams.latitude, radiusKm
+      );
+      
+      // Add search term filter even with geolocation
+      if (validatedParams.search) {
+        countQuery += ' AND s.name LIKE ?';
+        const searchTerm = DatabaseUtils.escapeSearchTerm(validatedParams.search);
+        countParams.push(searchTerm);
+      }
+    } else {
+      countQuery = `SELECT COUNT(*) as total FROM suppliers`;
+      if (validatedParams.search) {
+        countQuery += ' WHERE name LIKE ?';
+        const searchTerm = DatabaseUtils.escapeSearchTerm(validatedParams.search);
+        countParams.push(searchTerm);
+      }
     }
 
     const countResult = await DatabaseUtils.executeQueryFirst(env.DB, countQuery, countParams);
@@ -108,12 +133,28 @@ suppliersRouter.get('/', async (request, env) => {
           total: totalCount,
           totalPages: Math.ceil(totalCount / validatedParams.limit)
         },
-        filters: validatedParams
+        filters: validatedParams,
+        // Metadata for geolocation searches
+        searchMetadata: validatedParams.latitude && validatedParams.longitude ? {
+          searchType: 'geolocation',
+          centerPoint: {
+            latitude: validatedParams.latitude,
+            longitude: validatedParams.longitude
+          },
+          radiusMiles: validatedParams.radius,
+          sortedBy: 'distance_asc'
+        } : {
+          searchType: 'general',
+          sortedBy: 'rating_desc'
+        }
       }
     });
 
   } catch (error) {
     console.error('Suppliers search error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error message:', error.message);
+    console.error('Error name:', error.name);
     
     if (error.message.startsWith('[')) {
       return createCorsResponse({
@@ -125,7 +166,12 @@ suppliersRouter.get('/', async (request, env) => {
 
     return createCorsResponse({
       error: 'Failed to search suppliers',
-      code: 'SEARCH_ERROR'
+      code: 'SEARCH_ERROR',
+      debug: {
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      }
     }, 500);
   }
 });
@@ -159,40 +205,72 @@ suppliersRouter.get('/categories', async (request, env) => {
 /**
  * GET /api/suppliers/nearby
  * Get suppliers near a location
+ * Performance optimized for <200ms response time
  */
 suppliersRouter.get('/nearby', async (request, env) => {
   try {
-    const url = new URL(request.url);
-    const latitude = parseFloat(url.searchParams.get('latitude'));
-    const longitude = parseFloat(url.searchParams.get('longitude'));
-    const radius = parseFloat(url.searchParams.get('radius')) || 10;
-    const limit = parseInt(url.searchParams.get('limit')) || 10;
+    // Rate limiting for performance protection
+    const rateLimitResponse = await rateLimit(request, env);
+    if (rateLimitResponse) return rateLimitResponse;
 
-    if (isNaN(latitude) || isNaN(longitude)) {
+    const url = new URL(request.url);
+    // Support both lat/lng (frontend) and latitude/longitude (legacy)
+    const lat = parseFloat(url.searchParams.get('lat') || url.searchParams.get('latitude'));
+    const lng = parseFloat(url.searchParams.get('lng') || url.searchParams.get('longitude'));
+    const radius = parseFloat(url.searchParams.get('radius')) || 10; // miles
+    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 20, 50); // Cap at 50 for performance
+
+    if (isNaN(lat) || isNaN(lng)) {
       return createCorsResponse({
-        error: 'Latitude and longitude are required',
+        error: 'Latitude and longitude are required (use lat/lng parameters)',
         code: 'MISSING_COORDINATES'
       }, 400);
     }
 
-    if (!ValidationUtils.validateCoordinates(latitude, longitude)) {
+    if (!ValidationUtils.validateCoordinates(lat, lng)) {
       return createCorsResponse({
         error: 'Invalid coordinates',
         code: 'INVALID_COORDINATES'
       }, 400);
     }
 
+    if (radius < 0.1 || radius > 50) {
+      return createCorsResponse({
+        error: 'Radius must be between 0.1 and 50 miles',
+        code: 'INVALID_RADIUS'
+      }, 400);
+    }
+
     const suppliers = await SupplierQueries.search(env.DB, {
-      latitude,
-      longitude,
+      latitude: lat,
+      longitude: lng,
       radius,
       limit,
       page: 1
     });
 
+    // Process JSON fields for better frontend consumption
+    const processedSuppliers = suppliers.map(supplier => ({
+      ...supplier,
+      specialties: supplier.specialties ? JSON.parse(supplier.specialties) : [],
+      businessHours: supplier.business_hours ? JSON.parse(supplier.business_hours) : {},
+      images: supplier.images ? JSON.parse(supplier.images) : [],
+      // Round distance to 2 decimal places for readability
+      distance: supplier.distance ? Math.round(supplier.distance * 100) / 100 : null
+    }));
+
     return createCorsResponse({
       success: true,
-      data: { suppliers }
+      data: { 
+        suppliers: processedSuppliers,
+        searchParams: {
+          latitude: lat,
+          longitude: lng,
+          radius,
+          limit,
+          unit: 'miles'
+        }
+      }
     });
 
   } catch (error) {
@@ -383,7 +461,7 @@ suppliersRouter.put('/:id', async (request, env) => {
     params.push(DatabaseUtils.formatDateForDB());
     params.push(supplierId);
 
-    const updateQuery = `UPDATE rawgle_suppliers SET ${fields.join(', ')} WHERE id = ?`;
+    const updateQuery = `UPDATE suppliers SET ${fields.join(', ')} WHERE id = ?`;
     await DatabaseUtils.executeUpdate(env.DB, updateQuery, params);
 
     // Get updated supplier
@@ -443,7 +521,7 @@ suppliersRouter.delete('/:id', async (request, env) => {
     // Soft delete by setting is_active to false
     await DatabaseUtils.executeUpdate(
       env.DB,
-      'UPDATE rawgle_suppliers SET is_active = 0, updated_at = ? WHERE id = ?',
+      'UPDATE suppliers SET is_active = 0, updated_at = ? WHERE id = ?',
       [DatabaseUtils.formatDateForDB(), supplierId]
     );
 

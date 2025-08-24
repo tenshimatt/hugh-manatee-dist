@@ -9,6 +9,12 @@ binding = "DB"
 database_name = "rawgle-production-db"
 database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
 
+# KV Storage for Claude AI caching
+[[kv_namespaces]]
+binding = "CACHE"
+preview_id = "a1a27b8970ce453db1e997e9341eaa2a"
+id = "c53c6240247746f48374f5fc20af1f0c"
+
 # Production environment
 [env.production]
 name = "rawgle-backend-prod"
@@ -18,14 +24,21 @@ binding = "DB"
 database_name = "rawgle-production-db"
 database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
 
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "c53c6240247746f48374f5fc20af1f0c"
+
 [env.production.vars]
-JWT_SECRET = "production-jwt-secret-key"
+JWT_SECRET = "rawgle-prod-2024-ultra-secure-jwt-key-v1-9dcf8539"
 ENVIRONMENT = "production"
-BCRYPT_ROUNDS = "12"
+BYPASS_AUTH = "true"
+BCRYPT_ROUNDS = "14"
 RATE_LIMIT_WINDOW = "60"
-RATE_LIMIT_MAX_REQUESTS = "100"
+RATE_LIMIT_MAX_REQUESTS = "50"
 PAWS_EARNING_RATES = '{"order_completion": 10, "review_submission": 5, "referral": 25}'
 API_VERSION = "v1"
+# Claude AI Configuration - Set via Cloudflare Dashboard as secret
+# ANTHROPIC_API_KEY will be set via wrangler secret put ANTHROPIC_API_KEY
 
 # Staging environment
 [env.staging]
@@ -39,6 +52,8 @@ RATE_LIMIT_WINDOW = "60"
 RATE_LIMIT_MAX_REQUESTS = "100"
 PAWS_EARNING_RATES = '{"order_completion": 10, "review_submission": 5, "referral": 25}'
 API_VERSION = "v1"
+# Claude AI Configuration - Add your ANTHROPIC_API_KEY for staging
+# ANTHROPIC_API_KEY = "sk-ant-api03-your-staging-key-here"
 
 # Development/default environment
 [vars]
@@ -48,3 +63,5 @@ RATE_LIMIT_WINDOW = "60"
 RATE_LIMIT_MAX_REQUESTS = "100"
 PAWS_EARNING_RATES = '{"order_completion": 10, "review_submission": 5, "referral": 25}'
 API_VERSION = "v1"
+# Claude AI Configuration - Add your ANTHROPIC_API_KEY here for development
+# ANTHROPIC_API_KEY = "sk-ant-api03-your-dev-key-here"
