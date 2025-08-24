@@ -96,9 +96,9 @@ suppliersRouter.get('/', async (request, env) => {
       
       countQuery = `
         SELECT COUNT(*) as total FROM suppliers s
-        WHERE (${earthRadiusKm} * acos(cos(radians(?)) * cos(radians(s.latitude)) * 
-               cos(radians(s.longitude) - radians(?)) + sin(radians(?)) * 
-               sin(radians(s.latitude)))) <= ?
+        WHERE s.is_active = 1 AND (${earthRadiusKm} * acos(cos(radians(?)) * cos(radians(s.location_latitude)) * 
+               cos(radians(s.location_longitude) - radians(?)) + sin(radians(?)) * 
+               sin(radians(s.location_latitude)))) <= ?
       `;
       
       countParams.push(
@@ -112,9 +112,9 @@ suppliersRouter.get('/', async (request, env) => {
         countParams.push(searchTerm);
       }
     } else {
-      countQuery = `SELECT COUNT(*) as total FROM suppliers`;
+      countQuery = `SELECT COUNT(*) as total FROM suppliers WHERE is_active = 1`;
       if (validatedParams.search) {
-        countQuery += ' WHERE name LIKE ?';
+        countQuery += ' AND name LIKE ?';
         const searchTerm = DatabaseUtils.escapeSearchTerm(validatedParams.search);
         countParams.push(searchTerm);
       }
