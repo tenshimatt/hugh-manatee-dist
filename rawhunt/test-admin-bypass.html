@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Bypass Test - Rawgle Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        #result { white-space: pre-wrap; background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .endpoint { background: #e9ecef; padding: 5px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Admin Bypass Test - Rawgle Platform</h1>
+    
+    <div class="info">
+        <h3>Authentication Bypass Enabled!</h3>
+        <p><strong>BYPASS_AUTH = "true"</strong> has been configured in all environments (development, staging, production).</p>
+        <p>Any authenticated user now gets <strong>full admin access</strong> to test all platform features.</p>
+    </div>
+
+    <h2>Test Authentication & Admin Access</h2>
+    
+    <div>
+        <h3>Step 1: Test Login</h3>
+        <p>Login to get a JWT token for testing:</p>
+        <div>
+            <input type="email" id="email" placeholder="Email" value="test@test.com" style="padding: 8px; margin: 5px;">
+            <input type="password" id="password" placeholder="Password" value="password" style="padding: 8px; margin: 5px;">
+            <button onclick="testLogin()">Login & Get Token</button>
+        </div>
+    </div>
+
+    <div>
+        <h3>Step 2: Check Admin Bypass Status</h3>
+        <p>Verify that you have admin access after authentication:</p>
+        <button onclick="checkAdminStatus()">Check Admin Status</button>
+        <div class="endpoint">GET /api/admin-bypass/status</div>
+    </div>
+
+    <div>
+        <h3>Step 3: Test Protected Endpoints</h3>
+        <p>Test access to admin-only endpoints (should work with bypass):</p>
+        <button onclick="testSystemStats()">Get System Stats</button>
+        <button onclick="testAllUsers()">List All Users</button>
+        <div class="endpoint">GET /api/admin-bypass/system-stats | GET /api/admin-bypass/all-users</div>
+    </div>
+
+    <div>
+        <h3>Step 4: Test Platform Features</h3>
+        <p>Test regular platform features (should work without ownership checks):</p>
+        <button onclick="testSupplierSearch()">Search Suppliers</button>
+        <button onclick="testPAWSBalance()">Check PAWS Balance</button>
+        <div class="endpoint">GET /api/suppliers | GET /api/paws/balance</div>
+    </div>
+
+    <h2>Test Results</h2>
+    <div id="result">Click any test button above to see results...</div>
+
+    <script>
+        let jwtToken = '';
+        const API_BASE = 'http://localhost:8787'; // Update for production
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    jwtToken = data.token;
+                    showResult('✅ LOGIN SUCCESS', data, 'success');
+                } else {
+                    showResult('❌ LOGIN FAILED', data, 'error');
+                }
+            } catch (error) {
+                showResult('❌ LOGIN ERROR', { error: error.message }, 'error');
+            }
+        }
+
+        async function checkAdminStatus() {
+            if (!jwtToken) {
+                showResult('❌ PLEASE LOGIN FIRST', { error: 'No JWT token available' }, 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin-bypass/status`, {
+                    headers: { 'Authorization': `Bearer ${jwtToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const hasAdmin = data.data?.has_admin_access;
+                    const statusText = hasAdmin ? '✅ ADMIN ACCESS ENABLED' : '❌ ADMIN ACCESS DENIED';
+                    const statusType = hasAdmin ? 'success' : 'error';
+                    showResult(statusText, data, statusType);
+                } else {
+                    showResult('❌ ADMIN STATUS CHECK FAILED', data, 'error');
+                }
+            } catch (error) {
+                showResult('❌ ADMIN STATUS ERROR', { error: error.message }, 'error');
+            }
+        }
+
+        async function testSystemStats() {
+            await testAuthenticatedEndpoint('/api/admin-bypass/system-stats', '📊 SYSTEM STATS');
+        }
+
+        async function testAllUsers() {
+            await testAuthenticatedEndpoint('/api/admin-bypass/all-users', '👥 ALL USERS');
+        }
+
+        async function testSupplierSearch() {
+            await testAuthenticatedEndpoint('/api/suppliers?lat=30.2672&lng=-97.7431&radius=25', '🏪 SUPPLIER SEARCH');
+        }
+
+        async function testPAWSBalance() {
+            await testAuthenticatedEndpoint('/api/paws/balance', '🐾 PAWS BALANCE');
+        }
+
+        async function testAuthenticatedEndpoint(endpoint, testName) {
+            if (!jwtToken) {
+                showResult(`❌ ${testName} - PLEASE LOGIN FIRST`, { error: 'No JWT token available' }, 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: { 'Authorization': `Bearer ${jwtToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ ${testName} - SUCCESS`, data, 'success');
+                } else {
+                    showResult(`❌ ${testName} - FAILED`, data, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ ${testName} - ERROR`, { error: error.message }, 'error');
+            }
+        }
+
+        function showResult(title, data, type) {
+            const resultDiv = document.getElementById('result');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            resultDiv.innerHTML = `
+                <div class="${type}">
+                    <strong>${title}</strong> - ${timestamp}
+                </div>
+                ${JSON.stringify(data, null, 2)}
+            `;
+        }
+    </script>
+</body>
+</html>

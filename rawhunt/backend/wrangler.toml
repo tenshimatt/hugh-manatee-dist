@@ -47,6 +47,7 @@ name = "rawgle-backend-staging"
 [env.staging.vars]
 JWT_SECRET = "staging-jwt-secret-key"
 ENVIRONMENT = "staging"
+BYPASS_AUTH = "true"
 BCRYPT_ROUNDS = "12"
 RATE_LIMIT_WINDOW = "60"
 RATE_LIMIT_MAX_REQUESTS = "100"
@@ -58,6 +59,8 @@ API_VERSION = "v1"
 # Development/default environment
 [vars]
 JWT_SECRET = "dev-jwt-secret-key-change-in-production"
+ENVIRONMENT = "development"
+BYPASS_AUTH = "true"
 BCRYPT_ROUNDS = "12"
 RATE_LIMIT_WINDOW = "60"
 RATE_LIMIT_MAX_REQUESTS = "100"
