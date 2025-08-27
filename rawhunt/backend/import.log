@@ -1,0 +1,46 @@
+🎯 Rawgle Legacy Supplier Import System v2.0
+================================================
+🚀 Enhanced Legacy Supplier Import
+===================================
+📊 Configuration:
+   Dry Run: false
+   Batch Size: 50
+   Database: Remote (production)
+   Source: ../findrawdogfood/suppliers.csv
+
+🔍 Validating database connection...
+   ✅ Database connected successfully
+   📊 Current suppliers in database: 4
+📖 Reading CSV data...
+   📄 Headers found: 21 columns
+   📑 Data rows: 8843 suppliers
+   ✅ Successfully parsed 8843 suppliers
+   ❌ Parse errors: 0 rows
+📋 Found 8843 legacy suppliers to import
+
+📦 Processing batch 1/177 (50 suppliers)
+   📝 Generated SQL file: legacy_import_1755949018737.sql
+   ❌ Batch 1 failed: Database execution failed: Command failed: cd "/Users/mattwright/pandora/rawhunt/backend" && wrangler d1 execute rawgle-production-db --remote --file="/Users/mattwright/pandora/rawhunt/backend/migration_data/legacy_import_1755949018737.sql"
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mtable suppliers has no column named description: SQLITE_ERROR[0m
+
+
+🪵  Logs were written to "/Users/mattwright/Library/Preferences/.wrangler/logs/wrangler-2025-08-23_11-36-58_929.log"
+
+
+📦 Processing batch 2/177 (50 suppliers)
+   📝 Generated SQL file: legacy_import_1755949020874.sql
+   ❌ Batch 2 failed: Database execution failed: Command failed: cd "/Users/mattwright/pandora/rawhunt/backend" && wrangler d1 execute rawgle-production-db --remote --file="/Users/mattwright/pandora/rawhunt/backend/migration_data/legacy_import_1755949020874.sql"
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mtable suppliers has no column named description: SQLITE_ERROR[0m
+
+
+🪵  Logs were written to "/Users/mattwright/Library/Preferences/.wrangler/logs/wrangler-2025-08-23_11-37-01_105.log"
+
+
+📦 Processing batch 3/177 (50 suppliers)
+   📝 Generated SQL file: legacy_import_1755949024746.sql

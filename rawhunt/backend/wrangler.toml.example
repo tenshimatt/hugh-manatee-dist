@@ -1,0 +1,40 @@
+# Cloudflare Workers configuration for Rawgle Platform
+# Copy this to wrangler.toml and configure your settings
+
+name = "rawgle-backend"
+main = "src/index.js"
+compatibility_date = "2024-01-15"
+
+# Environment variables for development
+[env.development.vars]
+ENVIRONMENT = "development"
+BYPASS_AUTH = "true"
+API_VERSION = "v1"
+CORS_ORIGINS = "http://localhost:5175,http://localhost:3000"
+ADMIN_EMAILS = "admin@rawgle.com,dev@rawgle.com"
+LOG_LEVEL = "debug"
+
+# Environment variables for production  
+[env.production.vars]
+ENVIRONMENT = "production"
+BYPASS_AUTH = "false"
+API_VERSION = "v1"
+CORS_ORIGINS = "https://yourdomain.com,https://rawgle.com"
+LOG_LEVEL = "info"
+
+# Database binding (D1)
+[[d1_databases]]
+binding = "DB"
+database_name = "rawgle-db"
+database_id = "your-d1-database-id"
+preview_database_id = "your-preview-d1-database-id"
+
+# KV Storage binding (optional)
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Secrets (set via wrangler secret put)
+# JWT_SECRET - wrangler secret put JWT_SECRET
+# OPENAI_API_KEY - wrangler secret put OPENAI_API_KEY

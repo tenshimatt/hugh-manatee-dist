@@ -1,6 +1,0 @@
-name: Integration Spec
-integrations:
-  - Notion sync for docs (run from 'notion' Tmux pane)
-  - Git sync for features/tests
-  - Tmux-Orchestrator controlled sessions
-  - Cloudflare KV + R2 usage for synced storage

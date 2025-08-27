@@ -1,8 +1,0 @@
-name = "hunta-backend-prod"
-main = "workers/production-index.js"
-compatibility_date = "2024-01-01"
-
-[vars]
-ENVIRONMENT = "production"
-JWT_SECRET = "hunta-prod-secret-key"
-UPLOAD_LIMIT = "10485760"
