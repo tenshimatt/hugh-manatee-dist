@@ -1,0 +1,6 @@
+INSERT INTO rawgle_suppliers (name, business_type, location_address, location_city, location_state, location_country, latitude, longitude, phone_number, website, email, rating, paws_rewards, delivery_available, raw_specialization, is_active) VALUES 
+('Healthy Paws Pet Store', 'Pet Store', '123 Main St', 'New York', 'NY', 'US', 40.7128, -74.0060, '555-123-4567', 'https://healthypaws.com', 'info@healthypaws.com', 4.5, 1, 1, 'Raw Dog Food', 1),
+('Natural Pet Market', 'Pet Store', '456 Oak Ave', 'Los Angeles', 'CA', 'US', 34.0522, -118.2437, '555-987-6543', 'https://naturalpetmarket.com', 'info@naturalpet.com', 4.8, 1, 1, 'Raw Cat Food', 1),
+('Raw Feeders Supply', 'Distributor', '789 Pine Rd', 'Chicago', 'IL', 'US', 41.8781, -87.6298, '555-456-7890', 'https://rawfeeders.com', 'orders@rawfeeders.com', 4.3, 1, 1, 'Raw Pet Food', 1),
+('Paws & Claws Natural', 'Pet Store', '321 Elm St', 'Seattle', 'WA', 'US', 47.6062, -122.3321, '555-234-5678', 'https://pawsclaws.com', 'info@pawsclaws.com', 4.6, 1, 0, 'Raw Dog Food', 1),
+('The Raw Pet Company', 'Manufacturer', '654 Maple Dr', 'Austin', 'TX', 'US', 30.2672, -97.7431, '555-345-6789', 'https://rawpetco.com', 'sales@rawpetco.com', 4.7, 1, 1, 'Raw Pet Food', 1);

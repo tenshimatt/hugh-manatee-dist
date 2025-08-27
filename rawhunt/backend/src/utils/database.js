@@ -167,7 +167,7 @@ export class SupplierQueries {
   static async findById(db, id) {
     const query = `
       SELECT s.*, u.email as user_email 
-      FROM suppliers s
+      FROM rawgle_suppliers s
       LEFT JOIN users u ON s.user_id = u.id
       WHERE s.id = ? AND s.is_active = 1
     `;
@@ -182,7 +182,7 @@ export class SupplierQueries {
              s.contact_phone as phone_number, s.website_url as website, 
              s.rating_average as rating, s.rating_count as user_ratings_total,
              s.category, s.specialties, s.price_range
-      FROM suppliers s
+      FROM rawgle_suppliers s
       WHERE s.is_active = 1
     `;
 
@@ -202,7 +202,7 @@ export class SupplierQueries {
                (${earthRadiusKm} * acos(cos(radians(?)) * cos(radians(s.location_latitude)) * 
                cos(radians(s.location_longitude) - radians(?)) + sin(radians(?)) * 
                sin(radians(s.location_latitude)))) AS distance
-        FROM suppliers s
+        FROM rawgle_suppliers s
         WHERE s.is_active = 1 AND (${earthRadiusKm} * acos(cos(radians(?)) * cos(radians(s.location_latitude)) * 
                cos(radians(s.location_longitude) - radians(?)) + sin(radians(?)) * 
                sin(radians(s.location_latitude)))) <= ?
