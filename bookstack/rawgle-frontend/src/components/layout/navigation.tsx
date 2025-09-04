@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { 
@@ -122,20 +122,85 @@ const navigation = [
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
+  // Ensure client-side rendering to prevent hydration mismatches
   useEffect(() => {
+    setIsClient(true)
     setMounted(true)
+    
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
     }
+    
+    // Close mobile menu on resize to desktop
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileMenuOpen(false)
+        setExpandedSection(null)
+      }
+    }
+    
+    // Close mobile menu when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (mobileMenuOpen && !target.closest('nav')) {
+        setMobileMenuOpen(false)
+        setExpandedSection(null)
+      }
+    }
+    
     window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleResize)
+    document.addEventListener('click', handleClickOutside)
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleResize)
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [mobileMenuOpen])
+
+  // Memoized handlers to ensure consistent references
+  const handleMobileMenuToggle = useCallback(() => {
+    setMobileMenuOpen(prev => !prev)
   }, [])
 
-  // Render navigation immediately, handle theme button separately to avoid hydration issues
+  const handleThemeToggle = useCallback(() => {
+    if (theme === 'dark') {
+      setTheme('light')
+    } else {
+      setTheme('dark')
+    }
+  }, [theme, setTheme])
+
+  const handleMobileMenuClose = useCallback(() => {
+    setMobileMenuOpen(false)
+    setExpandedSection(null)
+  }, [])
+
+  const handleSectionToggle = useCallback((sectionName: string) => {
+    setExpandedSection(prev => prev === sectionName ? null : sectionName)
+  }, [])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [mobileMenuOpen])
+
+  // Don't render until client-side to avoid hydration issues
 
   return (
     <header
@@ -150,7 +215,7 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="text-3xl">🐾</div>
-            <span className="text-2xl font-heading font-bold text-gradient">RAWGLE</span>
+            <span className="text-2xl font-heading font-bold text-gradient-brand">RAWGLE</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -205,11 +270,13 @@ export function Navigation() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            {/* Theme Toggle - Only show after hydration to avoid theme mismatch */}
-            {mounted && (
+            {/* Theme Toggle - Only show after client-side hydration */}
+            {isClient && mounted && (
               <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 rounded-lg hover:bg-muted transition-colors"
+                onClick={handleThemeToggle}
+                className="p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer"
+                type="button"
+                aria-label="Toggle theme"
               >
                 {theme === 'dark' ? (
                   <Sun className="w-5 h-5" />
@@ -222,26 +289,48 @@ export function Navigation() {
             {/* Desktop Auth Buttons */}
             <div className="hidden lg:flex items-center gap-3">
               <Link href="/auth/login">
-                <button className="btn btn-outline">Sign In</button>
+                <Button variant="outline" className="min-h-[44px] px-6">Sign In</Button>
               </Link>
               <Link href="/auth/register">
-                <button className="btn btn-primary">
+                <Button className="min-h-[44px] px-6 bg-pumpkin hover:bg-pumpkin/90">
                   Get Started
                   <Coins className="ml-2 w-4 h-4" />
-                </button>
+                </Button>
               </Link>
             </div>
 
             {/* Mobile Menu Toggle */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+              onClick={handleMobileMenuToggle}
+              className="lg:hidden p-2 rounded-lg hover:bg-muted transition-all duration-200 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+              type="button"
+              aria-label={mobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-menu"
             >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              <AnimatePresence mode="wait">
+                {mobileMenuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X className="w-6 h-6" aria-hidden="true" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu className="w-6 h-6" aria-hidden="true" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </button>
           </div>
         </div>
@@ -251,52 +340,88 @@ export function Navigation() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
+            id="mobile-navigation-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-background border-b"
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className="lg:hidden bg-background/95 backdrop-blur-sm border-b shadow-lg"
+            role="dialog"
+            aria-modal="false"
+            aria-label="Mobile navigation menu"
           >
             <div className="container mx-auto px-4 py-4">
-              <div className="space-y-4">
-                {navigation.map((item) => (
-                  <div key={item.name}>
-                    {item.children ? (
-                      <div className="space-y-2">
-                        <div className="font-medium text-sm text-muted-foreground">
-                          {item.name}
-                        </div>
-                        <div className="pl-4 space-y-2">
-                          {item.children.map((child) => (
-                            <Link
-                              key={child.name}
-                              href={child.href}
-                              className="block text-sm hover:text-primary transition-colors"
-                              onClick={() => setMobileMenuOpen(false)}
+              <div className="max-h-[calc(100vh-80px)] overflow-y-auto scrollbar-hide">
+                <div className="space-y-3">
+                  {navigation.map((item) => (
+                    <div key={item.name} className="border-b border-border/50 last:border-b-0 pb-3 last:pb-0">
+                      {item.children ? (
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => handleSectionToggle(item.name)}
+                            className="w-full flex items-center justify-between p-3 rounded-lg text-left font-medium text-sm hover:bg-muted transition-all duration-200 cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            type="button"
+                            aria-expanded={expandedSection === item.name}
+                            aria-controls={`mobile-section-${item.name.replace(/\s+/g, '-').toLowerCase()}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              {item.icon && <item.icon className="w-5 h-5 text-primary" aria-hidden="true" />}
+                              <span>{item.name}</span>
+                            </div>
+                            <motion.div
+                              animate={{ rotate: expandedSection === item.name ? 180 : 0 }}
+                              transition={{ duration: 0.2 }}
                             >
-                              {child.name}
-                            </Link>
-                          ))}
+                              <ChevronDown className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                            </motion.div>
+                          </button>
+                          <AnimatePresence>
+                            {expandedSection === item.name && (
+                              <motion.div
+                                id={`mobile-section-${item.name.replace(/\s+/g, '-').toLowerCase()}`}
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="pl-6 space-y-2 overflow-hidden"
+                              >
+                                {item.children.map((child) => (
+                                  <Link
+                                    key={child.name}
+                                    href={child.href}
+                                    className="block p-3 text-sm rounded-lg hover:bg-muted/50 hover:text-primary transition-all duration-200 cursor-pointer min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    onClick={handleMobileMenuClose}
+                                  >
+                                    <span>{child.name}</span>
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
-                      </div>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        className="block text-sm font-medium hover:text-primary transition-colors"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    )}
+                      ) : (
+                        <Link
+                          href={item.href}
+                          className="block p-3 text-sm font-medium rounded-lg hover:bg-muted hover:text-primary transition-all duration-200 cursor-pointer min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          onClick={handleMobileMenuClose}
+                        >
+                          {item.name}
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+                  
+                  <div className="pt-4 border-t border-border/50 space-y-3">
+                    <Link href="/auth/login" onClick={handleMobileMenuClose}>
+                      <Button variant="outline" className="w-full min-h-[44px] text-base">Sign In</Button>
+                    </Link>
+                    <Link href="/auth/register" onClick={handleMobileMenuClose}>
+                      <Button className="w-full min-h-[44px] bg-pumpkin hover:bg-pumpkin/90 text-base">
+                        Get Started
+                        <Coins className="ml-2 w-4 h-4" />
+                      </Button>
+                    </Link>
                   </div>
-                ))}
-                
-                <div className="pt-4 border-t space-y-3">
-                  <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-                    <button className="btn btn-outline w-full">Sign In</button>
-                  </Link>
-                  <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
-                    <button className="btn btn-primary w-full">Get Started</button>
-                  </Link>
                 </div>
               </div>
             </div>
