@@ -17,7 +17,8 @@ import {
   MapPin,
   ShoppingCart,
   BookOpen,
-  Crown
+  Crown,
+  Bot
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
@@ -25,6 +26,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const navigation = [
   { name: 'Home', href: '/' },
+  { name: 'AI Assistant', href: '/chat', icon: Bot },
   {
     name: 'Pet Management',
     href: '#',
@@ -123,6 +125,7 @@ export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
+  const [activeDesktopDropdown, setActiveDesktopDropdown] = useState<string | null>(null)
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -137,37 +140,60 @@ export function Navigation() {
       setScrolled(window.scrollY > 10)
     }
     
-    // Close mobile menu on resize to desktop
+    // Close mobile menu on resize to desktop, close desktop dropdowns on resize to mobile
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setMobileMenuOpen(false)
         setExpandedSection(null)
+      } else {
+        setActiveDesktopDropdown(null)
       }
     }
     
-    // Close mobile menu when clicking outside
+    // Close mobile menu and desktop dropdowns when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
-      if (mobileMenuOpen && !target.closest('nav')) {
+      if (mobileMenuOpen && !target.closest('nav') && !target.closest('#mobile-navigation-menu')) {
         setMobileMenuOpen(false)
         setExpandedSection(null)
+      }
+      // Close desktop dropdowns when clicking outside
+      if (activeDesktopDropdown && !target.closest('.desktop-dropdown-container')) {
+        setActiveDesktopDropdown(null)
+      }
+    }
+    
+    // Handle keyboard navigation for accessibility
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (mobileMenuOpen) {
+          setMobileMenuOpen(false)
+          setExpandedSection(null)
+        }
+        if (activeDesktopDropdown) {
+          setActiveDesktopDropdown(null)
+        }
       }
     }
     
     window.addEventListener('scroll', handleScroll)
     window.addEventListener('resize', handleResize)
     document.addEventListener('click', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
     
     return () => {
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleResize)
       document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [mobileMenuOpen])
+  }, [mobileMenuOpen, activeDesktopDropdown])
 
   // Memoized handlers to ensure consistent references
   const handleMobileMenuToggle = useCallback(() => {
     setMobileMenuOpen(prev => !prev)
+    // Close desktop dropdowns when opening mobile menu
+    setActiveDesktopDropdown(null)
   }, [])
 
   const handleThemeToggle = useCallback(() => {
@@ -185,6 +211,22 @@ export function Navigation() {
 
   const handleSectionToggle = useCallback((sectionName: string) => {
     setExpandedSection(prev => prev === sectionName ? null : sectionName)
+  }, [])
+
+  const handleDesktopDropdownToggle = useCallback((sectionName: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+    setActiveDesktopDropdown(prev => prev === sectionName ? null : sectionName)
+  }, [])
+
+  const handleDesktopDropdownHover = useCallback((sectionName: string | null) => {
+    setActiveDesktopDropdown(sectionName)
+  }, [])
+
+  const handleDesktopDropdownClose = useCallback(() => {
+    setActiveDesktopDropdown(null)
   }, [])
 
   // Prevent body scroll when mobile menu is open
@@ -221,19 +263,36 @@ export function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
             {navigation.map((item) => (
-              <div key={item.name} className="relative group">
+              <div key={item.name} className="relative desktop-dropdown-container">
                 {item.children ? (
                   <>
-                    <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
+                    <button 
+                      onClick={(e) => handleDesktopDropdownToggle(item.name, e)}
+                      onMouseEnter={() => handleDesktopDropdownHover(item.name)}
+                      className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
+                      type="button"
+                      aria-expanded={activeDesktopDropdown === item.name}
+                      aria-haspopup="true"
+                    >
                       {item.icon && <item.icon className="w-4 h-4" />}
                       {item.name}
-                      <ChevronDown className="w-4 h-4" />
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
+                        activeDesktopDropdown === item.name ? 'rotate-180' : ''
+                      }`} />
                     </button>
-                    <div className="absolute top-full left-0 mt-2 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                      <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-3 max-h-96 overflow-y-auto">
-                        <div className="mb-3 pb-2 border-b border-gray-100">
-                          <div className="flex items-center text-sm font-semibold text-gray-800">
-                            {item.icon && <item.icon className="w-5 h-5 mr-2 text-blue-600" />}
+                    <div 
+                      className={`absolute top-full left-0 mt-2 w-80 transition-all duration-200 z-50 ${
+                        activeDesktopDropdown === item.name 
+                          ? 'opacity-100 visible' 
+                          : 'opacity-0 invisible pointer-events-none'
+                      }`}
+                      onMouseEnter={() => handleDesktopDropdownHover(item.name)}
+                      onMouseLeave={() => handleDesktopDropdownHover(null)}
+                    >
+                      <div className="bg-card dark:bg-popover rounded-lg shadow-xl border border-border dark:border-border p-3 max-h-96 overflow-y-auto">
+                        <div className="mb-3 pb-2 border-b border-border dark:border-border">
+                          <div className="flex items-center text-sm font-semibold text-card-foreground dark:text-popover-foreground">
+                            {item.icon && <item.icon className="w-5 h-5 mr-2 text-primary" />}
                             {item.name}
                           </div>
                         </div>
@@ -241,11 +300,12 @@ export function Navigation() {
                           <Link
                             key={child.name}
                             href={child.href}
-                            className="block px-3 py-3 text-sm rounded-lg hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
+                            onClick={handleDesktopDropdownClose}
+                            className="block px-3 py-3 text-sm rounded-lg hover:bg-accent dark:hover:bg-accent transition-colors border-b border-border/30 dark:border-border/30 last:border-b-0"
                           >
-                            <div className="font-medium text-gray-900 mb-1">{child.name}</div>
+                            <div className="font-medium text-card-foreground dark:text-popover-foreground mb-1">{child.name}</div>
                             {child.description && (
-                              <div className="text-xs text-gray-600">{child.description}</div>
+                              <div className="text-xs text-muted-foreground dark:text-muted-foreground">{child.description}</div>
                             )}
                           </Link>
                         ))}
@@ -346,8 +406,7 @@ export function Navigation() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className="lg:hidden bg-background/95 backdrop-blur-sm border-b shadow-lg"
-            role="dialog"
-            aria-modal="false"
+            role="navigation"
             aria-label="Mobile navigation menu"
           >
             <div className="container mx-auto px-4 py-4">
