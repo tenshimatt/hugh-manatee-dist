@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
+import { useAuth } from '@/hooks/useAuth'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navigation = [
@@ -128,6 +129,7 @@ export function Navigation() {
   const [activeDesktopDropdown, setActiveDesktopDropdown] = useState<string | null>(null)
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
+  const { isAuthenticated, user, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
   const [isClient, setIsClient] = useState(false)
 
@@ -271,7 +273,7 @@ export function Navigation() {
                       onMouseEnter={() => handleDesktopDropdownHover(item.name)}
                       className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
                       type="button"
-                      aria-expanded={activeDesktopDropdown === item.name}
+                      aria-expanded={activeDesktopDropdown === item.name ? "true" : "false"}
                       aria-haspopup="true"
                     >
                       {item.icon && <item.icon className="w-4 h-4" />}
@@ -348,15 +350,48 @@ export function Navigation() {
 
             {/* Desktop Auth Buttons */}
             <div className="hidden lg:flex items-center gap-3">
-              <Link href="/auth/login">
-                <Button variant="outline" className="min-h-[44px] px-6">Sign In</Button>
-              </Link>
-              <Link href="/auth/register">
-                <Button className="min-h-[44px] px-6 bg-pumpkin hover:bg-pumpkin/90">
-                  Get Started
-                  <Coins className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    {user?.avatarUrl && (
+                      <img 
+                        src={user.avatarUrl} 
+                        alt={user.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <div className="text-sm">
+                      <div className="font-medium">{user?.name}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Coins className="w-3 h-3" />
+                        {user?.pawsTokens || 0} PAWS
+                      </div>
+                    </div>
+                  </div>
+                  <Link href="/dashboard">
+                    <Button variant="outline" className="min-h-[44px] px-6">Dashboard</Button>
+                  </Link>
+                  <Button 
+                    onClick={logout}
+                    variant="ghost" 
+                    className="min-h-[44px] px-4"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Link href="/auth/login">
+                    <Button variant="outline" className="min-h-[44px] px-6">Sign In</Button>
+                  </Link>
+                  <Link href="/auth/register">
+                    <Button className="min-h-[44px] px-6 bg-pumpkin hover:bg-pumpkin/90">
+                      Get Started
+                      <Coins className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -365,7 +400,7 @@ export function Navigation() {
               className="lg:hidden p-2 rounded-lg hover:bg-muted transition-all duration-200 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
               type="button"
               aria-label={mobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
-              aria-expanded={mobileMenuOpen}
+              aria-expanded={mobileMenuOpen ? "true" : "false"}
               aria-controls="mobile-navigation-menu"
             >
               <AnimatePresence mode="wait">
@@ -420,7 +455,7 @@ export function Navigation() {
                             onClick={() => handleSectionToggle(item.name)}
                             className="w-full flex items-center justify-between p-3 rounded-lg text-left font-medium text-sm hover:bg-muted transition-all duration-200 cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary/50"
                             type="button"
-                            aria-expanded={expandedSection === item.name}
+                            aria-expanded={expandedSection === item.name ? "true" : "false"}
                             aria-controls={`mobile-section-${item.name.replace(/\s+/g, '-').toLowerCase()}`}
                           >
                             <div className="flex items-center gap-2">
@@ -471,15 +506,51 @@ export function Navigation() {
                   ))}
                   
                   <div className="pt-4 border-t border-border/50 space-y-3">
-                    <Link href="/auth/login" onClick={handleMobileMenuClose}>
-                      <Button variant="outline" className="w-full min-h-[44px] text-base">Sign In</Button>
-                    </Link>
-                    <Link href="/auth/register" onClick={handleMobileMenuClose}>
-                      <Button className="w-full min-h-[44px] bg-pumpkin hover:bg-pumpkin/90 text-base">
-                        Get Started
-                        <Coins className="ml-2 w-4 h-4" />
-                      </Button>
-                    </Link>
+                    {isAuthenticated ? (
+                      <>
+                        <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                          {user?.avatarUrl && (
+                            <img 
+                              src={user.avatarUrl} 
+                              alt={user.name}
+                              className="w-10 h-10 rounded-full"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{user?.name}</div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Coins className="w-3 h-3" />
+                              {user?.pawsTokens || 0} PAWS
+                            </div>
+                          </div>
+                        </div>
+                        <Link href="/dashboard" onClick={handleMobileMenuClose}>
+                          <Button variant="outline" className="w-full min-h-[44px] text-base">Dashboard</Button>
+                        </Link>
+                        <Button 
+                          onClick={() => {
+                            logout();
+                            handleMobileMenuClose();
+                          }}
+                          variant="ghost" 
+                          className="w-full min-h-[44px] text-base"
+                        >
+                          Sign Out
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/auth/login" onClick={handleMobileMenuClose}>
+                          <Button variant="outline" className="w-full min-h-[44px] text-base">Sign In</Button>
+                        </Link>
+                        <Link href="/auth/register" onClick={handleMobileMenuClose}>
+                          <Button className="w-full min-h-[44px] bg-pumpkin hover:bg-pumpkin/90 text-base">
+                            Get Started
+                            <Coins className="ml-2 w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
