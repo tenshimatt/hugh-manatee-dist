@@ -18,7 +18,6 @@ import {
   Check,
   Play
 } from 'lucide-react'
-import { Navigation } from '@/components/layout/navigation'
 import { ChatWidget } from '@/components/chat/chat-widget'
 import { ApiTestPanel } from '@/components/dev/ApiTestPanel'
 
@@ -140,9 +139,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Comprehensive Navigation with all features */}
-      <Navigation />
-
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4">
         <div className="container mx-auto">

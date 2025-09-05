@@ -173,7 +173,7 @@ export function FeedingEntryForm({
           <div>
             <h2 className="text-2xl font-bold">Log Feeding</h2>
             <p className="text-muted-foreground">
-              Record your pet's meal details
+              Record your pet&apos;s meal details
             </p>
           </div>
           {estimatedCalories > 0 && (
@@ -468,7 +468,7 @@ export function FeedingEntryForm({
                     />
                   </FormControl>
                   <FormDescription>
-                    Record any special observations, preparation notes, or your pet's reaction
+                    Record any special observations, preparation notes, or your pet&apos;s reaction
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

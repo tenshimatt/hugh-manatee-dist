@@ -207,7 +207,7 @@ export default function SignInPage() {
           </form>
 
           <p className="text-center text-sm text-charcoal-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/auth/sign-up" className="font-medium text-pumpkin hover:text-pumpkin-600">
               Sign up for free
             </Link>
@@ -232,7 +232,7 @@ export default function SignInPage() {
                 Track Every Meal
               </h3>
               <p className="text-white/80 text-lg">
-                Monitor your pet's nutrition journey with detailed feeding logs, health tracking, and smart analytics.
+                Monitor your pet&apos;s nutrition journey with detailed feeding logs, health tracking, and smart analytics.
               </p>
             </div>
             
@@ -257,7 +257,7 @@ export default function SignInPage() {
             
             <div className="mt-8 p-4 bg-white/10 backdrop-blur-sm rounded-lg">
               <p className="text-sm text-white/90 italic">
-                "RAWGLE completely transformed how I manage my pack's raw diet. The auto-reorder feature alone saves me hours every month!"
+                &quot;RAWGLE completely transformed how I manage my pack&apos;s raw diet. The auto-reorder feature alone saves me hours every month!&quot;
               </p>
               <p className="text-sm text-sunglow mt-2">- Sarah, Pack Leader of 4</p>
             </div>

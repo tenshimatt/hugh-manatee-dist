@@ -38,7 +38,6 @@ interface ProtectedRouteProps {
   
   // Fallback components
   unauthorizedComponent?: React.ComponentType<{ reason?: string }>;
-  loadingComponent?: React.ComponentType;
 }
 
 interface LoadingScreenProps {

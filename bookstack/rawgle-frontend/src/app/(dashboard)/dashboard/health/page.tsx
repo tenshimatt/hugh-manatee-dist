@@ -565,7 +565,7 @@ export default function HealthPage() {
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">AI Health Insights</h2>
-                  <p className="text-gray-600">Personalized recommendations based on your pets' health data</p>
+                  <p className="text-gray-600">Personalized recommendations based on your pets&apos; health data</p>
                 </div>
                 <Button variant="outline">
                   <Target className="h-5 w-5 mr-2" />

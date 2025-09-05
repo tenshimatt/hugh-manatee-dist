@@ -195,7 +195,7 @@ export function FeedingTimeline({
         <Card className="p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">
-              {selectedPet.name}'s Weekly Summary
+              {selectedPet.name}&apos;s Weekly Summary
             </h3>
             <div className="text-sm text-muted-foreground">
               {format(weekStart, 'MMM d')} - {format(weekEnd, 'MMM d, yyyy')}

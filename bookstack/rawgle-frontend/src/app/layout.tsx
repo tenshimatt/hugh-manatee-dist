@@ -7,6 +7,7 @@ import { ChatWidget } from '@/components/chat/chat-widget'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { Navigation } from '@/components/layout/navigation'
 import './globals.css'
 
 const inter = Inter({ 
@@ -100,6 +101,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <AuthProvider>
+                <Navigation />
                 {children}
                 <Toaster 
                   position="bottom-right"

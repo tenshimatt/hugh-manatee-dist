@@ -12,7 +12,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, permissionUtils } from '@/lib/auth';
 
-interface UseProtectedRouteConfig {
+export interface UseProtectedRouteConfig {
   // Authentication requirements
   requireAuth?: boolean; // Default: true
   requireEmailVerification?: boolean; // Default: false

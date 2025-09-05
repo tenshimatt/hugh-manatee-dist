@@ -33,9 +33,9 @@ function VerifyEmailContent() {
           
           <p className="text-charcoal-600 mb-4">
             {email ? (
-              <>We've sent a verification email to <strong>{email}</strong></>
+              <>We&apos;ve sent a verification email to <strong>{email}</strong></>
             ) : (
-              'We\'ve sent you a verification email'
+              'We&apos;ve sent you a verification email'
             )}
           </p>
         </div>
@@ -57,7 +57,7 @@ function VerifyEmailContent() {
 
           <div className="text-center space-y-4">
             <p className="text-sm text-charcoal-600">
-              Didn't receive the email? Check your spam folder or{' '}
+              Didn&apos;t receive the email? Check your spam folder or{' '}
               <button 
                 className="text-pumpkin hover:text-pumpkin-600 font-medium focus:outline-none focus:ring-2 focus:ring-pumpkin focus:ring-offset-2"
                 onClick={() => {
@@ -84,7 +84,7 @@ function VerifyEmailContent() {
 
         <div className="mt-8 pt-6 border-t border-charcoal-200">
           <div className="text-center text-sm text-charcoal-500">
-            <h4 className="font-medium mb-2">What's next?</h4>
+            <h4 className="font-medium mb-2">What&apos;s next?</h4>
             <ul className="space-y-1">
               <li>✓ Verify your email address</li>
               <li>✓ Complete your pet profile</li>

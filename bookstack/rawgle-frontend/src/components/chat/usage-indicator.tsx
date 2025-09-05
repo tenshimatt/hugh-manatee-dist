@@ -158,7 +158,7 @@ export function UsageIndicator({ usage, onUpgrade, className = '' }: UsageIndica
             <div>
               <h3 className="font-semibold text-amber-900">Daily Limit Reached</h3>
               <p className="text-sm text-amber-700">
-                You've used all {usage.dailyLimit} free messages today
+                You&apos;ve used all {usage.dailyLimit} free messages today
               </p>
             </div>
             <div className="space-y-2">

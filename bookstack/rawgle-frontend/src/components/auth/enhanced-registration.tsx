@@ -294,7 +294,13 @@ export default function EnhancedRegistration() {
       
       if (!response.ok || !result.success) {
         if (result.errors) {
-          setFormErrors(result.errors as FormErrors)
+          // Transform array errors to single string errors
+          const transformedErrors: FormErrors = {}
+          Object.entries(result.errors).forEach(([field, messages]) => {
+            // Take the first error message or join multiple messages
+            transformedErrors[field] = Array.isArray(messages) ? messages[0] : messages
+          })
+          setFormErrors(transformedErrors)
         } else {
           throw new Error(result.message || 'Registration failed')
         }
@@ -344,7 +350,7 @@ export default function EnhancedRegistration() {
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 bg-red-500 text-white p-2 text-center z-50 text-sm">
           <WifiOff className="inline h-4 w-4 mr-2" />
-          You're offline. Please check your internet connection.
+          You&apos;re offline. Please check your internet connection.
         </div>
       )}
       
@@ -973,7 +979,7 @@ export default function EnhancedRegistration() {
                 ))}
               </div>
               <p className="text-sm text-white/90">
-                "The best investment I've made for my dogs' health!"
+                &quot;The best investment I&apos;ve made for my dogs&apos; health!&quot;
               </p>
               <p className="text-sm text-sunglow mt-1">- 10,000+ Happy Users</p>
             </div>

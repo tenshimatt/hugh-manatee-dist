@@ -36,7 +36,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
   
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any | null>(null); // Use 'any' to avoid TypeScript errors for Web Speech API
   const {
     onResult,
     onError,
@@ -66,7 +66,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
         onStart?.();
       };
 
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event: any) => { // Use 'any' for SpeechRecognitionEvent
         let finalTranscript = '';
         let interimTranscript = '';
 
@@ -91,7 +91,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
         }
       };
 
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      recognition.onerror = (event: any) => { // Use 'any' for SpeechRecognitionErrorEvent
         const errorMessage = getRecognitionErrorMessage(event.error);
         setError(errorMessage);
         setIsListening(false);

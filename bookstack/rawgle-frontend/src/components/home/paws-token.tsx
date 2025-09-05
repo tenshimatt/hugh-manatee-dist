@@ -61,7 +61,7 @@ export function PawsToken() {
               <span className="gradient-paws bg-clip-text text-transparent">PAWS Token</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              The first cryptocurrency designed for the raw pet food community. Earn, stake, and spend PAWS while contributing to your pet's health journey.
+              The first cryptocurrency designed for the raw pet food community. Earn, stake, and spend PAWS while contributing to your pet&apos;s health journey.
             </p>
           </motion.div>
         </div>

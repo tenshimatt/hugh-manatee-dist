@@ -49,7 +49,7 @@ export function Hero() {
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-lg">
-              Track your pet's nutrition, connect with a thriving community, and earn PAWS tokens while giving your furry friend the diet they deserve.
+              Track your pet&apos;s nutrition, connect with a thriving community, and earn PAWS tokens while giving your furry friend the diet they deserve.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -113,7 +113,7 @@ export function Hero() {
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-medium mb-3 flex items-center gap-2">
                     <ChefHat className="w-4 h-4 text-charcoal" />
-                    Today's Feeding
+                    Today&apos;s Feeding
                   </h4>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">

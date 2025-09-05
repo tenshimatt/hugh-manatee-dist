@@ -27,7 +27,7 @@ const features = [
   {
     icon: Brain,
     title: 'AI Nutrition Assistant',
-    description: 'Get personalized feeding recommendations based on your pet\'s breed, age, weight, and activity level.',
+    description: 'Get personalized feeding recommendations based on your pet&apos;s breed, age, weight, and activity level.',
     color: 'text-charcoal',
     bg: 'bg-charcoal/10 dark:bg-charcoal/5',
   },
@@ -158,7 +158,7 @@ export function Features() {
                 🎯 Quick Weekly Batch Confirmation
               </h3>
               <p className="text-lg mb-4 text-white/90">
-                Our unique feature that sets us apart: Log in once a week and confirm "Same as last week" to instantly update all your feeding logs. Perfect for consistent feeders!
+                Our unique feature that sets us apart: Log in once a week and confirm &quot;Same as last week&quot; to instantly update all your feeding logs. Perfect for consistent feeders!
               </p>
               <ul className="space-y-2 text-white/90">
                 <li className="flex items-center gap-2">

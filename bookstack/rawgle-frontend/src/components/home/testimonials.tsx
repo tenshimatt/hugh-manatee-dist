@@ -8,7 +8,7 @@ const testimonials = [
     name: 'Sarah Johnson',
     role: 'Golden Retriever Owner',
     avatar: '👩',
-    content: 'RAWGLE transformed how I manage Max\'s diet. The weekly batch confirmation saves me so much time, and seeing his health improvements tracked over months is incredible!',
+    content: 'RAWGLE transformed how I manage Max&apos;s diet. The weekly batch confirmation saves me so much time, and seeing his health improvements tracked over months is incredible!',
     rating: 5,
   },
   {
@@ -29,7 +29,7 @@ const testimonials = [
     name: 'David Kim',
     role: 'Bulldog Enthusiast',
     avatar: '👨‍🦱',
-    content: 'The AI nutrition assistant helped identify my bulldog\'s allergies. We eliminated problem ingredients and his skin issues cleared up within weeks. Life-changing!',
+    content: 'The AI nutrition assistant helped identify my bulldog&apos;s allergies. We eliminated problem ingredients and his skin issues cleared up within weeks. Life-changing!',
     rating: 5,
   },
   {
@@ -88,7 +88,7 @@ export function Testimonials() {
                 </div>
 
                 <p className="text-muted-foreground mb-6 relative z-10">
-                  "{testimonial.content}"
+                  &quot;{testimonial.content}&quot;
                 </p>
 
                 <div className="flex items-center gap-3">

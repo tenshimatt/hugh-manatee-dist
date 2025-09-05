@@ -736,7 +736,7 @@ export default function EnhancedPortionCalculator({
                     <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary border-t-transparent mx-auto"></div>
                     <h3 className="text-xl font-semibold">Calculating Portions...</h3>
                     <p className="text-muted-foreground">
-                      Analyzing your pet's needs with AI precision
+                      Analyzing your pet&apos;s needs with AI precision
                     </p>
                   </div>
                 ) : (

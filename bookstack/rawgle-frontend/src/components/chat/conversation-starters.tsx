@@ -54,7 +54,7 @@ export function ConversationStarters({
         </div>
         <div>
           <h3 className="text-lg font-semibold text-foreground">
-            Hi! I'm RAWGLE AI
+            Hi! I&apos;m RAWGLE AI
           </h3>
           <p className="text-sm text-muted-foreground">
             Your expert assistant for raw pet feeding. Ask me anything or choose a topic below:

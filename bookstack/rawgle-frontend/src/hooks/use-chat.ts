@@ -10,7 +10,7 @@ import {
   ChatError,
   ConversationStarter
 } from '@/types/chat';
-import { ChatAPI, ChatAPIError, handleAPIError, createUserMessage, createMessageFromResponse } from '@/services/chat-api';
+import ChatAPI, { ChatAPIError, handleAPIError, createUserMessage, createMessageFromResponse } from '@/services/chat-api';
 
 // Conversation starters data
 const CONVERSATION_STARTERS: ConversationStarter[] = [
@@ -89,7 +89,7 @@ export function useChat(initialPetContext?: PetContext) {
 
   // Refs
   const chatAPI = useRef(ChatAPI);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any | null>(null); // Use 'any' to avoid TypeScript errors for Web Speech API
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
 
   // Current conversation computed
@@ -100,7 +100,7 @@ export function useChat(initialPetContext?: PetContext) {
     if (typeof window !== 'undefined') {
       // Speech Recognition
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
         recognitionRef.current = new SpeechRecognition();
         recognitionRef.current.continuous = false;
         recognitionRef.current.interimResults = false;

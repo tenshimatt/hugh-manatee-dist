@@ -71,7 +71,7 @@ function DefaultErrorFallback() {
         </div>
         <div className="space-y-2">
           <h3 className="text-lg font-medium text-charcoal">Access Denied</h3>
-          <p className="text-sm text-gray-600">You don't have permission to access this page.</p>
+          <p className="text-sm text-gray-600">You don&apos;t have permission to access this page.</p>
         </div>
       </div>
     </div>

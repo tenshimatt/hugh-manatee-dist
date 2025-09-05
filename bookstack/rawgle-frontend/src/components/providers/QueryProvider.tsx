@@ -8,10 +8,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { QueryClient, QueryClientProvider, MutationCache, QueryCache } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { toast } from 'sonner';
-import { ErrorTransformer, ErrorLogger } from '@/lib/errors';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Default query client configuration
 const createQueryClient = () => {
@@ -30,70 +27,12 @@ const createQueryClient = () => {
         refetchOnWindowFocus: false,
         // Refetch on reconnect
         refetchOnReconnect: true,
-        // Network mode
-        networkMode: 'online',
       },
       mutations: {
         // Retry mutations once
         retry: 1,
-        // Network mode for mutations
-        networkMode: 'online',
       },
     },
-    queryCache: new QueryCache({
-      onError: (error: any, query) => {
-        // Only show error toasts for background refetches if the query has data
-        // This prevents error toasts when initial queries fail
-        if (query.state.data !== undefined) {
-          const message = ErrorTransformer.toUserMessage(error);
-          toast.error('Query Error', {
-            description: message,
-          });
-        }
-        
-        // Log all query errors
-        ErrorLogger.logError(error, 'React Query - Query Error', {
-          queryKey: query.queryKey,
-          queryHash: query.queryHash,
-        });
-      },
-    }),
-    mutationCache: new MutationCache({
-      onError: (error: any, variables, context, mutation) => {
-        // Show user-friendly error message for mutations
-        const message = ErrorTransformer.toUserMessage(error);
-        toast.error('Operation Failed', {
-          description: message,
-        });
-        
-        // Log mutation errors
-        ErrorLogger.logError(error, 'React Query - Mutation Error', {
-          mutationKey: mutation.options.mutationKey,
-          variables,
-        });
-      },
-      onSuccess: (data, variables, context, mutation) => {
-        // Show success message for mutations if specified
-        const mutationKey = mutation.options.mutationKey?.[0] as string;
-        
-        // Success messages for common operations
-        const successMessages: Record<string, string> = {
-          'auth-login': 'Welcome back!',
-          'auth-register': 'Account created successfully!',
-          'auth-logout': 'Logged out successfully',
-          'auth-update-profile': 'Profile updated successfully',
-          'auth-change-password': 'Password changed successfully',
-          'blog-add-comment': 'Comment added successfully',
-          'blog-like-post': 'Post liked!',
-          'blog-unlike-post': 'Post unliked',
-          'store-add-review': 'Review submitted successfully',
-        };
-        
-        if (mutationKey && successMessages[mutationKey]) {
-          toast.success(successMessages[mutationKey]);
-        }
-      },
-    }),
   });
 };
 
@@ -108,13 +47,6 @@ export function QueryProvider({ children }: QueryProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* Only show devtools in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools 
-          initialIsOpen={false}
-          position="bottom-right"
-        />
-      )}
     </QueryClientProvider>
   );
 }

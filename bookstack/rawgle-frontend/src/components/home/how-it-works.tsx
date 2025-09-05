@@ -44,7 +44,7 @@ export function HowItWorks() {
               How It Works
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get started in minutes and transform your pet's health journey
+              Get started in minutes and transform your pet&apos;s health journey
             </p>
           </motion.div>
         </div>

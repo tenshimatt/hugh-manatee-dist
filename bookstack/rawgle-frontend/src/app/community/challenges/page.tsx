@@ -216,7 +216,7 @@ export default function ChallengesPage() {
   }).sort((a, b) => {
     switch (sortBy) {
       case 'featured':
-        return b.featured - a.featured || b.participants - a.participants
+        return Number(b.featured) - Number(a.featured) || b.participants - a.participants
       case 'popular':
         return b.participants - a.participants
       case 'ending_soon':

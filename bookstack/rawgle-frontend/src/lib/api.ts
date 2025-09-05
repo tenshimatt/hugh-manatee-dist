@@ -9,7 +9,7 @@
  * - CSRF protection
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axios from 'axios';
 
 // Configuration
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
@@ -37,9 +37,10 @@ export interface ApiError {
   errors?: Array<{ field?: string; message: string }>;
 }
 
-export interface RequestConfig extends AxiosRequestConfig {
+export interface RequestConfig {
   skipAuthRefresh?: boolean; // Skip automatic token refresh on 401
   retryCount?: number; // Internal retry counter
+  signal?: AbortSignal; // AbortController signal for request cancellation
 }
 
 class ApiClient {
@@ -158,7 +159,7 @@ class ApiClient {
         }
       );
       
-      if (response.data.success) {
+      if (response.data?.success) {
         console.debug('Token refreshed successfully');
         return;
       }
@@ -294,7 +295,7 @@ class ApiClient {
     const response = await this.client.post<ApiResponse<T>>(url, formData, {
       ...config,
       headers: {
-        ...config?.headers,
+        ...(config?.headers || {}),
         'Content-Type': 'multipart/form-data',
       },
       onUploadProgress: (progressEvent) => {
@@ -314,7 +315,7 @@ class ApiClient {
       const response = await axios.get(`${API_BASE_URL.replace('/api/v1', '')}/health`, {
         timeout: 5000,
       });
-      return response.data;
+      return response.data || { status: 'unknown', timestamp: new Date().toISOString() };
     } catch (error) {
       throw new Error('Backend health check failed');
     }

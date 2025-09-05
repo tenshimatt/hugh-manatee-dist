@@ -311,7 +311,7 @@ export function ArticleSearch({
             <div className="flex flex-wrap gap-2 mt-4">
               {query && (
                 <Badge className="bg-pumpkin text-white px-3 py-1 flex items-center gap-2">
-                  Search: "{query}"
+                  Search: &quot;{query}&quot;
                   <button onClick={() => handleSearch('')} className="hover:bg-white/20 rounded">
                     <X className="w-3 h-3" />
                   </button>
@@ -342,7 +342,7 @@ export function ArticleSearch({
       <div className="mb-4 text-charcoal-600">
         {query ? (
           <span>
-            Found <strong>{filteredArticles.length}</strong> articles matching "{query}"
+            Found <strong>{filteredArticles.length}</strong> articles matching &quot;{query}&quot;
           </span>
         ) : (
           <span>
@@ -379,7 +379,7 @@ export function ArticleSearch({
               </h3>
               <p className="text-charcoal-600 mb-6">
                 {query 
-                  ? `No articles match your search for "${query}". Try adjusting your filters or search terms.`
+                  ? `No articles match your search for &quot;${query}&quot;. Try adjusting your filters or search terms.`
                   : "No articles match your current filters. Try clearing some filters to see more results."
                 }
               </p>

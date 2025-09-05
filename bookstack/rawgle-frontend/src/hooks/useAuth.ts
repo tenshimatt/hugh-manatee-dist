@@ -7,11 +7,11 @@
 
 'use client';
 
-import { useContext } from 'react';
-import { AuthContext } from '@/contexts/AuthContext';
-
 // Re-export the useAuth hook from AuthContext
 export { useAuth } from '@/contexts/AuthContext';
+
+// Import for internal use
+import { useAuth } from '@/contexts/AuthContext';
 
 // Additional authentication utilities and hooks
 export function useAuthStatus() {

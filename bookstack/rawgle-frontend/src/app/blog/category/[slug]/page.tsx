@@ -126,7 +126,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                   No Articles Yet
                 </h3>
                 <p className="text-charcoal-600 mb-6 max-w-md mx-auto">
-                  We're working on creating great content for the {category.name} category. 
+                  We&apos;re working on creating great content for the {category.name} category. 
                   Check back soon for new articles!
                 </p>
                 <div className="space-y-3">

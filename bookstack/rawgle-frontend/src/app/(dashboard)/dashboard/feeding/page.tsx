@@ -260,7 +260,7 @@ export default function FeedingPage() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-muted-foreground">
-                    Today's Calories
+                    Today&apos;s Calories
                   </p>
                   <p className="text-2xl font-semibold">{todayCalories}</p>
                 </div>
