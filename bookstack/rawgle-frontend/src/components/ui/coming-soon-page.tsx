@@ -37,7 +37,7 @@ import Link from 'next/link'
 interface ComingSoonPageProps {
   title: string
   description: string
-  iconName?: string
+  iconName?: keyof typeof iconMap
   features?: string[]
   backLink?: string
   backLinkText?: string

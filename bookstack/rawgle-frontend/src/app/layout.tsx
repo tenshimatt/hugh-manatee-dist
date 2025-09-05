@@ -87,32 +87,34 @@ export default function RootLayout({
           padding: 0
         }}
       >
-        <ErrorBoundary>
-          <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <AuthProvider>
-                <Navigation />
-                {children}
-                <Toaster 
-                  position="bottom-right"
-                  toastOptions={{
-                    style: {
-                      background: 'var(--background)',
-                      color: 'var(--foreground)',
-                      border: '1px solid var(--border)',
-                    },
-                  }}
-                />
-                <ChatWidget />
-              </AuthProvider>
-            </ThemeProvider>
-          </QueryProvider>
-        </ErrorBoundary>
+        <ClerkProvider>
+          <ErrorBoundary>
+            <QueryProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <AuthProvider>
+                  <Navigation />
+                  {children}
+                  <Toaster 
+                    position="bottom-right"
+                    toastOptions={{
+                      style: {
+                        background: 'var(--background)',
+                        color: 'var(--foreground)',
+                        border: '1px solid var(--border)',
+                      },
+                    }}
+                  />
+                  <ChatWidget />
+                </AuthProvider>
+              </ThemeProvider>
+            </QueryProvider>
+          </ErrorBoundary>
+        </ClerkProvider>
       </body>
     </html>
   )

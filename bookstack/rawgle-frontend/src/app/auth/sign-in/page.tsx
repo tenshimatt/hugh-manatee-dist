@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-// import { useSignIn } from '@clerk/nextjs'  // Temporarily disabled
+import { useSignIn } from '@clerk/nextjs'
 import { motion } from 'framer-motion'
 import { 
   Dog, 
@@ -21,8 +21,7 @@ import {
 import { toast } from 'sonner'
 
 export default function SignInPage() {
-  // const { isLoaded, signIn, setActive } = useSignIn()  // Temporarily disabled
-  const isLoaded = false  // Temporarily disabled
+  const { isLoaded, signIn, setActive } = useSignIn()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -30,19 +29,107 @@ export default function SignInPage() {
   const [error, setError] = useState('')
   const router = useRouter()
 
+  // Clear errors when user starts typing
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
+    if (error) setError('')
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+    if (error) setError('')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('Authentication temporarily disabled for styling fixes')
-    // Temporarily disabled authentication
+    
+    if (!isLoaded || !signIn) return
+    
+    // Clear previous errors
+    setError('')
+    setIsLoading(true)
+    
+    try {
+      // Basic email validation
+      if (!email) {
+        setError('Email is required')
+        return
+      }
+      if (!email.includes('@')) {
+        setError('Please enter a valid email address')
+        return
+      }
+      if (!password) {
+        setError('Password is required')
+        return
+      }
+      
+      // Attempt to sign in
+      const result = await signIn.create({
+        identifier: email,
+        password,
+      })
+      
+      if (result.status === 'complete') {
+        await setActive({ session: result.createdSessionId })
+        toast.success('Welcome back!')
+        router.push('/dashboard')
+      } else {
+        // Handle additional steps if needed (2FA, etc.)
+        setError('Additional authentication steps required')
+      }
+      
+    } catch (err: any) {
+      console.error('Sign-in error:', err)
+      
+      if (err.errors) {
+        const errorCode = err.errors[0]?.code
+        switch (errorCode) {
+          case 'form_identifier_not_found':
+            setError('Invalid email or password')
+            break
+          case 'form_password_incorrect':
+            setError('Incorrect password')
+            break
+          case 'form_password_incorrect_too_many_attempts':
+            setError('Account temporarily locked due to too many failed attempts')
+            break
+          default:
+            setError(err.errors[0]?.message || 'An error occurred during sign-in')
+        }
+      } else if (err.message && err.message.includes('Network')) {
+        setError('Network error. Please check your connection.')
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleOAuthSignIn = async (strategy: 'oauth_google' | 'oauth_apple') => {
-    setError('OAuth authentication temporarily disabled for styling fixes')
-    // Temporarily disabled authentication
+    if (!isLoaded || !signIn) return
+    
+    setError('')
+    
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy,
+        redirectUrl: '/sso-callback',
+        redirectUrlComplete: '/dashboard'
+      })
+    } catch (err: any) {
+      console.error('OAuth error:', err)
+      if (err.errors && err.errors[0]?.message) {
+        toast.error(err.errors[0].message)
+      } else {
+        toast.error('OAuth authentication failed. Please try again.')
+      }
+    }
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row mobile-responsive" data-testid="sign-in-container">
       {/* Left Panel - Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 lg:py-0">
         <motion.div
@@ -102,12 +189,14 @@ export default function SignInPage() {
           </div>
 
           {/* Sign In Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" role="form">
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3"
+                role="alert"
+                aria-live="polite"
               >
                 <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-red-700">{error}</p>
@@ -128,8 +217,9 @@ export default function SignInPage() {
                   type="email"
                   autoComplete="email"
                   required
+                  aria-required="true"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleEmailChange}
                   className="block w-full pl-10 pr-3 py-3 border border-charcoal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pumpkin focus:border-transparent"
                   placeholder="you@example.com"
                 />
@@ -150,8 +240,9 @@ export default function SignInPage() {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
+                  aria-required="true"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   className="block w-full pl-10 pr-12 py-3 border border-charcoal-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pumpkin focus:border-transparent"
                   placeholder="••••••••"
                 />
@@ -159,6 +250,7 @@ export default function SignInPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-charcoal-400 hover:text-charcoal-600" />
