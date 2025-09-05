@@ -137,7 +137,22 @@ export interface PasswordStrength {
 // Email validation functions
 export function validateEmail(email: string): ValidationState {
   try {
-    const result = registrationSchema.shape.email.safeParse(email)
+    // Create a standalone email schema for validation
+    const emailSchema = z
+      .string()
+      .min(1, { message: 'Email address is required' })
+      .regex(emailRegex, { message: 'Please enter a valid email address' })
+      .max(254, { message: 'Email address is too long' })
+      .toLowerCase()
+      .refine(
+        (email) => {
+          const domain = email.split('@')[1]
+          return !disposableEmailDomains.includes(domain)
+        },
+        { message: 'Please use a permanent email address' }
+      )
+    
+    const result = emailSchema.safeParse(email)
     return {
       isValid: result.success,
       error: result.success ? undefined : result.error.errors[0]?.message
@@ -217,7 +232,7 @@ export async function checkPasswordBreach(password: string): Promise<boolean> {
     // Create SHA-1 hash
     const encoder = new TextEncoder()
     const data = encoder.encode(password)
-    const hashBuffer = await crypto.subtle.digest('SHA-1', data)
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data as BufferSource)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()
     

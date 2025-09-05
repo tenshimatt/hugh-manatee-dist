@@ -80,7 +80,7 @@ export default function ChatPage() {
     if (!chat.currentConversation) {
       chat.startNewConversation();
     }
-  }, []);
+  }, [chat]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

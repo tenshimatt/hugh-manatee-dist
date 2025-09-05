@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Navigation } from '@/components/layout/navigation'
 import { 
   Users, 
@@ -386,10 +387,12 @@ export default function CommunityPage() {
                     {recentActivity.map((activity) => (
                       <div key={activity.id} className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
                         <div className="flex items-start space-x-3">
-                          <img 
+                          <Image 
                             src={activity.avatar} 
                             alt={activity.user}
-                            className="w-8 h-8 rounded-full"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 rounded-full object-cover"
                           />
                           <div className="flex-1">
                             <p className="text-sm">
@@ -537,10 +540,12 @@ export default function CommunityPage() {
                   >
                     <div className="flex items-center mb-4">
                       <div className="relative">
-                        <img 
+                        <Image 
                           src={expert.avatar} 
                           alt={expert.name}
-                          className="w-16 h-16 rounded-full mr-4"
+                          width={64}
+                          height={64}
+                          className="w-16 h-16 rounded-full mr-4 object-cover"
                         />
                         <div className={`absolute bottom-0 right-4 w-4 h-4 rounded-full border-2 border-white ${
                           expert.status === 'online' ? 'bg-green-500' : 'bg-yellow-500'
@@ -638,10 +643,13 @@ export default function CommunityPage() {
                     whileHover={{ scale: 1.05 }}
                     className="bg-white rounded-xl overflow-hidden shadow-lg"
                   >
-                    <img 
+                    <Image 
                       src={recipe.image} 
                       alt={recipe.title}
+                      width={300}
+                      height={192}
                       className="w-full h-48 object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="p-6">
                       <h3 className="text-lg font-bold text-gray-900 mb-2">{recipe.title}</h3>

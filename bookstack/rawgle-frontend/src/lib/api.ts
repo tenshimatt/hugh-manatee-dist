@@ -44,7 +44,7 @@ export interface RequestConfig {
 }
 
 class ApiClient {
-  private client: AxiosInstance;
+  private client: any;
   private isRefreshing = false;
   private failedQueue: Array<{
     resolve: (token: string) => void;
@@ -94,7 +94,7 @@ class ApiClient {
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response: AxiosResponse) => {
+      (response: any) => {
         console.debug('API Response:', {
           status: response.status,
           url: response.config.url,
@@ -102,7 +102,7 @@ class ApiClient {
         });
         return response;
       },
-      async (error: AxiosError) => {
+      async (error: any) => {
         const originalRequest = error.config as RequestConfig;
 
         // Handle 401 Unauthorized with token refresh
@@ -159,7 +159,7 @@ class ApiClient {
         }
       );
       
-      if (response.data?.success) {
+      if ((response.data as any)?.success) {
         console.debug('Token refreshed successfully');
         return;
       }
@@ -196,7 +196,7 @@ class ApiClient {
     }
   }
 
-  private shouldRetry(error: AxiosError, config: RequestConfig): boolean {
+  private shouldRetry(error: any, config: RequestConfig): boolean {
     const retryCount = config.retryCount || 0;
     
     // Don't retry if max attempts reached
@@ -208,7 +208,7 @@ class ApiClient {
     return !error.response || (error.response.status >= 500);
   }
 
-  private async retryRequest(config: RequestConfig): Promise<AxiosResponse> {
+  private async retryRequest(config: RequestConfig): Promise<any> {
     const retryCount = (config.retryCount || 0) + 1;
     const delay = RETRY_DELAY * Math.pow(2, retryCount - 1); // Exponential backoff
 
@@ -222,7 +222,7 @@ class ApiClient {
     });
   }
 
-  private transformError(error: AxiosError): ApiError {
+  private transformError(error: any): ApiError {
     if (error.response) {
       // Server responded with error status
       const data = error.response.data as any;
@@ -258,27 +258,27 @@ class ApiClient {
 
   // Public API methods
   async get<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.get<ApiResponse<T>>(url, config);
+    const response = await this.client.get(url, config);
     return response.data;
   }
 
   async post<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.post<ApiResponse<T>>(url, data, config);
+    const response = await this.client.post(url, data, config);
     return response.data;
   }
 
   async put<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.put<ApiResponse<T>>(url, data, config);
+    const response = await this.client.put(url, data, config);
     return response.data;
   }
 
   async patch<T>(url: string, data?: any, config?: RequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.patch<ApiResponse<T>>(url, data, config);
+    const response = await this.client.patch(url, data, config);
     return response.data;
   }
 
   async delete<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.delete<ApiResponse<T>>(url, config);
+    const response = await this.client.delete(url, config);
     return response.data;
   }
 
@@ -292,10 +292,10 @@ class ApiClient {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await this.client.post<ApiResponse<T>>(url, formData, {
+    const response = await this.client.post(url, formData, {
       ...config,
       headers: {
-        ...(config?.headers || {}),
+        ...((config as any)?.headers || {}),
         'Content-Type': 'multipart/form-data',
       },
       onUploadProgress: (progressEvent) => {
@@ -315,7 +315,7 @@ class ApiClient {
       const response = await axios.get(`${API_BASE_URL.replace('/api/v1', '')}/health`, {
         timeout: 5000,
       });
-      return response.data || { status: 'unknown', timestamp: new Date().toISOString() };
+      return response.data || { status: 'unknown', timestamp: new Date().toISOString() } as any;
     } catch (error) {
       throw new Error('Backend health check failed');
     }

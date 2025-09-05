@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { 
   Menu, 
@@ -354,10 +355,12 @@ export function Navigation() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     {user?.avatarUrl && (
-                      <img 
+                      <Image 
                         src={user.avatarUrl} 
-                        alt={user.name}
-                        className="w-8 h-8 rounded-full"
+                        alt={user.name || 'User avatar'}
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full object-cover"
                       />
                     )}
                     <div className="text-sm">
@@ -510,10 +513,12 @@ export function Navigation() {
                       <>
                         <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                           {user?.avatarUrl && (
-                            <img 
+                            <Image 
                               src={user.avatarUrl} 
-                              alt={user.name}
-                              className="w-10 h-10 rounded-full"
+                              alt={user.name || 'User avatar'}
+                              width={40}
+                              height={40}
+                              className="w-10 h-10 rounded-full object-cover"
                             />
                           )}
                           <div className="flex-1">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import EnhancedPortionCalculator from '@/components/calculator/enhanced-portion-calculator'
@@ -13,14 +13,8 @@ export default function FeedingCalculatorPage() {
   const [selectedPetId, setSelectedPetId] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
-  // Load user's pets
-  useEffect(() => {
-    if (user?.id) {
-      fetchUserPets()
-    }
-  }, [user?.id])
-
-  const fetchUserPets = async () => {
+  // Load user's pets function with useCallback to prevent infinite loops
+  const fetchUserPets = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/pets?userId=${user?.id}`)
@@ -40,7 +34,14 @@ export default function FeedingCalculatorPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user?.id])
+
+  // Load user's pets
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserPets()
+    }
+  }, [user?.id, fetchUserPets])
 
   const handlePetSelect = (petId: string) => {
     setSelectedPetId(petId)

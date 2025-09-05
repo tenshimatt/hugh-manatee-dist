@@ -59,6 +59,20 @@ export default function LocationsPage() {
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const [showMobileFilters, setShowMobileFilters] = useState(false)
 
+  // Perform store search based on location (Archon requirement: nearby store search)
+  const handleLocationSearch = useCallback(async (locationData: LocationState) => {
+    const searchParams = storeFilters.getSearchParams({
+      latitude: locationData.lat,
+      longitude: locationData.lng
+    })
+    
+    try {
+      await stores.searchNearbyStores(searchParams)
+    } catch (error) {
+      console.error('Store search failed:', error)
+    }
+  }, [stores, storeFilters])
+
   // Initialize location and search when available (Archon requirement: IP-based + GPS fallback)
   useEffect(() => {
     if (location.location?.latitude && location.location?.longitude) {
@@ -72,7 +86,7 @@ export default function LocationsPage() {
       setCurrentLocation(locationData)
       handleLocationSearch(locationData)
     }
-  }, [location.location])
+  }, [location.location, handleLocationSearch])
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -100,7 +114,7 @@ export default function LocationsPage() {
   const handleLocationSelect = useCallback(async (locationData: LocationState) => {
     setCurrentLocation(locationData)
     await handleLocationSearch(locationData)
-  }, [])
+  }, [handleLocationSearch])
 
   // Handle current location detection (Archon requirement: GPS + IP fallback)
   const handleUseCurrentLocation = useCallback(async () => {
@@ -115,20 +129,6 @@ export default function LocationsPage() {
       console.error('Location detection failed:', error)
     }
   }, [location])
-
-  // Perform store search based on location (Archon requirement: nearby store search)
-  const handleLocationSearch = useCallback(async (locationData: LocationState) => {
-    const searchParams = storeFilters.getSearchParams({
-      latitude: locationData.lat,
-      longitude: locationData.lng
-    })
-    
-    try {
-      await stores.searchNearbyStores(searchParams)
-    } catch (error) {
-      console.error('Store search failed:', error)
-    }
-  }, [stores, storeFilters])
 
   // Handle filter changes (Archon requirement: comprehensive filtering)
   const handleFiltersChange = useCallback((newFilters: Partial<StoreFilterState>) => {

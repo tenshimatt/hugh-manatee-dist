@@ -324,7 +324,7 @@ export const securityUtils = {
     if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
       const encoder = new TextEncoder();
       const dataBuffer = encoder.encode(data);
-      const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer as BufferSource);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }

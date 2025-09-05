@@ -104,56 +104,68 @@ export default function EnhancedRegistration() {
   
   // Debounced email validation
   const debouncedEmailValidation = useCallback(
-    debounce(async (email: string) => {
-      if (!email || !touchedFields.has('email')) return
+    (email: string) => {
+      const debouncedFn = debounce(async (emailValue: string) => {
+        if (!emailValue || !touchedFields.has('email')) return
+        
+        const validation = validateEmail(emailValue)
+        setFieldValidation(prev => ({
+          ...prev,
+          email: { ...validation, hasBeenTouched: true }
+        }))
+      }, 500)
       
-      const validation = validateEmail(email)
-      setFieldValidation(prev => ({
-        ...prev,
-        email: { ...validation, hasBeenTouched: true }
-      }))
-    }, 500),
+      debouncedFn(email)
+    },
     [touchedFields]
   )
   
   // Debounced password breach check
   const debouncedBreachCheck = useCallback(
-    debounce(async (password: string) => {
-      if (!password || password.length < 8) {
-        setPasswordBreached(null)
-        setIsCheckingBreach(false)
-        return
-      }
+    (password: string) => {
+      const debouncedFn = debounce(async (passwordValue: string) => {
+        if (!passwordValue || passwordValue.length < 8) {
+          setPasswordBreached(null)
+          setIsCheckingBreach(false)
+          return
+        }
+        
+        setIsCheckingBreach(true)
+        try {
+          const isBreached = await checkPasswordBreach(passwordValue)
+          setPasswordBreached(isBreached)
+        } catch (error) {
+          console.error('Breach check failed:', error)
+          setPasswordBreached(null)
+        } finally {
+          setIsCheckingBreach(false)
+        }
+      }, 1000)
       
-      setIsCheckingBreach(true)
-      try {
-        const isBreached = await checkPasswordBreach(password)
-        setPasswordBreached(isBreached)
-      } catch (error) {
-        console.error('Breach check failed:', error)
-        setPasswordBreached(null)
-      } finally {
-        setIsCheckingBreach(false)
-      }
-    }, 1000),
+      debouncedFn(password)
+    },
     []
   )
   
   // Debounced password confirmation validation
   const debouncedConfirmPasswordValidation = useCallback(
-    debounce((password: string, confirmPassword: string) => {
-      if (!confirmPassword || !touchedFields.has('confirmPassword')) return
+    (password: string, confirmPassword: string) => {
+      const debouncedFn = debounce((passwordValue: string, confirmPasswordValue: string) => {
+        if (!confirmPasswordValue || !touchedFields.has('confirmPassword')) return
+        
+        const isValid = passwordValue === confirmPasswordValue
+        setFieldValidation(prev => ({
+          ...prev,
+          confirmPassword: {
+            isValid,
+            error: isValid ? undefined : 'Passwords do not match',
+            hasBeenTouched: true
+          }
+        }))
+      }, 250)
       
-      const isValid = password === confirmPassword
-      setFieldValidation(prev => ({
-        ...prev,
-        confirmPassword: {
-          isValid,
-          error: isValid ? undefined : 'Passwords do not match',
-          hasBeenTouched: true
-        }
-      }))
-    }, 250),
+      debouncedFn(password, confirmPassword)
+    },
     [touchedFields]
   )
   

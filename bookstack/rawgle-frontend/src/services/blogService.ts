@@ -327,7 +327,12 @@ class BlogService {
       throw new Error(response.message || 'Failed to fetch comments');
     }
     
-    return response.data;
+    return response.data as {
+      comments: BlogComment[];
+      total: number;
+      page: number;
+      limit: number;
+    };
   }
 
   /**
@@ -386,7 +391,11 @@ class BlogService {
       throw new Error(response.message || 'Failed to vote on comment');
     }
     
-    return response.data;
+    return response.data as {
+      upvotes: number;
+      downvotes: number;
+      userVote: 'up' | 'down' | null;
+    };
   }
 
   /**
@@ -445,7 +454,14 @@ class BlogService {
       throw new Error(response.message || 'Failed to fetch blog statistics');
     }
     
-    return response.data;
+    return response.data as {
+      totalPosts: number;
+      totalComments: number;
+      totalViews: number;
+      totalSubscribers: number;
+      popularCategories: Array<{ name: string; count: number }>;
+      popularTags: Array<{ name: string; count: number }>;
+    };
   }
 
   /**

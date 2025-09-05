@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   Trophy, 
   Target, 
@@ -477,10 +478,12 @@ export default function ChallengesPage() {
 
                 {/* Expert Info */}
                 <div className="flex items-center mb-6 p-3 bg-gray-50 rounded-lg">
-                  <img 
+                  <Image 
                     src={challenge.expertAvatar} 
                     alt={challenge.expert}
-                    className="w-10 h-10 rounded-full mr-3"
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full mr-3 object-cover"
                   />
                   <div>
                     <div className="font-medium text-gray-900">{challenge.expert}</div>

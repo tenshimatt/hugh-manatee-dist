@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Calculator, 
@@ -102,38 +102,6 @@ export default function EnhancedPortionCalculator({
     portionAdjustment: 0
   })
 
-  // Load pet data when selected
-  useEffect(() => {
-    if (selectedPetId && pets.length > 0) {
-      const selectedPet = pets.find(pet => pet.id === selectedPetId)
-      if (selectedPet) {
-        setInputs(prev => ({
-          ...prev,
-          petId: selectedPet.id,
-          petName: selectedPet.name,
-          species: selectedPet.species,
-          weight: selectedPet.weight,
-          weightUnit: selectedPet.weight_unit,
-          age: calculateAge(selectedPet.birthdate),
-          ageCategory: determineAgeCategory(selectedPet.species, calculateAge(selectedPet.birthdate)),
-          activityLevel: selectedPet.activity_level,
-          specialConditions: selectedPet.spayed_neutered ? ['spayed_neutered'] : []
-        }))
-      }
-    }
-  }, [selectedPetId, pets])
-
-  // Auto-calculate when inputs change
-  useEffect(() => {
-    if (inputs.petName && inputs.weight > 0) {
-      const timeoutId = setTimeout(() => {
-        handleCalculate()
-      }, 500) // Debounce calculations
-      
-      return () => clearTimeout(timeoutId)
-    }
-  }, [inputs])
-
   // Helper function to calculate age from birthdate
   function calculateAge(birthdate: string): number {
     const birth = new Date(birthdate)
@@ -142,8 +110,23 @@ export default function EnhancedPortionCalculator({
     return Math.round(years * 10) / 10 // Round to 1 decimal place
   }
 
+  // Apply macro adjustments to the breakdown
+  const applyMacroAdjustments = useCallback((macros: any, adjs: typeof adjustments) => {
+    const adjusted = { ...macros }
+    
+    if (adjs.muscleAdjustment !== 0) {
+      const multiplier = 1 + (adjs.muscleAdjustment / 100)
+      adjusted.muscleMeat.weightOz *= multiplier
+      adjusted.muscleMeat.weightGrams *= multiplier
+      adjusted.muscleMeat.calories *= multiplier
+    }
+    
+    // Apply similar logic for other macros...
+    return adjusted
+  }, [])
+
   // Calculate portion with current inputs
-  const handleCalculate = () => {
+  const handleCalculate = useCallback(() => {
     if (!inputs.petName || inputs.weight <= 0) return
     
     setIsCalculating(true)
@@ -174,22 +157,39 @@ export default function EnhancedPortionCalculator({
         setIsCalculating(false)
       }
     }, 1000)
-  }
+  }, [inputs, adjustments, applyMacroAdjustments])
 
-  // Apply macro adjustments to the breakdown
-  const applyMacroAdjustments = (macros: any, adjs: typeof adjustments) => {
-    const adjusted = { ...macros }
-    
-    if (adjs.muscleAdjustment !== 0) {
-      const multiplier = 1 + (adjs.muscleAdjustment / 100)
-      adjusted.muscleMeat.weightOz *= multiplier
-      adjusted.muscleMeat.weightGrams *= multiplier
-      adjusted.muscleMeat.calories *= multiplier
+  // Load pet data when selected
+  useEffect(() => {
+    if (selectedPetId && pets.length > 0) {
+      const selectedPet = pets.find(pet => pet.id === selectedPetId)
+      if (selectedPet) {
+        setInputs(prev => ({
+          ...prev,
+          petId: selectedPet.id,
+          petName: selectedPet.name,
+          species: selectedPet.species,
+          weight: selectedPet.weight,
+          weightUnit: selectedPet.weight_unit,
+          age: calculateAge(selectedPet.birthdate),
+          ageCategory: determineAgeCategory(selectedPet.species, calculateAge(selectedPet.birthdate)),
+          activityLevel: selectedPet.activity_level,
+          specialConditions: selectedPet.spayed_neutered ? ['spayed_neutered'] : []
+        }))
+      }
     }
-    
-    // Apply similar logic for other macros...
-    return adjusted
-  }
+  }, [selectedPetId, pets])
+
+  // Auto-calculate when inputs change
+  useEffect(() => {
+    if (inputs.petName && inputs.weight > 0) {
+      const timeoutId = setTimeout(() => {
+        handleCalculate()
+      }, 500) // Debounce calculations
+      
+      return () => clearTimeout(timeoutId)
+    }
+  }, [inputs, handleCalculate])
 
   // Handle special condition toggle
   const toggleSpecialCondition = (condition: SpecialCondition) => {

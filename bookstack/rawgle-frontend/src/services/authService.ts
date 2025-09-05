@@ -225,7 +225,19 @@ class AuthService {
       throw new Error(response.message || 'Failed to fetch activity log');
     }
     
-    return response.data;
+    return response.data as {
+      activities: Array<{
+        id: string;
+        type: string;
+        description: string;
+        ipAddress: string;
+        userAgent: string;
+        createdAt: string;
+      }>;
+      total: number;
+      page: number;
+      limit: number;
+    };
   }
 
   /**
@@ -323,7 +335,14 @@ class AuthService {
       throw new Error(response.message || 'Failed to fetch sessions');
     }
     
-    return response.data;
+    return response.data as Array<{
+      id: string;
+      deviceType: string;
+      location: string;
+      ipAddress: string;
+      lastActivity: string;
+      current: boolean;
+    }>;
   }
 
   /**

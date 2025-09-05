@@ -72,7 +72,7 @@ export default function FeedingPage() {
     }
     
     fetchPets()
-  }, [])
+  }, [selectedPetId])
   
   // Fetch feeding entries when pet is selected
   useEffect(() => {

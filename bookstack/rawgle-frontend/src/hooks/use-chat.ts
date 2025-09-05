@@ -86,6 +86,7 @@ export function useChat(initialPetContext?: PetContext) {
   // Voice state
   const [isListening, setIsListening] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   // Refs
   const chatAPI = useRef(ChatAPI);
@@ -94,6 +95,9 @@ export function useChat(initialPetContext?: PetContext) {
 
   // Current conversation computed
   const currentConversation = conversations.find(c => c.id === currentConversationId);
+
+  // Speech message handler ref to avoid dependency cycles
+  const sendMessageRef = useRef<((content: string, petContext?: PetContext) => Promise<void>) | null>(null);
 
   // Initialize speech APIs
   useEffect(() => {
@@ -108,8 +112,8 @@ export function useChat(initialPetContext?: PetContext) {
         
         recognitionRef.current.onresult = (event) => {
           const transcript = event.results[0][0].transcript;
-          if (transcript.trim()) {
-            sendMessage(transcript.trim());
+          if (transcript.trim() && sendMessageRef.current) {
+            sendMessageRef.current(transcript.trim());
           }
         };
         
@@ -196,20 +200,6 @@ export function useChat(initialPetContext?: PetContext) {
   }, [usage.resetTime]);
 
   // Actions
-  const openChat = useCallback(() => {
-    setIsOpen(true);
-    if (!currentConversationId && conversations.length === 0) {
-      startNewConversation();
-    }
-  }, [currentConversationId, conversations.length]);
-
-  const closeChat = useCallback(() => {
-    setIsOpen(false);
-    if (isListening) {
-      stopVoiceInput();
-    }
-  }, [isListening]);
-
   const startNewConversation = useCallback(() => {
     const newConversation: Conversation = {
       id: `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -225,6 +215,27 @@ export function useChat(initialPetContext?: PetContext) {
     setCurrentConversationId(newConversation.id);
     setError(null);
   }, [initialPetContext]);
+
+  const openChat = useCallback(() => {
+    setIsOpen(true);
+    if (!currentConversationId && conversations.length === 0) {
+      startNewConversation();
+    }
+  }, [currentConversationId, conversations.length, startNewConversation]);
+
+  const stopVoiceInput = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+  }, []);
+
+  const closeChat = useCallback(() => {
+    setIsOpen(false);
+    if (isListening) {
+      stopVoiceInput();
+    }
+  }, [isListening, stopVoiceInput]);
 
   const loadConversation = useCallback((id: string) => {
     setCurrentConversationId(id);
@@ -242,6 +253,24 @@ export function useChat(initialPetContext?: PetContext) {
   const checkUsageLimit = useCallback(() => {
     return usage.currentUsage < usage.dailyLimit;
   }, [usage.currentUsage, usage.dailyLimit]);
+
+  const speakMessage = useCallback((message: string) => {
+    if (!synthesisRef.current || !usage.features.voiceOutput) return;
+    
+    // Cancel any ongoing speech
+    synthesisRef.current.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    utterance.volume = 0.8;
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    synthesisRef.current.speak(utterance);
+  }, [usage.features.voiceOutput]);
 
   const sendMessage = useCallback(async (content: string, petContext?: PetContext) => {
     if (!content.trim()) return;
@@ -336,8 +365,14 @@ export function useChat(initialPetContext?: PetContext) {
     settings, 
     checkUsageLimit, 
     isVoiceEnabled,
-    startNewConversation
+    startNewConversation,
+    speakMessage
   ]);
+
+  // Update the ref whenever sendMessage changes
+  useEffect(() => {
+    sendMessageRef.current = sendMessage;
+  }, [sendMessage]);
 
   const retryLastMessage = useCallback(() => {
     if (!currentConversation || currentConversation.messages.length < 2) return;
@@ -373,27 +408,6 @@ export function useChat(initialPetContext?: PetContext) {
       console.error('Error starting voice recognition:', error);
     }
   }, [usage.features.voiceInput]);
-
-  const stopVoiceInput = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-    setIsListening(false);
-  }, []);
-
-  const speakMessage = useCallback((message: string) => {
-    if (!synthesisRef.current || !usage.features.voiceOutput) return;
-    
-    // Cancel any ongoing speech
-    synthesisRef.current.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(message);
-    utterance.rate = 0.9;
-    utterance.pitch = 1.0;
-    utterance.volume = 0.8;
-    
-    synthesisRef.current.speak(utterance);
-  }, [usage.features.voiceOutput]);
 
   const updateSettings = useCallback((newSettings: Partial<ChatSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));

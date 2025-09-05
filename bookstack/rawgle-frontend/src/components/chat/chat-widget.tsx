@@ -76,7 +76,7 @@ export function ChatWidget({
     if (defaultOpen) {
       chat.openChat();
     }
-  }, [defaultOpen]);
+  }, [defaultOpen, chat]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

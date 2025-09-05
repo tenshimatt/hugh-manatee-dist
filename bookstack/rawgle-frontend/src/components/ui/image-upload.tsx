@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import { Camera, Upload, X, Check } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -163,10 +164,13 @@ export function ImageUpload({
         {currentImage ? (
           // Show uploaded image
           <div className="relative w-full h-full">
-            <img
+            <Image
               src={currentImage}
               alt="Pet photo"
+              width={128}
+              height={128}
               className="w-full h-full object-cover rounded-full"
+              priority
             />
             {/* Remove button */}
             <button
