@@ -306,4 +306,4 @@ MIT License - see LICENSE file
 
 ---
 
-**Built with ❤️ for the raw pet food community**
+**Built with ❤️ for the raw pet food community**# Trigger Vercel deployment via GitHub Actions
