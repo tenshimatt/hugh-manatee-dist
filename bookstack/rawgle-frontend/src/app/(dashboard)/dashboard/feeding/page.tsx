@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Utensils, 
@@ -25,8 +25,7 @@ import { FeedingTimeline } from '@/components/feeding/feeding-timeline'
 import type { FeedingEntry, DailyFeedingSummary } from '@/types/feeding'
 import type { PetProfile } from '@/types/pet'
 
-
-export default function FeedingPage() {
+function FeedingPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -332,5 +331,17 @@ export default function FeedingPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function FeedingPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <FeedingPageContent />
+    </Suspense>
   )
 }
