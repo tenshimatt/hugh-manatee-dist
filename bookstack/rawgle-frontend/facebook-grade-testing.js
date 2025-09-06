@@ -87,8 +87,8 @@ class FacebookGradeTestSuite {
     const page = await browser.newPage();
     
     const testPages = [
-      { name: 'health-logs', url: 'http://localhost:3001/dashboard/health/logs' },
-      { name: 'health-dashboard', url: 'http://localhost:3001/dashboard/health' }
+      { name: 'health-logs', url: 'http://localhost:3000/dashboard/health/logs' },
+      { name: 'health-dashboard', url: 'http://localhost:3000/dashboard/health' }
     ];
 
     let totalPixelDifference = 0;
@@ -255,8 +255,8 @@ class FacebookGradeTestSuite {
     const page = await browser.newPage();
 
     const testUrls = [
-      'http://localhost:3001/dashboard/health/logs',
-      'http://localhost:3001/dashboard/health'
+      'http://localhost:3000/dashboard/health/logs',
+      'http://localhost:3000/dashboard/health'
     ];
 
     let totalLoadTime = 0;
@@ -327,7 +327,7 @@ class FacebookGradeTestSuite {
     const page = await browser.newPage();
 
     const testUrls = [
-      'http://localhost:3001/dashboard/health/logs'
+      'http://localhost:3000/dashboard/health/logs'
     ];
 
     let totalScore = 0;
@@ -474,7 +474,7 @@ class FacebookGradeTestSuite {
         const browser = await browserType.launch();
         const page = await browser.newPage();
         
-        await page.goto('http://localhost:3001/dashboard/health/logs');
+        await page.goto('http://localhost:3000/dashboard/health/logs');
         await page.waitForLoadState('networkidle');
         
         // Basic functionality check

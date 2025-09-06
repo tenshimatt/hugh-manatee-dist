@@ -29,14 +29,14 @@ echo -e "${BLUE}📋 STEP 1: Pre-deployment Environment Checks${NC}"
 echo "============================================="
 
 # Check if dev server is running
-if ! curl -s http://localhost:3001/dashboard/health/logs > /dev/null; then
+if ! curl -s http://localhost:3000/dashboard/health/logs > /dev/null; then
     echo -e "${YELLOW}⚠️  Starting development server...${NC}"
     npm run dev &
     sleep 10
 fi
 
 # Verify server is responsive
-if curl -s http://localhost:3001/dashboard/health/logs > /dev/null; then
+if curl -s http://localhost:3000/dashboard/health/logs > /dev/null; then
     echo -e "${GREEN}✅ Development server running${NC}"
 else
     echo -e "${RED}❌ DEPLOYMENT BLOCKED: Server not responding${NC}"
