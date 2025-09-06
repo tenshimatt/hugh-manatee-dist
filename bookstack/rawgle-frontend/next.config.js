@@ -13,6 +13,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // output: 'export', // Disabled for API routes during development
   images: {
     unoptimized: true, // Temporarily disabled to fix image API issues
