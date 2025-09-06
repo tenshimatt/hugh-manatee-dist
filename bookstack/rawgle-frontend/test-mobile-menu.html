@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Menu Test - RAWGLE</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        .test-container {
+            max-width: 414px;
+            margin: 0 auto;
+            border: 2px solid #ccc;
+            height: 896px;
+            overflow: hidden;
+            position: relative;
+        }
+        .test-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: yellow;
+            padding: 10px;
+            z-index: 1000;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .instructions {
+            margin: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h2>Mobile Menu Click Test</h2>
+        <p><strong>Test Steps:</strong></p>
+        <ol>
+            <li>Look for the hamburger menu button (≡) in the top-right</li>
+            <li>Click/tap the hamburger button</li>
+            <li>Verify the mobile menu opens</li>
+            <li>Click menu items to test navigation</li>
+            <li>Click the X button to close</li>
+        </ol>
+        <p><strong>Expected Result:</strong> Mobile menu should open/close without 30-second timeouts</p>
+    </div>
+    
+    <div class="test-info">
+        Mobile Test: 414x896 (iPhone 11 Pro Max)
+    </div>
+    
+    <div class="test-container">
+        <iframe src="http://localhost:3000" title="Mobile Menu Test"></iframe>
+    </div>
+    
+    <script>
+        // Log iframe load status
+        const iframe = document.querySelector('iframe');
+        iframe.addEventListener('load', () => {
+            console.log('✅ RAWGLE app loaded successfully');
+        });
+        
+        iframe.addEventListener('error', () => {
+            console.log('❌ Failed to load RAWGLE app');
+        });
+        
+        // Test device viewport
+        console.log('Test viewport:', window.innerWidth + 'x' + window.innerHeight);
+        console.log('Device pixel ratio:', window.devicePixelRatio);
+        
+        // Debug pointer events
+        document.addEventListener('click', (e) => {
+            console.log('Click detected:', e.target, 'at', e.clientX, e.clientY);
+        });
+    </script>
+</body>
+</html>

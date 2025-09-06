@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import EnhancedPortionCalculator from '@/components/calculator/enhanced-portion-calculator'
 import { PetProfile } from '@/types/pet'
 
 export default function FeedingCalculatorPage() {
-  const { user } = useUser()
+  // Use mock user data when Clerk is disabled
+  const user = { id: 'demo-user' }
+  
   const router = useRouter()
   const [pets, setPets] = useState<PetProfile[]>([])
   const [selectedPetId, setSelectedPetId] = useState<string>('')

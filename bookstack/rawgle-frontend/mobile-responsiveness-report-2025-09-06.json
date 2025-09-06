@@ -1,0 +1,1093 @@
+{
+  "metadata": {
+    "testDate": "2025-09-06T08:07:39.150Z",
+    "testDuration": "61 seconds",
+    "totalTests": 55,
+    "baseUrl": "http://localhost:3000",
+    "viewportConfigurations": [
+      {
+        "name": "iPhone SE",
+        "width": 375,
+        "height": 667,
+        "deviceScaleFactor": 2,
+        "isMobile": true
+      },
+      {
+        "name": "iPhone 12 Pro",
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 3,
+        "isMobile": true
+      },
+      {
+        "name": "iPad",
+        "width": 768,
+        "height": 1024,
+        "deviceScaleFactor": 2,
+        "isMobile": true
+      },
+      {
+        "name": "Small Mobile",
+        "width": 320,
+        "height": 568,
+        "deviceScaleFactor": 2,
+        "isMobile": true
+      },
+      {
+        "name": "Large Mobile",
+        "width": 414,
+        "height": 896,
+        "deviceScaleFactor": 3,
+        "isMobile": true
+      }
+    ],
+    "pagesTestedCount": 11
+  },
+  "summary": {
+    "totalTests": 55,
+    "passCount": 0,
+    "warningCount": 0,
+    "failCount": 55,
+    "errorCount": 0,
+    "criticalIssuesCount": 0,
+    "byViewport": {
+      "iPhone SE": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "iPhone 12 Pro": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "iPad": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Small Mobile": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Large Mobile": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      }
+    },
+    "byPage": {
+      "Homepage": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Pet Dashboard": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Feeding Dashboard": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Health Dashboard": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Community Hub": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Shop Marketplace": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "AI Chat": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Login Page": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Register Page": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Location Services": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      },
+      "Getting Started": {
+        "pass": 0,
+        "warning": 0,
+        "fail": 0,
+        "error": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "page": "Homepage",
+      "path": "/",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:41.942Z"
+    },
+    {
+      "page": "Homepage",
+      "path": "/",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:44.267Z"
+    },
+    {
+      "page": "Homepage",
+      "path": "/",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:45.310Z"
+    },
+    {
+      "page": "Homepage",
+      "path": "/",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:46.360Z"
+    },
+    {
+      "page": "Homepage",
+      "path": "/",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:47.373Z"
+    },
+    {
+      "page": "Pet Dashboard",
+      "path": "/dashboard/pets",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:48.443Z"
+    },
+    {
+      "page": "Pet Dashboard",
+      "path": "/dashboard/pets",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:49.575Z"
+    },
+    {
+      "page": "Pet Dashboard",
+      "path": "/dashboard/pets",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:50.406Z"
+    },
+    {
+      "page": "Pet Dashboard",
+      "path": "/dashboard/pets",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:51.209Z"
+    },
+    {
+      "page": "Pet Dashboard",
+      "path": "/dashboard/pets",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:52.110Z"
+    },
+    {
+      "page": "Feeding Dashboard",
+      "path": "/dashboard/feeding",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:53.049Z"
+    },
+    {
+      "page": "Feeding Dashboard",
+      "path": "/dashboard/feeding",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:54.212Z"
+    },
+    {
+      "page": "Feeding Dashboard",
+      "path": "/dashboard/feeding",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:55.279Z"
+    },
+    {
+      "page": "Feeding Dashboard",
+      "path": "/dashboard/feeding",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:56.347Z"
+    },
+    {
+      "page": "Feeding Dashboard",
+      "path": "/dashboard/feeding",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:57.347Z"
+    },
+    {
+      "page": "Health Dashboard",
+      "path": "/dashboard/health",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:58.299Z"
+    },
+    {
+      "page": "Health Dashboard",
+      "path": "/dashboard/health",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:07:59.267Z"
+    },
+    {
+      "page": "Health Dashboard",
+      "path": "/dashboard/health",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:00.074Z"
+    },
+    {
+      "page": "Health Dashboard",
+      "path": "/dashboard/health",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:00.908Z"
+    },
+    {
+      "page": "Health Dashboard",
+      "path": "/dashboard/health",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:01.779Z"
+    },
+    {
+      "page": "Community Hub",
+      "path": "/community",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:02.606Z"
+    },
+    {
+      "page": "Community Hub",
+      "path": "/community",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:03.946Z"
+    },
+    {
+      "page": "Community Hub",
+      "path": "/community",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:04.824Z"
+    },
+    {
+      "page": "Community Hub",
+      "path": "/community",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:05.708Z"
+    },
+    {
+      "page": "Community Hub",
+      "path": "/community",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:06.580Z"
+    },
+    {
+      "page": "Shop Marketplace",
+      "path": "/shop",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:07.462Z"
+    },
+    {
+      "page": "Shop Marketplace",
+      "path": "/shop",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:08.419Z"
+    },
+    {
+      "page": "Shop Marketplace",
+      "path": "/shop",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:09.241Z"
+    },
+    {
+      "page": "Shop Marketplace",
+      "path": "/shop",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:10.059Z"
+    },
+    {
+      "page": "Shop Marketplace",
+      "path": "/shop",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "high",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:10.878Z"
+    },
+    {
+      "page": "AI Chat",
+      "path": "/chat",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:11.729Z"
+    },
+    {
+      "page": "AI Chat",
+      "path": "/chat",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:12.739Z"
+    },
+    {
+      "page": "AI Chat",
+      "path": "/chat",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:13.590Z"
+    },
+    {
+      "page": "AI Chat",
+      "path": "/chat",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:14.490Z"
+    },
+    {
+      "page": "AI Chat",
+      "path": "/chat",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:15.374Z"
+    },
+    {
+      "page": "Login Page",
+      "path": "/auth/login",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:16.225Z"
+    },
+    {
+      "page": "Login Page",
+      "path": "/auth/login",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:17.373Z"
+    },
+    {
+      "page": "Login Page",
+      "path": "/auth/login",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:18.426Z"
+    },
+    {
+      "page": "Login Page",
+      "path": "/auth/login",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:19.441Z"
+    },
+    {
+      "page": "Login Page",
+      "path": "/auth/login",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:20.484Z"
+    },
+    {
+      "page": "Register Page",
+      "path": "/auth/register",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:21.640Z"
+    },
+    {
+      "page": "Register Page",
+      "path": "/auth/register",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:22.823Z"
+    },
+    {
+      "page": "Register Page",
+      "path": "/auth/register",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:23.858Z"
+    },
+    {
+      "page": "Register Page",
+      "path": "/auth/register",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:24.875Z"
+    },
+    {
+      "page": "Register Page",
+      "path": "/auth/register",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "critical",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:25.890Z"
+    },
+    {
+      "page": "Location Services",
+      "path": "/locations",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:26.940Z"
+    },
+    {
+      "page": "Location Services",
+      "path": "/locations",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:29.435Z"
+    },
+    {
+      "page": "Location Services",
+      "path": "/locations",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:31.028Z"
+    },
+    {
+      "page": "Location Services",
+      "path": "/locations",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:32.629Z"
+    },
+    {
+      "page": "Location Services",
+      "path": "/locations",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:34.240Z"
+    },
+    {
+      "page": "Getting Started",
+      "path": "/learn/getting-started",
+      "viewport": "iPhone SE",
+      "dimensions": "375x667",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:35.996Z"
+    },
+    {
+      "page": "Getting Started",
+      "path": "/learn/getting-started",
+      "viewport": "iPhone 12 Pro",
+      "dimensions": "390x844",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:37.093Z"
+    },
+    {
+      "page": "Getting Started",
+      "path": "/learn/getting-started",
+      "viewport": "iPad",
+      "dimensions": "768x1024",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:37.980Z"
+    },
+    {
+      "page": "Getting Started",
+      "path": "/learn/getting-started",
+      "viewport": "Small Mobile",
+      "dimensions": "320x568",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:38.807Z"
+    },
+    {
+      "page": "Getting Started",
+      "path": "/learn/getting-started",
+      "viewport": "Large Mobile",
+      "dimensions": "414x896",
+      "priority": "medium",
+      "tests": {
+        "pageLoad": {
+          "status": "error",
+          "error": "page.waitForTimeout is not a function"
+        }
+      },
+      "issues": [],
+      "recommendations": [],
+      "screenshot": null,
+      "timestamp": "2025-09-06T08:08:39.626Z"
+    }
+  ],
+  "prioritizedIssues": [],
+  "recommendations": []
+}

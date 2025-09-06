@@ -12,7 +12,7 @@ const nextConfig = {
   reactStrictMode: true,
   // output: 'export', // Disabled for API routes during development
   images: {
-    // unoptimized: true, // Disabled to enable image optimization
+    unoptimized: true, // Temporarily disabled to fix image API issues
     remotePatterns: [
       {
         protocol: 'https',
@@ -27,8 +27,8 @@ const nextConfig = {
         hostname: '**.placeholder.com',
       },
     ],
-    // Image optimization settings for better performance
-    formats: ['image/webp', 'image/avif'],
+    // Image optimization settings for better performance (disabled for now)
+    // formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,

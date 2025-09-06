@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Menu Debug</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Debug styles to identify click interception */
+        .debug-outline {
+            outline: 2px solid red !important;
+        }
+        .debug-pointer-events {
+            pointer-events: auto !important;
+            background-color: rgba(255, 0, 0, 0.1) !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation Header -->
+        <header class="fixed top-0 z-50 w-full bg-white shadow-sm">
+            <nav class="container mx-auto px-4">
+                <div class="flex h-16 items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="text-3xl">🐾</div>
+                        <span class="text-2xl font-bold">RAWGLE</span>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button 
+                        id="mobile-menu-toggle"
+                        class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 debug-outline debug-pointer-events"
+                        type="button"
+                        aria-label="Toggle mobile menu"
+                        onclick="toggleMobileMenu()"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+            
+            <!-- Mobile Menu Overlay -->
+            <div 
+                id="mobile-menu"
+                class="lg:hidden bg-white border-t shadow-lg hidden"
+                role="navigation"
+                aria-label="Mobile navigation menu"
+            >
+                <div class="container mx-auto px-4 py-4">
+                    <div class="max-h-[calc(100vh-80px)] overflow-y-auto">
+                        <div class="space-y-3">
+                            <a href="#" class="block p-3 text-sm font-medium rounded-lg hover:bg-gray-100 min-h-[44px] flex items-center debug-pointer-events">
+                                Home
+                            </a>
+                            <a href="#" class="block p-3 text-sm font-medium rounded-lg hover:bg-gray-100 min-h-[44px] flex items-center debug-pointer-events">
+                                Features
+                            </a>
+                            <a href="#" class="block p-3 text-sm font-medium rounded-lg hover:bg-gray-100 min-h-[44px] flex items-center debug-pointer-events">
+                                Pricing
+                            </a>
+                            <a href="#" class="block p-3 text-sm font-medium rounded-lg hover:bg-gray-100 min-h-[44px] flex items-center debug-pointer-events">
+                                Contact
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content (This might be causing click interception) -->
+        <main class="pt-16">
+            <div class="flex flex-col space-y-1.5 p-6">
+                <h1 class="text-2xl font-bold">Main Content</h1>
+                <p>This div might be intercepting pointer events on mobile menu.</p>
+                <p>Testing click interception issues...</p>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        let isMenuOpen = false;
+        
+        function toggleMobileMenu() {
+            console.log('Mobile menu toggle clicked!');
+            const menu = document.getElementById('mobile-menu');
+            const button = document.getElementById('mobile-menu-toggle');
+            
+            isMenuOpen = !isMenuOpen;
+            
+            if (isMenuOpen) {
+                menu.classList.remove('hidden');
+                button.setAttribute('aria-expanded', 'true');
+                console.log('Menu opened');
+            } else {
+                menu.classList.add('hidden');
+                button.setAttribute('aria-expanded', 'false');
+                console.log('Menu closed');
+            }
+        }
+        
+        // Debug: Log all click events
+        document.addEventListener('click', function(e) {
+            console.log('Click detected on:', e.target);
+            console.log('Click coordinates:', e.clientX, e.clientY);
+            console.log('Target element:', e.target.tagName, e.target.className);
+        });
+        
+        // Debug: Test pointer events
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.getElementById('mobile-menu-toggle');
+            const rect = button.getBoundingClientRect();
+            console.log('Mobile menu button position:', rect);
+            console.log('Mobile menu button z-index:', getComputedStyle(button).zIndex);
+            console.log('Mobile menu button pointer-events:', getComputedStyle(button).pointerEvents);
+        });
+    </script>
+</body>
+</html>

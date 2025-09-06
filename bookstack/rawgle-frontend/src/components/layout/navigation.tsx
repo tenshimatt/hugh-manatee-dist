@@ -194,10 +194,15 @@ export function Navigation() {
 
   // Memoized handlers to ensure consistent references
   const handleMobileMenuToggle = useCallback(() => {
-    setMobileMenuOpen(prev => !prev)
+    console.log('Mobile menu toggle clicked - current state:', mobileMenuOpen)
+    setMobileMenuOpen(prev => {
+      const newState = !prev
+      console.log('Mobile menu state changed to:', newState)
+      return newState
+    })
     // Close desktop dropdowns when opening mobile menu
     setActiveDesktopDropdown(null)
-  }, [])
+  }, [mobileMenuOpen])
 
   const handleThemeToggle = useCallback(() => {
     if (theme === 'dark') {
@@ -249,11 +254,12 @@ export function Navigation() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+      className={`fixed top-0 z-[100] w-full transition-all duration-300 ${
         scrolled
           ? 'bg-background/95 backdrop-blur-sm border-b shadow-sm'
           : 'bg-transparent'
       }`}
+      style={{ pointerEvents: 'auto' }}
     >
       <nav className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
@@ -400,11 +406,18 @@ export function Navigation() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={handleMobileMenuToggle}
-              className="lg:hidden p-2 rounded-lg hover:bg-muted transition-all duration-200 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+              className="mobile-menu-toggle lg:hidden p-2 rounded-lg hover:bg-muted transition-all duration-200 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
               type="button"
               aria-label={mobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
               aria-expanded={mobileMenuOpen ? "true" : "false"}
               aria-controls="mobile-navigation-menu"
+              style={{ 
+                pointerEvents: 'auto',
+                touchAction: 'manipulation',
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
             >
               <AnimatePresence mode="wait">
                 {mobileMenuOpen ? (
@@ -443,9 +456,14 @@ export function Navigation() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className="lg:hidden bg-background/95 backdrop-blur-sm border-b shadow-lg"
+            className="lg:hidden bg-background/95 backdrop-blur-sm border-b shadow-lg relative z-[90]"
             role="navigation"
             aria-label="Mobile navigation menu"
+            style={{ 
+              pointerEvents: 'auto',
+              position: 'relative',
+              isolation: 'isolate'
+            }}
           >
             <div className="container mx-auto px-4 py-4">
               <div className="max-h-[calc(100vh-80px)] overflow-y-auto scrollbar-hide">
@@ -456,10 +474,14 @@ export function Navigation() {
                         <div className="space-y-2">
                           <button
                             onClick={() => handleSectionToggle(item.name)}
-                            className="w-full flex items-center justify-between p-3 rounded-lg text-left font-medium text-sm hover:bg-muted transition-all duration-200 cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            className="w-full flex items-center justify-between p-3 rounded-lg text-left font-medium text-sm hover:bg-muted transition-all duration-200 cursor-pointer min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary/50 relative z-[95]"
                             type="button"
                             aria-expanded={expandedSection === item.name ? "true" : "false"}
                             aria-controls={`mobile-section-${item.name.replace(/\s+/g, '-').toLowerCase()}`}
+                            style={{ 
+                              pointerEvents: 'auto',
+                              touchAction: 'manipulation'
+                            }}
                           >
                             <div className="flex items-center gap-2">
                               {item.icon && <item.icon className="w-5 h-5 text-primary" aria-hidden="true" />}
@@ -486,8 +508,12 @@ export function Navigation() {
                                   <Link
                                     key={child.name}
                                     href={child.href}
-                                    className="block p-3 text-sm rounded-lg hover:bg-muted/50 hover:text-primary transition-all duration-200 cursor-pointer min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    className="block p-3 text-sm rounded-lg hover:bg-muted/50 hover:text-primary transition-all duration-200 cursor-pointer min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50 relative z-[95]"
                                     onClick={handleMobileMenuClose}
+                                    style={{ 
+                                      pointerEvents: 'auto',
+                                      touchAction: 'manipulation'
+                                    }}
                                   >
                                     <span>{child.name}</span>
                                   </Link>
@@ -499,8 +525,12 @@ export function Navigation() {
                       ) : (
                         <Link
                           href={item.href}
-                          className="block p-3 text-sm font-medium rounded-lg hover:bg-muted hover:text-primary transition-all duration-200 cursor-pointer min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          className="block p-3 text-sm font-medium rounded-lg hover:bg-muted hover:text-primary transition-all duration-200 cursor-pointer min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50 relative z-[95]"
                           onClick={handleMobileMenuClose}
+                          style={{ 
+                            pointerEvents: 'auto',
+                            touchAction: 'manipulation'
+                          }}
                         >
                           {item.name}
                         </Link>

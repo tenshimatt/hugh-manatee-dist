@@ -109,8 +109,8 @@ export function ComingSoonPage({
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-8"
           >
-            <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
-              <IconComponent className="h-12 w-12 text-primary" />
+            <div className="mx-auto w-24 h-24 bg-pumpkin/10 rounded-full flex items-center justify-center">
+              <IconComponent className="h-12 w-12 text-pumpkin" />
             </div>
           </motion.div>
 
@@ -135,9 +135,9 @@ export function ComingSoonPage({
               transition={{ duration: 0.5, delay: 0.4 }}
               className="mb-8"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary rounded-full">
-                <Clock className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Estimated Launch: {estimatedLaunch}</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-sunglow/20 rounded-full">
+                <Clock className="h-4 w-4 text-pumpkin" />
+                <span className="text-sm font-medium text-charcoal">Estimated Launch: {estimatedLaunch}</span>
               </div>
             </motion.div>
           )}
@@ -160,7 +160,7 @@ export function ComingSoonPage({
                     transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
+                    <div className="w-2 h-2 bg-pumpkin rounded-full flex-shrink-0" />
                     <span className="text-sm text-muted-foreground">{feature}</span>
                   </motion.div>
                 ))}
@@ -193,9 +193,9 @@ export function ComingSoonPage({
         >
           <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <div className="flex gap-1">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-              <div className="w-2 h-2 bg-primary/40 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+              <div className="w-2 h-2 bg-pumpkin rounded-full animate-pulse" />
+              <div className="w-2 h-2 bg-pumpkin/60 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+              <div className="w-2 h-2 bg-pumpkin/40 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
             </div>
             <span>Under Development</span>
           </div>

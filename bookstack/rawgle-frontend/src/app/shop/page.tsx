@@ -235,7 +235,7 @@ export default function ShopPage() {
             {/* Local Stores */}
             <Card className="p-6">
               <div className="flex items-center mb-4">
-                <MapPin className="h-5 w-5 text-blue-500 mr-2" />
+                <MapPin className="h-5 w-5 text-zomp mr-2" />
                 <h3 className="text-lg font-semibold">Nearby Stores</h3>
               </div>
               <div className="space-y-3">
@@ -269,11 +269,11 @@ export default function ShopPage() {
               <h3 className="text-lg font-semibold mb-4">Why Shop with RAWGLE?</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center">
-                  <Shield className="h-4 w-4 text-green-500 mr-2" />
+                  <Shield className="h-4 w-4 text-olivine mr-2" />
                   <span>Quality Guaranteed</span>
                 </div>
                 <div className="flex items-center">
-                  <Truck className="h-4 w-4 text-blue-500 mr-2" />
+                  <Truck className="h-4 w-4 text-zomp mr-2" />
                   <span>Fast Local Delivery</span>
                 </div>
                 <div className="flex items-center">

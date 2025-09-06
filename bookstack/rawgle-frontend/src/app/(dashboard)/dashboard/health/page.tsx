@@ -322,17 +322,17 @@ export default function HealthPage() {
           className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12"
         >
           {[
-            { label: "Pets Monitored", value: "3", icon: Heart, color: "red" },
-            { label: "Overdue Items", value: "1", icon: AlertTriangle, color: "orange" },
-            { label: "Avg Health Score", value: "92", icon: TrendingUp, color: "green" },
-            { label: "Next Appointment", value: "Tomorrow", icon: Calendar, color: "blue" }
+            { label: "Pets Monitored", value: "3", icon: Heart, colorClass: "text-red-600" },
+            { label: "Overdue Items", value: "1", icon: AlertTriangle, colorClass: "text-orange-600" },
+            { label: "Avg Health Score", value: "92", icon: TrendingUp, colorClass: "text-green-600" },
+            { label: "Next Appointment", value: "Tomorrow", icon: Calendar, colorClass: "text-blue-600" }
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
               whileHover={{ scale: 1.05 }}
               className="bg-white rounded-xl p-6 shadow-lg text-center"
             >
-              <stat.icon className={`h-8 w-8 text-${stat.color}-600 mx-auto mb-2`} />
+              <stat.icon className={`h-8 w-8 ${stat.colorClass} mx-auto mb-2`} />
               <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
               <div className="text-sm text-gray-600">{stat.label}</div>
             </motion.div>

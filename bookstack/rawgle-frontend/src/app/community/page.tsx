@@ -254,7 +254,7 @@ export default function CommunityPage() {
             <motion.div
               key={stat.label}
               whileHover={{ scale: 1.05 }}
-              className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-l-blue-500"
+              className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-l-zomp"
             >
               <stat.icon className={`h-8 w-8 text-${stat.color}-600 mb-2`} />
               <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
@@ -276,7 +276,7 @@ export default function CommunityPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
                 activeTab === tab.id
-                  ? 'bg-blue-500 text-white shadow-lg'
+                  ? 'bg-zomp text-white shadow-lg'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -352,7 +352,7 @@ export default function CommunityPage() {
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div 
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                              className="bg-zomp h-2 rounded-full transition-all duration-500"
                               style={{ width: `${challenge.progress}%` }}
                             ></div>
                           </div>
@@ -379,7 +379,7 @@ export default function CommunityPage() {
               {/* Recent Activity Sidebar */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                  <Clock className="h-6 w-6 text-green-500 mr-2" />
+                  <Clock className="h-6 w-6 text-olivine mr-2" />
                   Recent Activity
                 </h2>
                 <div className="bg-white rounded-xl p-6 shadow-lg">
@@ -548,14 +548,14 @@ export default function CommunityPage() {
                           className="w-16 h-16 rounded-full mr-4 object-cover"
                         />
                         <div className={`absolute bottom-0 right-4 w-4 h-4 rounded-full border-2 border-white ${
-                          expert.status === 'online' ? 'bg-green-500' : 'bg-yellow-500'
+                          expert.status === 'online' ? 'bg-olivine' : 'bg-sunglow'
                         }`}></div>
                       </div>
                       <div>
                         <div className="flex items-center">
                           <h3 className="text-lg font-bold text-gray-900">{expert.name}</h3>
                           {expert.verified && (
-                            <BadgeCheck className="h-5 w-5 text-blue-500 ml-2" />
+                            <BadgeCheck className="h-5 w-5 text-zomp ml-2" />
                           )}
                         </div>
                         <p className="text-sm text-gray-600">{expert.title}</p>
@@ -604,7 +604,7 @@ export default function CommunityPage() {
 
                     <Link 
                       href={`/community/experts/${expert.id}`}
-                      className="block w-full bg-blue-500 text-white text-center py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                      className="block w-full bg-zomp text-white text-center py-2 rounded-lg hover:bg-zomp/90 transition-colors"
                     >
                       View Profile
                     </Link>
@@ -629,7 +629,7 @@ export default function CommunityPage() {
                 <h2 className="text-2xl font-bold text-gray-900">Community Recipes</h2>
                 <Link 
                   href="/community/recipes/share"
-                  className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center"
+                  className="bg-olivine text-white px-6 py-3 rounded-lg hover:bg-olivine/90 transition-colors flex items-center"
                 >
                   <ChefHat className="h-5 w-5 mr-2" />
                   Share Recipe
@@ -680,7 +680,7 @@ export default function CommunityPage() {
 
                       <Link 
                         href={`/community/recipes/${recipe.id}`}
-                        className="block w-full bg-green-500 text-white text-center py-2 rounded-lg hover:bg-green-600 transition-colors"
+                        className="block w-full bg-olivine text-white text-center py-2 rounded-lg hover:bg-olivine/90 transition-colors"
                       >
                         View Recipe
                       </Link>

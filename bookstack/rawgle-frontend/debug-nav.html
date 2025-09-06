@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-link {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🐾 RAWGLE Navigation Debug Test</h1>
+        
+        <div class="status success">
+            <strong>✅ CRITICAL BUG FIX IMPLEMENTED</strong><br>
+            Navigation dropdown disappearing issue has been resolved with proper state management.
+        </div>
+
+        <div class="status info">
+            <strong>🔧 FIXES IMPLEMENTED:</strong><br>
+            • Added React state management for desktop dropdowns<br>
+            • Implemented proper click and hover event handling<br>
+            • Added event propagation prevention<br>
+            • Enhanced keyboard accessibility with ARIA attributes<br>
+            • Added smooth transitions and visual feedback<br>
+            • Integrated click-outside behavior for proper UX<br>
+        </div>
+
+        <h2>Test Navigation Functionality:</h2>
+        
+        <a href="http://localhost:3000" class="test-link" target="_blank">
+            🧪 Test Main Site Navigation
+        </a>
+
+        <h3>Expected Behavior After Fix:</h3>
+        <ul>
+            <li><strong>Desktop (hover):</strong> Menu items show dropdowns on hover, stay visible when moving mouse between button and dropdown</li>
+            <li><strong>Desktop (click):</strong> Clicking menu buttons toggles dropdown visibility</li>
+            <li><strong>Touch devices:</strong> Tap menu buttons to show/hide dropdowns</li>
+            <li><strong>Accessibility:</strong> Screen readers get proper ARIA expanded states</li>
+            <li><strong>Visual feedback:</strong> ChevronDown icon rotates when dropdown opens</li>
+            <li><strong>Click outside:</strong> Clicking elsewhere closes active dropdowns</li>
+        </ul>
+
+        <h3>Key Technical Changes:</h3>
+        <ul>
+            <li>Added <code>activeDesktopDropdown</code> state for managing dropdown visibility</li>
+            <li>Replaced CSS-only <code>group-hover</code> with React state management</li>
+            <li>Added <code>onMouseEnter</code> and <code>onClick</code> handlers to buttons</li>
+            <li>Implemented <code>onMouseLeave</code> with delay for better UX</li>
+            <li>Added <code>pointer-events-none</code> to hidden dropdowns</li>
+            <li>Enhanced <code>handleClickOutside</code> to manage desktop dropdowns</li>
+            <li>Proper ARIA attributes for accessibility compliance</li>
+        </ul>
+
+        <div class="status success">
+            <strong>🎯 SOLUTION SUMMARY:</strong><br>
+            The critical navigation bug was caused by pure CSS hover states that didn't work properly with touch interactions and click events. The fix implements proper React state management with both hover and click support, ensuring dropdowns remain visible and accessible on all devices.
+        </div>
+    </div>
+</body>
+</html>

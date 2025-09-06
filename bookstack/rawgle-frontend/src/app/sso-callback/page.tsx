@@ -1,22 +1,24 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useClerk } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { Loader2, Dog } from 'lucide-react'
 
 /**
  * SSO Callback page - handles OAuth redirects from providers
+ * Note: Clerk functionality disabled - redirects to sign-in for now
  */
 export default function SSOCallbackPage() {
-  const { handleRedirectCallback } = useClerk()
   const router = useRouter()
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        await handleRedirectCallback()
-        // Redirect handled by Clerk middleware
+        // Mock SSO callback processing
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        
+        // Since Clerk is disabled, redirect to dashboard with demo user
+        router.push('/dashboard?sso_callback=success')
       } catch (error) {
         console.error('SSO callback error:', error)
         router.push('/auth/sign-in?error=sso_failed')
@@ -24,7 +26,7 @@ export default function SSOCallbackPage() {
     }
 
     handleCallback()
-  }, [handleRedirectCallback, router])
+  }, [router])
 
   // Show loading state during OAuth callback processing
   return (

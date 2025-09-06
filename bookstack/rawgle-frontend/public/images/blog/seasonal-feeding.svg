@@ -1,0 +1,16 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="seasonal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#seasonal)"/>
+  <circle cx="200" cy="150" r="60" fill="white" opacity="0.15"/>
+  <circle cx="600" cy="450" r="80" fill="white" opacity="0.15"/>
+  <text x="400" y="350" font-family="Arial, sans-serif" font-size="36" font-weight="bold" 
+        text-anchor="middle" fill="white">Seasonal Feeding</text>
+  <text x="400" y="400" font-family="Arial, sans-serif" font-size="24" 
+        text-anchor="middle" fill="white" opacity="0.9">Adapting diet through the seasons</text>
+</svg>

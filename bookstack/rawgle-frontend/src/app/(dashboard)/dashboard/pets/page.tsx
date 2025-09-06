@@ -94,9 +94,9 @@ export default function PetsPage() {
             Manage your furry family members and their health profiles
           </p>
         </div>
-        <Button>
+        <Button data-testid="add-pet-button">
           <Plus className="mr-2 h-4 w-4" />
-          Add New Pet
+          Add Pet
         </Button>
       </div>
 

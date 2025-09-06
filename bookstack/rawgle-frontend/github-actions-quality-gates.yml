@@ -1,0 +1,230 @@
+# Facebook-Grade Quality Gates for GitHub Actions
+# Place this in .github/workflows/quality-gates.yml
+
+name: 🚀 Facebook-Grade Quality Gates
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    
+    steps:
+    - name: 📋 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: 🔧 Install Dependencies
+      run: |
+        npm ci
+        npx playwright install --with-deps
+        
+    - name: 🚀 Start Development Server
+      run: |
+        npm run dev &
+        sleep 10
+        curl -f http://localhost:3000/dashboard/health/logs || exit 1
+      timeout-minutes: 2
+        
+    - name: 🧪 Run Facebook-Grade Test Suite
+      run: node facebook-grade-testing.js
+      timeout-minutes: 10
+      
+    - name: 📊 Upload Test Reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-reports-node-${{ matrix.node-version }}
+        path: |
+          test-reports/
+          test-outputs/
+          test-baselines/
+          
+    - name: 📈 Upload Performance Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-results
+        path: test-reports/facebook-grade-report.json
+        
+    - name: 🚫 Block Merge on Quality Gate Failure
+      if: failure()
+      run: |
+        echo "❌ QUALITY GATES FAILED - BLOCKING MERGE"
+        echo "🔧 Fix all quality gate failures before merging"
+        exit 1
+
+  visual-regression:
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: success()
+    
+    steps:
+    - name: 📋 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        
+    - name: 🔧 Install Dependencies
+      run: |
+        npm ci
+        npx playwright install --with-deps
+        
+    - name: 🚀 Start Development Server
+      run: |
+        npm run dev &
+        sleep 10
+        
+    - name: 📸 Visual Regression Testing
+      run: |
+        node facebook-grade-testing.js --visual-only
+        
+    - name: 📊 Compare with Main Branch
+      if: github.event_name == 'pull_request'
+      run: |
+        # Download baselines from main branch
+        gh workflow run download-baselines.yml --ref main
+        # Compare current screenshots with baselines
+        node facebook-grade-testing.js --compare-only
+        
+    - name: 📈 Post Visual Diff Comment
+      if: github.event_name == 'pull_request' && failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('test-reports/facebook-grade-report.json'));
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## 📸 Visual Regression Detected
+            
+            ❌ **Quality Gate Failed**: Visual differences detected that exceed threshold.
+            
+            ### Issues Found:
+            ${report.testResults.visual.map(v => `- ${v.issue}`).join('\n')}
+            
+            **Action Required**: Review visual changes and update baselines if intentional.
+            
+            📊 [Full Test Report](${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`
+          });
+
+  performance-budget:
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: success()
+    
+    steps:
+    - name: 📋 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        
+    - name: 🔧 Install Dependencies
+      run: |
+        npm ci
+        npx playwright install --with-deps
+        
+    - name: 🚀 Start Development Server
+      run: |
+        npm run dev &
+        sleep 10
+        
+    - name: ⚡ Performance Budget Testing
+      run: |
+        node facebook-grade-testing.js --perf-only
+        
+    - name: 📊 Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v10
+      with:
+        configPath: './lighthouserc.json'
+        
+    - name: 📈 Performance Regression Check
+      run: |
+        # Compare with previous performance metrics
+        node scripts/performance-regression-check.js
+
+  accessibility-compliance:
+    runs-on: ubuntu-latest
+    needs: quality-gates
+    if: success()
+    
+    steps:
+    - name: 📋 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        
+    - name: 🔧 Install Dependencies
+      run: |
+        npm ci
+        npx playwright install --with-deps
+        
+    - name: 🚀 Start Development Server
+      run: |
+        npm run dev &
+        sleep 10
+        
+    - name: ♿ Accessibility Testing
+      run: |
+        node facebook-grade-testing.js --a11y-only
+        
+    - name: 📊 axe-core Testing
+      run: |
+        npx @axe-core/cli http://localhost:3000/dashboard/health/logs
+        
+    - name: 🔍 WAVE Testing
+      run: |
+        # Additional accessibility validation
+        npx pa11y http://localhost:3000/dashboard/health/logs
+
+  deployment-gate:
+    runs-on: ubuntu-latest
+    needs: [quality-gates, visual-regression, performance-budget, accessibility-compliance]
+    if: always()
+    
+    steps:
+    - name: ✅ All Quality Gates Passed
+      if: needs.quality-gates.result == 'success' && needs.visual-regression.result == 'success' && needs.performance-budget.result == 'success' && needs.accessibility-compliance.result == 'success'
+      run: |
+        echo "🎉 ALL QUALITY GATES PASSED!"
+        echo "🚀 Ready for deployment to production"
+        
+    - name: ❌ Quality Gates Failed
+      if: needs.quality-gates.result != 'success' || needs.visual-regression.result != 'success' || needs.performance-budget.result != 'success' || needs.accessibility-compliance.result != 'success'
+      run: |
+        echo "❌ QUALITY GATES FAILED"
+        echo "🚫 Deployment blocked until issues are resolved"
+        echo "Gate Results:"
+        echo "  - Quality Gates: ${{ needs.quality-gates.result }}"
+        echo "  - Visual Regression: ${{ needs.visual-regression.result }}"
+        echo "  - Performance Budget: ${{ needs.performance-budget.result }}"
+        echo "  - Accessibility: ${{ needs.accessibility-compliance.result }}"
+        exit 1

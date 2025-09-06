@@ -73,7 +73,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dashboard-layout">
       {/* Mobile sidebar overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -225,7 +225,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1">
+        <main className="flex-1 pt-6 pb-6">
           {children}
         </main>
       </div>

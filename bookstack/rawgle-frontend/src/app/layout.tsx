@@ -73,6 +73,39 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Temporarily disable Clerk until valid keys are configured
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  const isClerkEnabled = clerkPublishableKey && !clerkPublishableKey.includes('placeholder') && !clerkPublishableKey.includes('your_actual')
+
+  const AppContent = () => (
+    <ErrorBoundary>
+      <QueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <Navigation />
+            {children}
+            <Toaster 
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: 'var(--background)',
+                  color: 'var(--foreground)',
+                  border: '1px solid var(--border)',
+                },
+              }}
+            />
+            <ChatWidget />
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryProvider>
+    </ErrorBoundary>
+  )
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -87,34 +120,19 @@ export default function RootLayout({
           padding: 0
         }}
       >
-        <ClerkProvider>
-          <ErrorBoundary>
-            <QueryProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <AuthProvider>
-                  <Navigation />
-                  {children}
-                  <Toaster 
-                    position="bottom-right"
-                    toastOptions={{
-                      style: {
-                        background: 'var(--background)',
-                        color: 'var(--foreground)',
-                        border: '1px solid var(--border)',
-                      },
-                    }}
-                  />
-                  <ChatWidget />
-                </AuthProvider>
-              </ThemeProvider>
-            </QueryProvider>
-          </ErrorBoundary>
-        </ClerkProvider>
+        {isClerkEnabled ? (
+          <ClerkProvider
+            publishableKey={clerkPublishableKey}
+            signInUrl="/auth/sign-in"
+            signUpUrl="/auth/sign-up"
+            afterSignInUrl="/dashboard"
+            afterSignUpUrl="/dashboard"
+          >
+            <AppContent />
+          </ClerkProvider>
+        ) : (
+          <AppContent />
+        )}
       </body>
     </html>
   )

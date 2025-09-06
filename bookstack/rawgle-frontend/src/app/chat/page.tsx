@@ -100,12 +100,12 @@ export default function ChatPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-olivine-50 to-zomp-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full flex items-center justify-center animate-pulse">
+          <div className="w-16 h-16 bg-gradient-to-r from-pumpkin to-sunglow rounded-full flex items-center justify-center animate-pulse">
             <Bot className="w-8 h-8 text-white" />
           </div>
-          <p className="text-lg text-gray-600">Loading RAWGLE AI...</p>
+          <p className="text-lg text-charcoal-600">Loading RAWGLE AI...</p>
         </div>
       </div>
     );
@@ -175,20 +175,20 @@ export default function ChatPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-olivine-50 via-white to-zomp-50">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-emerald-100">
+      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-olivine-100">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-r from-pumpkin to-sunglow rounded-xl flex items-center justify-center shadow-lg">
                 <Bot className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold text-gradient-paws">
                   RAWGLE AI Assistant
                 </h1>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal-600 text-sm">
                   {chat.isTyping ? 'AI is thinking...' : 'Your expert in raw pet nutrition'}
                 </p>
               </div>
@@ -212,10 +212,10 @@ export default function ChatPage() {
           {/* Sidebar - Quick Actions & Info */}
           <div className="lg:col-span-1 space-y-6">
             {/* Quick Actions */}
-            <Card className="border-emerald-100 shadow-sm">
+            <Card className="border-olivine-100 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-emerald-600" />
+                  <Zap className="w-5 h-5 text-pumpkin" />
                   Quick Actions
                 </CardTitle>
               </CardHeader>
@@ -225,13 +225,13 @@ export default function ChatPage() {
                     key={index}
                     variant="ghost"
                     onClick={() => chat.sendMessage(action.prompt)}
-                    className="w-full h-auto p-3 justify-start text-left hover:bg-emerald-50"
+                    className="w-full h-auto p-3 justify-start text-left hover:bg-olivine-50"
                   >
                     <div className="flex items-start gap-3">
-                      <action.icon className="w-5 h-5 text-emerald-600 mt-0.5" />
+                      <action.icon className="w-5 h-5 text-pumpkin mt-0.5" />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-sm">{action.title}</div>
-                        <div className="text-xs text-gray-500 mt-1">{action.description}</div>
+                        <div className="text-xs text-charcoal-500 mt-1">{action.description}</div>
                       </div>
                     </div>
                   </Button>
@@ -240,39 +240,39 @@ export default function ChatPage() {
             </Card>
 
             {/* Features */}
-            <Card className="border-emerald-100 shadow-sm">
+            <Card className="border-olivine-100 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-emerald-600" />
+                  <Sparkles className="w-5 h-5 text-sunglow" />
                   AI Features
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-olivine rounded-full"></div>
                   <span>Nutrition calculations</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-olivine rounded-full"></div>
                   <span>Food safety guidance</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-olivine rounded-full"></div>
                   <span>Ingredient analysis</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-olivine rounded-full"></div>
                   <span>Meal planning</span>
                 </div>
                 {speech.recognition.isSupported && (
                   <div className="flex items-center gap-3 text-sm">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-zomp rounded-full"></div>
                     <span>Voice input</span>
                   </div>
                 )}
                 {speech.synthesis.isSupported && (
                   <div className="flex items-center gap-3 text-sm">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-zomp rounded-full"></div>
                     <span>Voice output</span>
                   </div>
                 )}
@@ -290,7 +290,7 @@ export default function ChatPage() {
 
           {/* Chat Area */}
           <div className="lg:col-span-3">
-            <Card className="h-[calc(100vh-200px)] border-emerald-100 shadow-lg flex flex-col">
+            <Card className="h-[calc(100vh-200px)] border-olivine-100 shadow-lg flex flex-col">
               {/* Messages Area */}
               <ScrollArea className="flex-1 p-6">
                 <div className="space-y-6">
@@ -320,12 +320,12 @@ export default function ChatPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="flex justify-start"
                     >
-                      <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 max-w-[80%]">
-                        <div className="flex items-center gap-3 text-emerald-700">
+                      <div className="bg-olivine-50 border border-olivine-100 rounded-2xl p-4 max-w-[80%]">
+                        <div className="flex items-center gap-3 text-olivine-700">
                           <div className="flex gap-1">
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-olivine rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div className="w-2 h-2 bg-olivine rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div className="w-2 h-2 bg-olivine rounded-full animate-bounce"></div>
                           </div>
                           <span className="text-sm font-medium">RAWGLE AI is analyzing...</span>
                         </div>
@@ -374,7 +374,7 @@ export default function ChatPage() {
               </ScrollArea>
 
               {/* Input Area */}
-              <div className="border-t border-emerald-100 bg-emerald-50/30 p-6">
+              <div className="border-t border-olivine-100 bg-olivine-50/30 p-6">
                 <div className="space-y-4">
                   {/* Voice/Audio Controls */}
                   {(speech.recognition.isSupported || speech.synthesis.isSupported) && (
@@ -385,7 +385,7 @@ export default function ChatPage() {
                           variant={speech.recognition.isListening ? "default" : "outline"}
                           onClick={handleVoiceToggle}
                           disabled={!chat.usage.features.voiceInput}
-                          className={`gap-2 ${speech.recognition.isListening ? 'bg-red-500 hover:bg-red-600 text-white' : 'border-emerald-200 hover:bg-emerald-50'}`}
+                          className={`gap-2 ${speech.recognition.isListening ? 'bg-red-500 hover:bg-red-600 text-white' : 'border-olivine-200 hover:bg-olivine-50'}`}
                         >
                           {speech.recognition.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                           {speech.recognition.isListening ? 'Stop Listening' : 'Voice Input'}
@@ -398,7 +398,7 @@ export default function ChatPage() {
                           variant="outline"
                           onClick={() => speech.synthesis.stop()}
                           disabled={!speech.synthesis.isSpeaking}
-                          className="gap-2 border-emerald-200 hover:bg-emerald-50"
+                          className="gap-2 border-olivine-200 hover:bg-olivine-50"
                         >
                           {speech.synthesis.isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                           {speech.synthesis.isSpeaking ? 'Stop Audio' : 'Audio Output'}
@@ -416,14 +416,14 @@ export default function ChatPage() {
                       onKeyPress={handleKeyPress}
                       placeholder={chat.checkUsageLimit() ? "Ask me anything about raw pet nutrition..." : "Daily limit reached - upgrade for unlimited messages"}
                       disabled={!chat.checkUsageLimit() || chat.isLoading}
-                      className="flex-1 min-h-[50px] max-h-32 resize-none border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400/20"
+                      className="flex-1 min-h-[50px] max-h-32 resize-none border-olivine-200 focus:border-pumpkin focus:ring-pumpkin/20"
                       maxLength={1000}
                     />
                     <Button
                       onClick={handleSend}
                       disabled={!message.trim() || chat.isLoading || !chat.checkUsageLimit()}
                       size="lg"
-                      className="self-end bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 h-[50px] shadow-lg"
+                      className="self-end bg-gradient-to-r from-pumpkin to-sunglow hover:from-pumpkin/90 hover:to-sunglow/90 text-white px-6 h-[50px] shadow-lg"
                     >
                       <Send className="w-5 h-5" />
                     </Button>

@@ -4,6 +4,73 @@
 
 /* Navigation Fix - Ensure all interactive elements are clickable */
 @layer components {
+  /* Critical mobile menu fixes */
+  header nav {
+    pointer-events: auto !important;
+    z-index: 100;
+    isolation: isolate;
+  }
+  
+  /* Mobile menu button must always be clickable - CRITICAL FIX */
+  .mobile-menu-toggle {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    touch-action: manipulation !important;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* All navigation elements should be clickable */
+  header button,
+  #mobile-navigation-menu button,
+  #mobile-navigation-menu a {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    position: relative;
+    z-index: 110;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Mobile menu overlay fixes */
+  #mobile-navigation-menu {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 90;
+    isolation: isolate;
+  }
+  
+  /* Prevent main content from intercepting clicks */
+  main {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* CRITICAL: Prevent content from appearing under fixed/sticky headers */
+  body {
+    padding-top: 4rem; /* Account for fixed navigation header (h-16 = 4rem) */
+  }
+  
+  /* Dashboard layout already has pt-6, so remove body padding for dashboard pages */
+  .dashboard-layout body {
+    padding-top: 0;
+  }
+  
+  /* Ensure all page content has proper spacing from fixed headers */
+  main > * {
+    margin-top: 0;
+  }
+  
+  /* For pages with both navigation and content, ensure proper spacing */
+  .has-fixed-header main {
+    margin-top: 1rem;
+  }
+  
   /* Navigation dropdown theme improvements */
   .dropdown-menu {
     background-color: hsl(var(--card));
@@ -100,10 +167,10 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 210 22% 98%;  /* Very pale charcoal tint (charcoal-50) */
+    --foreground: 210 20% 15%;  /* Charcoal-800 for good contrast */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 20% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 210 40% 25%;
@@ -123,10 +190,10 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 217.2 32.6% 17.5%;
-    --card-foreground: 210 40% 98%;
+    --background: 210 20% 6%;     /* Very pale charcoal-900 instead of full charcoal */
+    --foreground: 210 15% 95%;    /* Light charcoal tint for text */
+    --card: 210 15% 12%;          /* Slightly lighter card background */
+    --card-foreground: 210 15% 95%;
     --popover: 217.2 32.6% 17.5%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
@@ -170,6 +237,48 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* RAWGLE Pale Background System */
+  .bg-pale-primary {
+    background-color: hsl(210 22% 98%);  /* Very pale charcoal */
+  }
+  
+  .bg-pale-pumpkin {
+    background-color: hsl(24 100% 97%);  /* Very pale pumpkin */
+  }
+  
+  .bg-pale-sunglow {
+    background-color: hsl(47 100% 96%);  /* Very pale sunglow */
+  }
+  
+  .bg-pale-olivine {
+    background-color: hsl(84 47% 96%);   /* Very pale olivine */
+  }
+  
+  .bg-pale-zomp {
+    background-color: hsl(162 25% 96%);  /* Very pale zomp */
+  }
+
+  /* Dark theme pale backgrounds */
+  .dark .bg-pale-primary {
+    background-color: hsl(210 20% 8%);
+  }
+  
+  .dark .bg-pale-pumpkin {
+    background-color: hsl(24 20% 8%);
+  }
+  
+  .dark .bg-pale-sunglow {
+    background-color: hsl(47 20% 8%);
+  }
+  
+  .dark .bg-pale-olivine {
+    background-color: hsl(84 15% 8%);
+  }
+  
+  .dark .bg-pale-zomp {
+    background-color: hsl(162 15% 8%);
+  }
   
   .text-gradient-paws {
     background: linear-gradient(135deg, #fcca46 0%, #fe7f2d 100%);
@@ -192,6 +301,22 @@
 
   .btn-outline {
     @apply bg-white border border-border text-foreground hover:bg-muted hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .btn-success {
+    @apply bg-olivine text-white hover:bg-olivine/90 hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .btn-warning {
+    @apply bg-sunglow text-charcoal hover:bg-sunglow/90 hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .btn-info {
+    @apply bg-zomp text-white hover:bg-zomp/90 hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600 hover:shadow-lg hover:-translate-y-0.5;
   }
   
   /* Interactive element enhancements */

@@ -299,12 +299,12 @@ export default function EnhancedPortionCalculator({
                     setInputs(prev => ({ ...prev, species: value }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger data-testid="species-select">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="dog">Dog</SelectItem>
-                    <SelectItem value="cat">Cat</SelectItem>
+                    <SelectItem value="dog" data-testid="species-dog">Dog</SelectItem>
+                    <SelectItem value="cat" data-testid="species-cat">Cat</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

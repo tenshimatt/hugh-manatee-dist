@@ -100,6 +100,13 @@ Keep responses concise (under 500 tokens), friendly, and actionable. Use bullet 
       return await response.json();
     } catch (error) {
       console.error('Chat API Error:', error);
+      
+      // Return mock response when backend is unavailable (for testing/demo)
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        const userMessage = messages[messages.length - 1]?.content || '';
+        return this.getMockResponse(userMessage, petContext);
+      }
+      
       throw error;
     }
   }
@@ -237,6 +244,42 @@ Keep responses concise (under 500 tokens), friendly, and actionable. Use bullet 
     } catch {
       return false;
     }
+  }
+
+  private getMockResponse(userMessage: string, petContext?: PetContext): ChatCompletionResponse {
+    const responses = [
+      "I'm RAWGLE AI, your raw feeding expert! 🐕 While I'm running in demo mode, I can still help with raw feeding basics.",
+      "Great question about raw feeding! For safety, always transition gradually over 7-10 days when switching to raw food.",
+      "For portion sizes, a good starting point is 2-3% of your pet's body weight daily, but this varies based on age, activity level, and health.",
+      "Raw feeding should include 80% muscle meat, 10% organs, and 10% bones for optimal nutrition balance.",
+      "Food safety is crucial - use fresh ingredients, maintain cold chain, and clean all surfaces thoroughly."
+    ];
+
+    const contextualResponse = userMessage.toLowerCase().includes('portion') || userMessage.toLowerCase().includes('calculate')
+      ? "For accurate portion calculations, I recommend using our feeding calculator. Generally, active dogs need 2-3% of body weight daily in raw food."
+      : userMessage.toLowerCase().includes('safety') || userMessage.toLowerCase().includes('safe')
+      ? "Raw feeding safety essentials: ✅ Fresh ingredients ✅ Proper storage ✅ Clean preparation ✅ Gradual transition"
+      : responses[Math.floor(Math.random() * responses.length)];
+
+    return {
+      id: `mock-${Date.now()}`,
+      object: 'chat.completion',
+      created: Math.floor(Date.now() / 1000),
+      model: 'rawgle-demo',
+      choices: [{
+        index: 0,
+        message: {
+          role: 'assistant',
+          content: contextualResponse + "\n\n*Note: This is a demo response. Connect your chat API for full functionality!*"
+        },
+        finish_reason: 'stop'
+      }],
+      usage: {
+        prompt_tokens: 50,
+        completion_tokens: 30,
+        total_tokens: 80
+      }
+    };
   }
 }
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Navigation Test</title>
+</head>
+<body>
+    <h1>Navigation Test Results</h1>
+    <div id="results"></div>
+    <script>
+        // Test if the main site is accessible and JavaScript is working
+        fetch('http://localhost:3000/')
+            .then(response => response.text())
+            .then(html => {
+                const results = document.getElementById('results');
+                
+                // Check if navigation HTML is present
+                const hasNav = html.includes('desktop-dropdown-container');
+                const hasButtons = html.includes('aria-expanded="false"');
+                const hasClerkScript = html.includes('clerk.browser.js');
+                
+                results.innerHTML = `
+                    <p><strong>Site Accessibility:</strong> ✅ Accessible</p>
+                    <p><strong>Navigation HTML:</strong> ${hasNav ? '✅' : '❌'} Present</p>
+                    <p><strong>Interactive Buttons:</strong> ${hasButtons ? '✅' : '❌'} Present</p>
+                    <p><strong>Clerk Scripts:</strong> ${hasClerkScript ? '❌ Still loading' : '✅ Removed'}</p>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('results').innerHTML = `
+                    <p><strong>Error:</strong> ❌ ${error.message}</p>
+                `;
+            });
+    </script>
+</body>
+</html>

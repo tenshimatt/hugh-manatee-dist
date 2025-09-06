@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useSignIn } from '@clerk/nextjs'
 import { motion } from 'framer-motion'
 import { 
   Dog, 
@@ -21,7 +20,11 @@ import {
 import { toast } from 'sonner'
 
 export default function SignInPage() {
-  const { isLoaded, signIn, setActive } = useSignIn()
+  // Mock Clerk functionality when disabled
+  const isLoaded = true
+  const signIn = null
+  const setActive = null
+  
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -43,7 +46,7 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!isLoaded || !signIn) return
+    if (!isLoaded) return
     
     // Clear previous errors
     setError('')
@@ -64,67 +67,30 @@ export default function SignInPage() {
         return
       }
       
-      // Attempt to sign in
-      const result = await signIn.create({
-        identifier: email,
-        password,
-      })
-      
-      if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId })
-        toast.success('Welcome back!')
-        router.push('/dashboard')
-      } else {
-        // Handle additional steps if needed (2FA, etc.)
-        setError('Additional authentication steps required')
-      }
+      // Mock authentication for demo purposes
+      toast.success('Demo mode: Authentication disabled - redirecting to dashboard!')
+      router.push('/dashboard')
       
     } catch (err: any) {
       console.error('Sign-in error:', err)
-      
-      if (err.errors) {
-        const errorCode = err.errors[0]?.code
-        switch (errorCode) {
-          case 'form_identifier_not_found':
-            setError('Invalid email or password')
-            break
-          case 'form_password_incorrect':
-            setError('Incorrect password')
-            break
-          case 'form_password_incorrect_too_many_attempts':
-            setError('Account temporarily locked due to too many failed attempts')
-            break
-          default:
-            setError(err.errors[0]?.message || 'An error occurred during sign-in')
-        }
-      } else if (err.message && err.message.includes('Network')) {
-        setError('Network error. Please check your connection.')
-      } else {
-        setError('An unexpected error occurred. Please try again.')
-      }
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleOAuthSignIn = async (strategy: 'oauth_google' | 'oauth_apple') => {
-    if (!isLoaded || !signIn) return
+    if (!isLoaded) return
     
     setError('')
     
     try {
-      await signIn.authenticateWithRedirect({
-        strategy,
-        redirectUrl: '/sso-callback',
-        redirectUrlComplete: '/dashboard'
-      })
+      // Mock OAuth for demo
+      toast.success(`Demo mode: ${strategy} authentication disabled - redirecting to dashboard!`)
+      router.push('/dashboard')
     } catch (err: any) {
       console.error('OAuth error:', err)
-      if (err.errors && err.errors[0]?.message) {
-        toast.error(err.errors[0].message)
-      } else {
-        toast.error('OAuth authentication failed. Please try again.')
-      }
+      toast.error('OAuth authentication failed. Please try again.')
     }
   }
 
@@ -251,6 +217,7 @@ export default function SignInPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  data-testid="password-toggle"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-charcoal-400 hover:text-charcoal-600" />
