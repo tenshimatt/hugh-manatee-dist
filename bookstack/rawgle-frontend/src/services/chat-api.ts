@@ -1,7 +1,7 @@
 // OpenAI API integration service for the GPT Chatbot
 import { ChatCompletionResponse, StreamingResponse, Message, PetContext } from '@/types/chat';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 export class ChatAPI {
   private static instance: ChatAPI;
@@ -74,7 +74,7 @@ Keep responses concise (under 500 tokens), friendly, and actionable. Use bullet 
         }))
       ];
 
-      const response = await fetch(`${API_BASE_URL}/chat`, {
+      const response = await fetch(`${API_BASE_URL}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,8 +84,9 @@ Keep responses concise (under 500 tokens), friendly, and actionable. Use bullet 
           model,
           messages: apiMessages,
           temperature,
-          max_tokens: maxTokens,
-          stream
+          maxTokens: maxTokens,
+          stream,
+          petContext
         })
       });
 
@@ -143,7 +144,7 @@ Keep responses concise (under 500 tokens), friendly, and actionable. Use bullet 
         }))
       ];
 
-      const response = await fetch(`${API_BASE_URL}/chat/stream`, {
+      const response = await fetch(`${API_BASE_URL}/chat/completions/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,8 +154,9 @@ Keep responses concise (under 500 tokens), friendly, and actionable. Use bullet 
           model,
           messages: apiMessages,
           temperature,
-          max_tokens: maxTokens,
-          stream: true
+          maxTokens: maxTokens,
+          stream: true,
+          petContext
         })
       });
 

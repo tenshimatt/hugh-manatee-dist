@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Service Worker</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Clearing Service Worker...</h1>
+    <div id="status">Processing...</div>
+
+    <script>
+        async function clearServiceWorker() {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                // Get all service worker registrations
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                
+                if (registrations.length === 0) {
+                    statusDiv.innerHTML = 'No service workers found to unregister.';
+                    return;
+                }
+                
+                statusDiv.innerHTML = `Found ${registrations.length} service worker(s). Unregistering...`;
+                
+                // Unregister all service workers
+                const unregisterPromises = registrations.map(registration => registration.unregister());
+                await Promise.all(unregisterPromises);
+                
+                // Clear all caches
+                const cacheNames = await caches.keys();
+                const deletePromises = cacheNames.map(cacheName => caches.delete(cacheName));
+                await Promise.all(deletePromises);
+                
+                statusDiv.innerHTML = `
+                    <p>✅ Unregistered ${registrations.length} service worker(s)</p>
+                    <p>✅ Cleared ${cacheNames.length} cache(s)</p>
+                    <p>🔄 Reloading page in 2 seconds...</p>
+                `;
+                
+                // Reload after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                
+            } catch (error) {
+                statusDiv.innerHTML = `❌ Error: ${error.message}`;
+                console.error('Error clearing service worker:', error);
+            }
+        }
+        
+        // Run when page loads
+        if ('serviceWorker' in navigator) {
+            clearServiceWorker();
+        } else {
+            document.getElementById('status').innerHTML = 'Service workers not supported in this browser.';
+        }
+    </script>
+</body>
+</html>

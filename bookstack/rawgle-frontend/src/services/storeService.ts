@@ -260,9 +260,10 @@ const mockStores: Store[] = [
 
 class StoreService {
   private stores: Store[] = mockStores
+  private readonly API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
 
   /**
-   * Search stores by coordinates with filters
+   * Search stores by coordinates with filters - uses real backend API
    */
   async searchNearbyStores(params: LocationSearchParams): Promise<StoreSearchResponse> {
     const { latitude, longitude, radius, storeType, openNow, hasDelivery, hasCurbsidePickup, limit, sortBy } = params
@@ -276,6 +277,56 @@ class StoreService {
         error: 'Coordinates are required'
       }
     }
+
+    try {
+      const searchParams = new URLSearchParams({
+        latitude: String(latitude),
+        longitude: String(longitude),
+        radius: String(radius),
+        limit: String(limit || 20)
+      })
+      
+      // Add optional filters
+      if (storeType) searchParams.append('storeType', storeType)
+      if (openNow !== undefined) searchParams.append('openNow', String(openNow))
+      if (hasDelivery !== undefined) searchParams.append('hasDelivery', String(hasDelivery))
+      if (hasCurbsidePickup !== undefined) searchParams.append('hasCurbsidePickup', String(hasCurbsidePickup))
+      if (sortBy) searchParams.append('sortBy', sortBy)
+      
+      const response = await fetch(`${this.API_BASE}/stores/nearby?${searchParams}`)
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      }
+      
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Backend search failed')
+      }
+      
+      return {
+        success: true,
+        stores: result.data.stores || [],
+        total: result.data.total || 0,
+        query: params,
+        message: result.message || `Found ${result.data.stores?.length || 0} stores`
+      }
+
+    } catch (error: any) {
+      console.error('Store search error:', error)
+      
+      // Fallback to mock data if API fails
+      console.warn('Falling back to mock data due to API error')
+      return await this.searchNearbyStoresFallback(params)
+    }
+  }
+  
+  /**
+   * Fallback method using mock data when API is unavailable
+   */
+  private async searchNearbyStoresFallback(params: LocationSearchParams): Promise<StoreSearchResponse> {
+    const { latitude, longitude, radius, storeType, openNow, hasDelivery, hasCurbsidePickup, limit, sortBy } = params
 
     try {
       // Calculate distances and apply filters
@@ -334,12 +385,10 @@ class StoreService {
         stores: filteredStores,
         total: filteredStores.length,
         query: params,
-        message: `Found ${filteredStores.length} stores`
+        message: `Found ${filteredStores.length} stores (mock data)`
       }
 
     } catch (error: any) {
-      console.error('Store search error:', error)
-      
       return {
         success: false,
         stores: [],
@@ -351,29 +400,162 @@ class StoreService {
   }
 
   /**
-   * Search stores by address
+   * Search stores by address - geocodes first, then searches nearby
    */
   async searchStoresByAddress(address: string, params: Omit<LocationSearchParams, 'latitude' | 'longitude'>): Promise<StoreSearchResponse> {
-    const locationResult = await locationService.geocodeAddress(address)
-    
-    if (!locationResult.success || !locationResult.location) {
+    try {
+      const locationResult = await locationService.geocodeAddress(address)
+      
+      if (!locationResult.success || !locationResult.location) {
+        return {
+          success: false,
+          stores: [],
+          total: 0,
+          query: { ...params, address, latitude: 0, longitude: 0 },
+          error: locationResult.error || 'Failed to geocode address'
+        }
+      }
+
+      const searchParams: LocationSearchParams = {
+        ...params,
+        address,
+        latitude: locationResult.location.latitude,
+        longitude: locationResult.location.longitude
+      }
+
+      return await this.searchNearbyStores(searchParams)
+    } catch (error: any) {
+      console.error('Address search error:', error)
       return {
         success: false,
         stores: [],
         total: 0,
         query: { ...params, address, latitude: 0, longitude: 0 },
-        error: locationResult.error || 'Failed to geocode address'
+        error: 'Failed to search stores by address'
+      }
+    }
+  }
+  
+  /**
+   * Text search stores using backend API
+   */
+  async searchStoresByText(query: string, filters: any = {}): Promise<StoreSearchResponse> {
+    if (!query || query.trim().length < 2) {
+      return {
+        success: false,
+        stores: [],
+        total: 0,
+        query: { ...filters, latitude: 0, longitude: 0 },
+        error: 'Search query must be at least 2 characters'
       }
     }
 
-    const searchParams: LocationSearchParams = {
-      ...params,
-      address,
-      latitude: locationResult.location.latitude,
-      longitude: locationResult.location.longitude
-    }
+    try {
+      const searchParams = new URLSearchParams({
+        q: query.trim(),
+        limit: String(filters.limit || 20)
+      })
+      
+      // Add optional filters
+      if (filters.storeType) searchParams.append('storeType', filters.storeType)
+      if (filters.openNow !== undefined) searchParams.append('openNow', String(filters.openNow))
+      if (filters.hasDelivery !== undefined) searchParams.append('hasDelivery', String(filters.hasDelivery))
+      if (filters.hasCurbsidePickup !== undefined) searchParams.append('hasCurbsidePickup', String(filters.hasCurbsidePickup))
+      if (filters.priceRange) searchParams.append('priceRange', filters.priceRange)
+      if (filters.sortBy) searchParams.append('sortBy', filters.sortBy)
+      
+      const response = await fetch(`${this.API_BASE}/stores/search?${searchParams}`)
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      }
+      
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Backend search failed')
+      }
+      
+      return {
+        success: true,
+        stores: result.data.stores || [],
+        total: result.data.total || 0,
+        query: { ...filters, latitude: 0, longitude: 0 },
+        message: result.message || `Found ${result.data.stores?.length || 0} stores`
+      }
 
-    return await this.searchNearbyStores(searchParams)
+    } catch (error: any) {
+      console.error('Text search error:', error)
+      
+      // Fallback to mock search
+      console.warn('Falling back to mock text search due to API error')
+      return await this.searchStoresByTextFallback(query, filters)
+    }
+  }
+  
+  /**
+   * Fallback text search using mock data
+   */
+  private async searchStoresByTextFallback(query: string, filters: any = {}): Promise<StoreSearchResponse> {
+    try {
+      const searchTerm = query.toLowerCase().trim()
+      
+      let filteredStores = this.stores.filter(store => {
+        const searchableText = [
+          store.name,
+          store.address,
+          store.city,
+          store.state,
+          ...store.specialties,
+          ...store.productCategories
+        ].join(' ').toLowerCase()
+
+        return searchableText.includes(searchTerm)
+      })
+      
+      // Apply filters
+      if (filters.storeType) {
+        filteredStores = filteredStores.filter(store => store.storeType === filters.storeType)
+      }
+      
+      if (filters.openNow) {
+        filteredStores = filteredStores.filter(store => isStoreOpen(store.businessHours))
+      }
+      
+      if (filters.hasDelivery) {
+        filteredStores = filteredStores.filter(store => store.delivery)
+      }
+      
+      if (filters.hasCurbsidePickup) {
+        filteredStores = filteredStores.filter(store => store.curbsidePickup)
+      }
+      
+      // Add open status
+      filteredStores = filteredStores.map(store => ({
+        ...store,
+        isOpen: isStoreOpen(store.businessHours)
+      }))
+      
+      // Apply limit
+      const limit = filters.limit || 20
+      filteredStores = filteredStores.slice(0, limit)
+      
+      return {
+        success: true,
+        stores: filteredStores,
+        total: filteredStores.length,
+        query: { ...filters, latitude: 0, longitude: 0 },
+        message: `Found ${filteredStores.length} stores matching "${query}" (mock data)`
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        stores: [],
+        total: 0,
+        query: { ...filters, latitude: 0, longitude: 0 },
+        error: 'Failed to search stores'
+      }
+    }
   }
 
   /**

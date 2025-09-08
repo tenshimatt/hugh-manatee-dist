@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Poppins } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
+// import { ClerkProvider } from '@clerk/nextjs' // TEMPORARILY DISABLED TO FIX UI LOADING
 import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ChatWidget } from '@/components/chat/chat-widget'
@@ -73,38 +73,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Temporarily disable Clerk until valid keys are configured
-  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-  const isClerkEnabled = clerkPublishableKey && !clerkPublishableKey.includes('placeholder') && !clerkPublishableKey.includes('your_actual')
-
-  const AppContent = () => (
-    <ErrorBoundary>
-      <QueryProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AuthProvider>
-            <Navigation />
-            {children}
-            <Toaster 
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  background: 'var(--background)',
-                  color: 'var(--foreground)',
-                  border: '1px solid var(--border)',
-                },
-              }}
-            />
-            <ChatWidget />
-          </AuthProvider>
-        </ThemeProvider>
-      </QueryProvider>
-    </ErrorBoundary>
-  )
+  // CLERK AUTHENTICATION TEMPORARILY DISABLED FOR UI LOADING FIX
+  // The UI was failing to load due to Clerk server-side rendering issues
+  // Authentication can be re-enabled after proper Clerk configuration
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -120,19 +91,32 @@ export default function RootLayout({
           padding: 0
         }}
       >
-        {isClerkEnabled ? (
-          <ClerkProvider
-            publishableKey={clerkPublishableKey}
-            signInUrl="/auth/sign-in"
-            signUpUrl="/auth/sign-up"
-            afterSignInUrl="/dashboard"
-            afterSignUpUrl="/dashboard"
-          >
-            <AppContent />
-          </ClerkProvider>
-        ) : (
-          <AppContent />
-        )}
+        <ErrorBoundary>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AuthProvider>
+                <Navigation />
+                {children}
+                <Toaster 
+                  position="bottom-right"
+                  toastOptions={{
+                    style: {
+                      background: 'var(--background)',
+                      color: 'var(--foreground)',
+                      border: '1px solid var(--border)',
+                    },
+                  }}
+                />
+                <ChatWidget />
+              </AuthProvider>
+            </ThemeProvider>
+          </QueryProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )
