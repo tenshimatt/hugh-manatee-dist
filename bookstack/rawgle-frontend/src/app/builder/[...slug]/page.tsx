@@ -62,7 +62,7 @@ async function getBuilderContent(model: string, url: string) {
 export async function generateStaticParams() {
   // These are the main pages that will be managed by Builder.io
   const pages = [
-    { slug: [] }, // Home page
+    { slug: ['home'] }, // Home page
     { slug: ['features'] },
     { slug: ['pricing'] },
     { slug: ['about'] },

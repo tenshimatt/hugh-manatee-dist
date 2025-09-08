@@ -1,5 +1,9 @@
+'use client';
+
 // Builder.io REST API integration
 // This provides a lightweight alternative to the SDK that doesn't require native compilation
+
+import React, { useEffect, useState } from 'react';
 
 export interface BuilderContent {
   id: string;
@@ -162,8 +166,7 @@ export const builderConfig = {
 // Create singleton instance
 export const builder = new BuilderAPI(builderConfig.apiKey);
 
-// React hooks and component imports
-import React, { useEffect, useState } from 'react';
+// React hooks and component imports are already imported at the top
 
 export function useBuilderContent(modelName: string, url?: string) {
   const [content, setContent] = useState<BuilderContent | null>(null);

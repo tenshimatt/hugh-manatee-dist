@@ -367,5 +367,7 @@ export function registerBuilderComponents() {
   // builder.registerComponent('PawsBalance', PawsBalance);
 }
 
-// Auto-register on import
-registerBuilderComponents();
+// Auto-register on client-side only
+if (typeof window !== 'undefined') {
+  registerBuilderComponents();
+}
