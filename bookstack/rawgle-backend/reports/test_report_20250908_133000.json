@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-09-08T12:30:00Z",
+  "environment": "development",
+  "test_run_id": "20250908_133000",
+  "results": {
+    "unit_tests": 0,
+    "integration_tests": 0,
+    "coverage_threshold_met": 0
+  },
+  "coverage": {
+    "enabled": true,
+    "report_path": "coverage/lcov-report/index.html",
+    "threshold": "70%"
+  },
+  "logs": {
+    "path": "/Users/mattwright/pandora/bookstack/rawgle-backend/logs/tests/test_run_20250908_133000.log",
+    "size_bytes":      945
+  },
+  "archon_integration": {
+    "task_id": "a6f60267-ebed-4018-a1ae-c4a7fa59ccc7",
+    "project_id": "12b025a5-f1ee-4901-98c1-b088e35d91de",
+    "updated": true
+  }
+}

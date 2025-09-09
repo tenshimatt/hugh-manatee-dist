@@ -1,0 +1,219 @@
+# Course Enrollment Load Test
+# Following TDD_DOCUMENTATION.md specifications for performance testing
+
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm up phase"
+    - duration: 300
+      arrivalRate: 50
+      name: "Normal load phase"  
+    - duration: 120
+      arrivalRate: 100
+      name: "Peak load phase"
+    - duration: 60
+      arrivalRate: 200
+      name: "Stress test phase"
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+  processor: './load-test-processor.js'
+  
+scenarios:
+  - name: "Course enrollment flow"
+    weight: 60
+    flow:
+      # User registration
+      - post:
+          url: "/api/v1/auth/register"
+          json:
+            name: "{{ $randomString() }}"
+            email: "{{ $randomString() }}@loadtest.com"
+            password: "LoadTest123!"
+            accountType: "user"
+          capture:
+            - json: "$.data.user.id"
+              as: "userId"
+          expect:
+            - statusCode: 201
+            - contentType: json
+            - hasProperty: "data.user.id"
+        
+      # User login
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "{{ $randomString() }}@loadtest.com"
+            password: "LoadTest123!"
+          capture:
+            - json: "$.data.accessToken"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.accessToken"
+      
+      # Browse courses
+      - get:
+          url: "/api/v1/courses"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.courses"
+            - contentType: json
+        
+      # Get course details
+      - get:
+          url: "/api/v1/courses/raw-feeding-101"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.course"
+        
+      # Course enrollment
+      - post:
+          url: "/api/v1/courses/raw-feeding-101/enroll"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json: {}
+          expect:
+            - statusCode: 201
+            - hasProperty: "data.enrollment"
+        
+      # Check enrollment status
+      - get:
+          url: "/api/v1/courses/raw-feeding-101/progress"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.enrollment.status"
+
+  - name: "Course browsing only"
+    weight: 30
+    flow:
+      # Anonymous course browsing
+      - get:
+          url: "/api/v1/courses"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.courses"
+        
+      # Course search
+      - get:
+          url: "/api/v1/courses?search=raw feeding"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.courses"
+        
+      # Filter by difficulty
+      - get:
+          url: "/api/v1/courses?difficulty=beginner"
+          expect:
+            - statusCode: 200
+        
+      # Get specific course details
+      - get:
+          url: "/api/v1/courses/{{ $randomItem(['raw-feeding-101', 'advanced-nutrition', 'feline-feeding-mastery']) }}"
+          expect:
+            - statusCode: 200
+
+  - name: "Authenticated user course interaction"
+    weight: 10
+    flow:
+      # Login existing user
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "loadtest-user-{{ $randomInt(1, 100) }}@example.com"
+            password: "LoadTest123!"
+          capture:
+            - json: "$.data.accessToken"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+        
+      # Update course progress
+      - put:
+          url: "/api/v1/courses/raw-feeding-101/progress"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            moduleId: "module-{{ $randomInt(1, 8) }}"
+            lessonId: "lesson-{{ $randomInt(1, 5) }}"
+            percentComplete: "{{ $randomInt(10, 100) }}"
+            timeSpent: "{{ $randomInt(5, 60) }}"
+          expect:
+            - statusCode: 200
+        
+      # Get updated progress
+      - get:
+          url: "/api/v1/courses/raw-feeding-101/progress"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+# Performance expectations based on TDD_DOCUMENTATION.md
+expect:
+  # Response time targets: p50: 50ms, p95: 200ms, p99: 500ms
+  - responsetime:
+      p50: 50
+      p95: 200
+      p99: 500
+  
+  # Success rate should be above 99%
+  - successrate: 99
+  
+  # Error rate should be below 1%
+  - errorrate: 1
+
+# Metrics collection
+metrics:
+  - name: "response_time_courses_list"
+    from: "{{ responsetime }}"
+    for: "/api/v1/courses"
+  
+  - name: "response_time_enrollment"
+    from: "{{ responsetime }}"
+    for: "/api/v1/courses/.*/enroll"
+  
+  - name: "enrollment_success_rate"
+    from: "{{ statuscode }}"
+    for: "/api/v1/courses/.*/enroll"
+    transform: "statuscode === 201 ? 1 : 0"
+
+# Load test reporting
+reporting:
+  - type: json
+    output: './reports/course-enrollment-load.json'
+  
+  - type: html
+    output: './reports/course-enrollment-load.html'
+
+# Environment-specific configuration
+environments:
+  development:
+    target: 'http://localhost:3000'
+    phases:
+      - duration: 30
+        arrivalRate: 5
+  
+  staging:
+    target: 'https://staging-api.rawgle.com'
+    phases:
+      - duration: 60
+        arrivalRate: 20
+  
+  production:
+    target: 'https://api.rawgle.com'
+    phases:
+      - duration: 300
+        arrivalRate: 100
+      - duration: 600
+        arrivalRate: 500
+      - duration: 300
+        arrivalRate: 1000

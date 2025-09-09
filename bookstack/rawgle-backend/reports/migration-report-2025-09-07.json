@@ -1,0 +1,36 @@
+{
+  "migration": {
+    "startTime": "2025-09-07T22:06:23.620Z",
+    "endTime": "2025-09-07T22:06:31.572Z",
+    "durationSeconds": 8,
+    "durationFormatted": "0m 8s"
+  },
+  "records": {
+    "totalInSource": 8844,
+    "processed": 8844,
+    "successfulInserts": 8843,
+    "failedInserts": 1,
+    "finalCountInTarget": 8843
+  },
+  "performance": {
+    "recordsPerSecond": 1106,
+    "batchSize": 1000,
+    "totalBatches": 9
+  },
+  "dataQuality": {
+    "recordsWithName": 8843,
+    "recordsWithCoordinates": 8843,
+    "recordsWithCity": 8843,
+    "recordsWithRating": 8570,
+    "averageRating": 4.31,
+    "uniqueCities": 408,
+    "uniqueStates": 140
+  },
+  "validation": {
+    "migrationSuccessful": false,
+    "recordCountsMatch": true,
+    "dataQualityScore": 100
+  },
+  "errors": [],
+  "totalErrors": 0
+}
