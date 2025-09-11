@@ -1,0 +1,253 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  avatar        String?
+  role          UserRole @default(VIEWER)
+  preferences   Json     @default("{}")
+  lastActiveAt  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  isActive      Boolean  @default(true)
+
+  // Relations
+  createdDocuments Document[] @relation("DocumentCreator")
+  ownedDocuments   Document[] @relation("DocumentOwner")
+  documentPermissions DocumentPermission[]
+  versions         Version[]
+  exports          Export[]
+  collaborationSessions CollaborationSession[]
+  workflowStates   WorkflowState[]
+
+  @@map("users")
+}
+
+model Document {
+  id          String         @id @default(cuid())
+  title       String
+  content     Json           @default("{}")
+  wordCount   Int            @default(0)
+  status      DocumentStatus @default(DRAFT)
+  version     String         @default("1.0.0")
+  metadata    Json           @default("{}")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  createdById String
+  ownerId     String
+
+  // Relations
+  createdBy   User @relation("DocumentCreator", fields: [createdById], references: [id])
+  owner       User @relation("DocumentOwner", fields: [ownerId], references: [id])
+  
+  sections    Section[]
+  versions    Version[]
+  exports     Export[]
+  collaborationSessions CollaborationSession[]
+  workflowStates        WorkflowState[]
+  documentPermissions   DocumentPermission[]
+
+  @@unique([title, ownerId])
+  @@index([status, updatedAt])
+  @@index([ownerId])
+  @@map("documents")
+}
+
+model Section {
+  id         String  @id @default(cuid())
+  documentId String
+  parentId   String?
+  title      String
+  content    String  @default("")
+  level      Int     @db.SmallInt
+  order      Int
+  wordCount  Int     @default(0)
+  metadata   Json    @default("{}")
+
+  // Relations
+  document Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  parent   Section?  @relation("SectionHierarchy", fields: [parentId], references: [id])
+  children Section[] @relation("SectionHierarchy")
+
+  @@index([documentId, parentId, order])
+  @@index([documentId])
+  @@map("sections")
+}
+
+model Template {
+  id             String  @id @default(cuid())
+  name           String
+  description    String
+  category       String
+  structure      Json
+  defaultContent Json    @default("{}")
+  metadata       Json    @default("{}")
+  createdById    String
+  isPublic       Boolean @default(false)
+  usageCount     Int     @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  createdBy User @relation(fields: [createdById], references: [id])
+
+  @@unique([name, createdById])
+  @@index([category, isPublic])
+  @@index([usageCount])
+  @@map("templates")
+}
+
+model Version {
+  id                String   @id @default(cuid())
+  documentId        String
+  versionNumber     String
+  content           Json
+  changeDescription String?
+  wordCount         Int
+  createdById       String
+  createdAt         DateTime @default(now())
+  tags              String[] @default([])
+
+  // Relations
+  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  createdBy User     @relation(fields: [createdById], references: [id])
+
+  @@unique([documentId, versionNumber])
+  @@index([createdAt])
+  @@map("versions")
+}
+
+model Export {
+  id           String       @id @default(cuid())
+  documentId   String
+  format       ExportFormat
+  status       ExportStatus @default(PENDING)
+  filePath     String?
+  fileSize     BigInt?
+  parameters   Json         @default("{}")
+  errorMessage String?
+  createdById  String
+  createdAt    DateTime     @default(now())
+  completedAt  DateTime?
+
+  // Relations
+  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  createdBy User     @relation(fields: [createdById], references: [id])
+
+  @@index([status, createdAt])
+  @@index([createdById, createdAt])
+  @@map("exports")
+}
+
+model CollaborationSession {
+  id          String   @id @default(cuid())
+  documentId  String
+  userId      String
+  socketId    String   @unique
+  cursor      Json     @default("{}")
+  presence    Json     @default("{}")
+  lastSeen    DateTime @default(now())
+  isActive    Boolean  @default(true)
+  permissions String[] @default([])
+
+  // Relations
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([documentId, isActive])
+  @@index([socketId])
+  @@index([lastSeen])
+  @@map("collaboration_sessions")
+}
+
+model WorkflowState {
+  id           String        @id @default(cuid())
+  documentId   String        @unique
+  state        WorkflowState @default(DRAFT)
+  assignedToId String?
+  comments     Json          @default("[]")
+  deadline     DateTime?
+  transitions  Json          @default("[]")
+  requirements Json          @default("{}")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  assignedTo User?    @relation(fields: [assignedToId], references: [id])
+
+  @@index([state, assignedToId])
+  @@index([deadline])
+  @@map("workflow_states")
+}
+
+model DocumentPermission {
+  id         String           @id @default(cuid())
+  documentId String
+  userId     String
+  permission DocumentPermission @default(READ)
+  grantedAt  DateTime         @default(now())
+  grantedById String?
+
+  // Relations
+  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, userId])
+  @@index([userId])
+  @@map("document_permissions")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  EDITOR
+  VIEWER
+  GUEST
+}
+
+enum DocumentStatus {
+  DRAFT
+  UNDER_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ExportFormat {
+  PDF
+  HTML
+  MARKDOWN
+  WORD
+}
+
+enum ExportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum WorkflowState {
+  DRAFT
+  UNDER_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DocumentPermission {
+  READ
+  WRITE
+  ADMIN
+}
