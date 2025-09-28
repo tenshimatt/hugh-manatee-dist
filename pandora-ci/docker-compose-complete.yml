@@ -1,0 +1,737 @@
+version: '3.9'
+
+services:
+  # ============================================
+  # CORE VERSION CONTROL & CI/CD
+  # ============================================
+  
+  # GitLab CE - Complete DevOps Platform
+  gitlab:
+    image: gitlab/gitlab-ce:17.6.0-ce.0
+    container_name: pandora-gitlab
+    restart: unless-stopped
+    hostname: gitlab.pandora.local
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.pandora.local'
+        gitlab_rails['initial_root_password'] = 'PandoraAdmin2025!'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        gitlab_rails['smtp_enable'] = false
+        gitlab_rails['gitlab_email_enabled'] = true
+        gitlab_rails['gitlab_default_theme'] = 2
+        prometheus['enable'] = true
+        prometheus_monitoring['enable'] = true
+        grafana['enable'] = false
+        gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        gitlab_rails['lfs_enabled'] = true
+        gitlab_rails['registry_enabled'] = true
+        registry_external_url 'http://registry.pandora.local:5000'
+    ports:
+      - '3000:80'      # GitLab Web UI
+      - '2222:22'      # Git SSH
+      - '5000:5000'    # Container Registry
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD", "gitlab-healthcheck", "--fail", "--max-time", "10"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+
+  # Jenkins - Automation Server
+  jenkins:
+    image: jenkins/jenkins:2.479.1-lts-jdk21
+    container_name: pandora-jenkins
+    restart: unless-stopped
+    ports:
+      - '3001:8080'
+      - '50000:50000'  # Jenkins agents
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      JENKINS_OPTS: "--prefix=/jenkins"
+      JAVA_OPTS: "-Xmx2048m -Xms512m -Djenkins.install.runSetupWizard=false"
+    networks:
+      - pandora-network
+    user: root
+
+  # GitLab Runner for CI/CD
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine-v17.6.0
+    container_name: pandora-gitlab-runner
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - gitlab_runner_config:/etc/gitlab-runner
+    networks:
+      - pandora-network
+    depends_on:
+      - gitlab
+
+  # ============================================
+  # PROJECT MANAGEMENT
+  # ============================================
+  
+  # OpenProject - Project Management
+  openproject:
+    image: openproject/openproject:14.6.0
+    container_name: pandora-openproject
+    restart: unless-stopped
+    ports:
+      - '3002:80'
+    environment:
+      SECRET_KEY_BASE: 'pandora-secret-key-2025-super-long-random-string-for-production'
+      DATABASE_URL: 'postgresql://openproject:pandora2025@postgres:5432/openproject'
+      OPENPROJECT_HTTPS: 'false'
+      OPENPROJECT_DEFAULT__LANGUAGE: 'en'
+      OPENPROJECT_SEED__ADMIN__USER__NAME: 'OpenProject Admin'
+      OPENPROJECT_SEED__ADMIN__USER__PASSWORD: 'PandoraAdmin2025!'
+      OPENPROJECT_SEED__ADMIN__USER__MAIL: 'admin@pandora.local'
+      RAILS_MIN_THREADS: 4
+      RAILS_MAX_THREADS: 16
+    volumes:
+      - openproject_data:/var/openproject/assets
+      - openproject_files:/var/openproject/files
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - pandora-network
+
+  # ============================================
+  # DATABASES & CACHING
+  # ============================================
+  
+  # PostgreSQL - Primary Database
+  postgres:
+    image: postgres:17.2-alpine
+    container_name: pandora-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: pandora
+      POSTGRES_PASSWORD: pandora2025
+      POSTGRES_DB: pandora
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=en_US.UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pandora"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Caching & Queues
+  redis:
+    image: redis:8.0-alpine
+    container_name: pandora-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # CODE QUALITY & SECURITY
+  # ============================================
+  
+  # SonarQube - Code Quality
+  sonarqube:
+    image: sonarqube:11.0.0-community
+    container_name: pandora-sonarqube
+    restart: unless-stopped
+    ports:
+      - '3004:9000'
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: 'true'
+      SONAR_JDBC_URL: 'jdbc:postgresql://postgres:5432/sonarqube'
+      SONAR_JDBC_USERNAME: 'sonarqube'
+      SONAR_JDBC_PASSWORD: 'pandora2025'
+      SONAR_WEB_JAVAADDITIONALOPTS: '-Xmx512m -Xms128m'
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    depends_on:
+      - postgres
+    networks:
+      - pandora-network
+
+  # ============================================
+  # MONITORING & OBSERVABILITY
+  # ============================================
+  
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: pandora-prometheus
+    restart: unless-stopped
+    ports:
+      - '3006:9090'
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - pandora-network
+    user: root
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: pandora-grafana
+    restart: unless-stopped
+    ports:
+      - '3005:3000'
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: PandoraAdmin2025!
+      GF_INSTALL_PLUGINS: 'grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel'
+      GF_SERVER_ROOT_URL: 'http://localhost:3005'
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/prometheus.yml
+      - ./config/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+    depends_on:
+      - prometheus
+    networks:
+      - pandora-network
+
+  # Node Exporter - System Metrics
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: pandora-node-exporter
+    restart: unless-stopped
+    ports:
+      - '9100:9100'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - pandora-network
+
+  # cAdvisor - Container Metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.51.0
+    container_name: pandora-cadvisor
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    networks:
+      - pandora-network
+
+  # Loki - Log Aggregation
+  loki:
+    image: grafana/loki:3.3.0
+    container_name: pandora-loki
+    restart: unless-stopped
+    ports:
+      - '3100:3100'
+    volumes:
+      - loki_data:/loki
+      - ./config/loki.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - pandora-network
+
+  # Promtail - Log Shipping
+  promtail:
+    image: grafana/promtail:3.3.0
+    container_name: pandora-promtail
+    restart: unless-stopped
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./config/promtail.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - pandora-network
+
+  # ============================================
+  # DEVELOPER PORTAL & DOCUMENTATION
+  # ============================================
+  
+  # Backstage - Developer Portal
+  backstage:
+    image: backstage/backstage:latest
+    container_name: pandora-backstage
+    restart: unless-stopped
+    ports:
+      - '3003:7007'
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: backstage
+      POSTGRES_PASSWORD: pandora2025
+      APP_CONFIG_app_title: 'Pandora Developer Portal'
+      APP_CONFIG_app_baseUrl: 'http://localhost:3003'
+      APP_CONFIG_backend_baseUrl: 'http://localhost:3003'
+      APP_CONFIG_backend_cors_origin: 'http://localhost:3003'
+      LOG_LEVEL: 'info'
+    volumes:
+      - backstage_data:/app
+    depends_on:
+      - postgres
+    networks:
+      - pandora-network
+
+  # ============================================
+  # AI & MACHINE LEARNING SERVICES
+  # ============================================
+  
+  # Ollama - Local AI Models
+  ollama:
+    image: ollama/ollama:latest
+    container_name: pandora-ollama
+    restart: unless-stopped
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_HOST: '0.0.0.0'
+      OLLAMA_MODELS: '/root/.ollama/models'
+      OLLAMA_NUM_PARALLEL: '4'
+      OLLAMA_MAX_LOADED_MODELS: '2'
+      OLLAMA_KEEP_ALIVE: '5m'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - pandora-network
+
+  # Open WebUI - AI Chat Interface
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: pandora-open-webui
+    restart: unless-stopped
+    ports:
+      - '3007:8080'
+    environment:
+      OLLAMA_BASE_URL: 'http://ollama:11434'
+      WEBUI_SECRET_KEY: 'pandora-secret-key-2025'
+      WEBUI_AUTH: 'false'
+      ENABLE_SIGNUP: 'true'
+      DEFAULT_MODELS: 'qwen2.5-coder:32b-instruct,codellama:34b,deepseek-coder:33b'
+    volumes:
+      - open_webui_data:/app/backend/data
+    depends_on:
+      - ollama
+    networks:
+      - pandora-network
+
+  # ============================================
+  # CONTAINER MANAGEMENT
+  # ============================================
+  
+  # Portainer - Container Management UI
+  portainer:
+    image: portainer/portainer-ce:2.22.0
+    container_name: pandora-portainer
+    restart: unless-stopped
+    ports:
+      - '9000:9000'
+      - '9443:9443'
+      - '8000:8000'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    command: --admin-password '$$2y$$10$$X.92tPMgrNFqg.vNdD.GUOt0gZGp7wB5P0G0W7X9YYG4zKLxwRkgC' # PandoraAdmin2025!
+    networks:
+      - pandora-network
+
+  # Docker Registry - Container Registry
+  registry:
+    image: registry:2.8.3
+    container_name: pandora-registry
+    restart: unless-stopped
+    ports:
+      - '5001:5000'
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/cert.pem
+      REGISTRY_HTTP_TLS_KEY: /certs/key.pem
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_STORAGE_DELETE_ENABLED: 'true'
+    volumes:
+      - registry_data:/var/lib/registry
+      - registry_auth:/auth
+      - registry_certs:/certs
+    networks:
+      - pandora-network
+
+  # ============================================
+  # TESTING & QUALITY ASSURANCE
+  # ============================================
+  
+  # Selenium Hub - Browser Testing
+  selenium-hub:
+    image: selenium/hub:4.27.0
+    container_name: pandora-selenium-hub
+    restart: unless-stopped
+    ports:
+      - '4444:4444'
+      - '4442:4442'
+      - '4443:4443'
+    environment:
+      GRID_MAX_SESSION: 10
+      GRID_BROWSER_TIMEOUT: 300
+      GRID_TIMEOUT: 300
+    networks:
+      - pandora-network
+
+  # Chrome Node for Selenium
+  selenium-chrome:
+    image: selenium/node-chrome:4.27.0
+    container_name: pandora-selenium-chrome
+    restart: unless-stopped
+    shm_size: 2gb
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 3
+    depends_on:
+      - selenium-hub
+    networks:
+      - pandora-network
+
+  # Firefox Node for Selenium
+  selenium-firefox:
+    image: selenium/node-firefox:4.27.0
+    container_name: pandora-selenium-firefox
+    restart: unless-stopped
+    shm_size: 2gb
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 3
+    depends_on:
+      - selenium-hub
+    networks:
+      - pandora-network
+
+  # ============================================
+  # ARTIFACT MANAGEMENT
+  # ============================================
+  
+  # Nexus - Artifact Repository
+  nexus:
+    image: sonatype/nexus3:3.75.0
+    container_name: pandora-nexus
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+      - '8082:8082'  # Docker hosted
+      - '8083:8083'  # Docker proxy
+    volumes:
+      - nexus_data:/nexus-data
+    environment:
+      NEXUS_CONTEXT: /
+      INSTALL4J_ADD_VM_PARAMS: '-Xms1024m -Xmx2048m -XX:MaxDirectMemorySize=3g'
+    networks:
+      - pandora-network
+
+  # ============================================
+  # MESSAGE QUEUING
+  # ============================================
+  
+  # RabbitMQ - Message Broker
+  rabbitmq:
+    image: rabbitmq:4.0-management-alpine
+    container_name: pandora-rabbitmq
+    restart: unless-stopped
+    ports:
+      - '5672:5672'   # AMQP
+      - '15672:15672' # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: pandora
+      RABBITMQ_DEFAULT_PASS: pandora2025
+      RABBITMQ_DEFAULT_VHOST: pandora
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - pandora-network
+
+  # ============================================
+  # SECURITY & COMPLIANCE
+  # ============================================
+  
+  # Vault - Secret Management
+  vault:
+    image: hashicorp/vault:1.18.0
+    container_name: pandora-vault
+    restart: unless-stopped
+    ports:
+      - '8200:8200'
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: 'pandora-vault-token-2025'
+      VAULT_DEV_LISTEN_ADDRESS: '0.0.0.0:8200'
+      VAULT_ADDR: 'http://0.0.0.0:8200'
+    volumes:
+      - vault_data:/vault/data
+      - vault_logs:/vault/logs
+    command: server -dev
+    networks:
+      - pandora-network
+
+  # Trivy - Container Security Scanner
+  trivy:
+    image: aquasec/trivy:0.58.0
+    container_name: pandora-trivy
+    restart: unless-stopped
+    ports:
+      - '8084:8080'
+    command: server --listen 0.0.0.0:8080
+    volumes:
+      - trivy_cache:/root/.cache/trivy
+    networks:
+      - pandora-network
+
+  # ============================================
+  # ADDITIONAL DEVELOPMENT TOOLS
+  # ============================================
+  
+  # MinIO - S3 Compatible Storage
+  minio:
+    image: minio/minio:RELEASE.2025-01-13T19-14-15Z
+    container_name: pandora-minio
+    restart: unless-stopped
+    ports:
+      - '9001:9001' # Console
+      - '9002:9000' # API
+    environment:
+      MINIO_ROOT_USER: pandora
+      MINIO_ROOT_PASSWORD: pandora2025
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Elasticsearch - Search & Analytics
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: pandora-elasticsearch
+    restart: unless-stopped
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      discovery.type: single-node
+      cluster.name: pandora-cluster
+      node.name: pandora-node
+      ES_JAVA_OPTS: '-Xms512m -Xmx2g'
+      xpack.security.enabled: 'false'
+      xpack.security.enrollment.enabled: 'false'
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - pandora-network
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  # Kibana - Elasticsearch UI
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    container_name: pandora-kibana
+    restart: unless-stopped
+    ports:
+      - '5601:5601'
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+      ELASTICSEARCH_USERNAME: 'kibana_system'
+      ELASTICSEARCH_PASSWORD: 'pandora2025'
+      SERVER_HOST: '0.0.0.0'
+      SERVER_NAME: 'pandora-kibana'
+    depends_on:
+      - elasticsearch
+    networks:
+      - pandora-network
+
+  # Jaeger - Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    container_name: pandora-jaeger
+    restart: unless-stopped
+    ports:
+      - '16686:16686' # Jaeger UI
+      - '14268:14268' # Collector HTTP
+      - '14250:14250' # Collector gRPC
+      - '6831:6831/udp' # Agent compact thrift
+      - '6832:6832/udp' # Agent binary thrift
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: ':9411'
+      SPAN_STORAGE_TYPE: 'badger'
+      BADGER_EPHEMERAL: 'false'
+      BADGER_DIRECTORY_VALUE: '/badger/data'
+      BADGER_DIRECTORY_KEY: '/badger/key'
+    volumes:
+      - jaeger_data:/badger
+    networks:
+      - pandora-network
+
+  # ============================================
+  # DEVELOPMENT DATABASES
+  # ============================================
+  
+  # MongoDB - NoSQL Database
+  mongodb:
+    image: mongo:8.0
+    container_name: pandora-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pandora
+      MONGO_INITDB_ROOT_PASSWORD: pandora2025
+      MONGO_INITDB_DATABASE: pandora
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - pandora-network
+
+  # MySQL - Relational Database
+  mysql:
+    image: mysql:9.1
+    container_name: pandora-mysql
+    restart: unless-stopped
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: pandora2025
+      MYSQL_DATABASE: pandora
+      MYSQL_USER: pandora
+      MYSQL_PASSWORD: pandora2025
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - pandora-network
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  pandora-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
+# ============================================
+# VOLUMES
+# ============================================
+volumes:
+  # Core Services
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:
+  gitlab_runner_config:
+  jenkins_data:
+  openproject_data:
+  openproject_files:
+  
+  # Databases
+  postgres_data:
+  redis_data:
+  mongodb_data:
+  mongodb_config:
+  mysql_data:
+  elasticsearch_data:
+  
+  # Code Quality
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  
+  # Monitoring
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  jaeger_data:
+  
+  # AI & ML
+  ollama_data:
+  open_webui_data:
+  
+  # Storage & Artifacts
+  minio_data:
+  nexus_data:
+  registry_data:
+  registry_auth:
+  registry_certs:
+  
+  # Management
+  portainer_data:
+  backstage_data:
+  vault_data:
+  vault_logs:
+  
+  # Message Queue
+  rabbitmq_data:
+  
+  # Security
+  trivy_cache:

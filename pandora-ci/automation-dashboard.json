@@ -1,0 +1,323 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Proxmox Stack Automation Management",
+    "tags": ["automation", "proxmox", "updates", "production"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(up{job=\"proxmox\"})",
+            "legendFormat": "Total Containers",
+            "refId": "A"
+          },
+          {
+            "expr": "count(up{job=\"proxmox\"} == 1)",
+            "legendFormat": "Online Containers",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list",
+              "orientation": "horizontal"
+            },
+            "mappings": [],
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Latest Update Status",
+        "type": "table",
+        "targets": [
+          {
+            "format": "table",
+            "rawSql": "SELECT container_id, container_name, status, timestamp, success, available_updates FROM latest_container_status ORDER BY timestamp DESC LIMIT 20",
+            "refId": "A",
+            "datasource": {
+              "type": "postgres",
+              "uid": "postgres-automation"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            },
+            "mappings": [
+              {
+                "options": {
+                  "completed": {
+                    "color": "green",
+                    "index": 0
+                  },
+                  "failed": {
+                    "color": "red",
+                    "index": 1
+                  },
+                  "updating": {
+                    "color": "yellow",
+                    "index": 2
+                  }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Daily Update Trends",
+        "type": "timeseries",
+        "targets": [
+          {
+            "format": "time_series",
+            "rawSql": "SELECT update_date as time, completed_updates, failed_updates FROM daily_update_summary WHERE update_date >= NOW() - INTERVAL '30 days' ORDER BY update_date",
+            "refId": "A",
+            "datasource": {
+              "type": "postgres",
+              "uid": "postgres-automation"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Container Health Status",
+        "type": "heatmap",
+        "targets": [
+          {
+            "format": "table",
+            "rawSql": "SELECT container_id, AVG(health_score) as avg_health, DATE_TRUNC('hour', timestamp) as time FROM system_health WHERE timestamp >= NOW() - INTERVAL '24 hours' GROUP BY container_id, DATE_TRUNC('hour', timestamp) ORDER BY time",
+            "refId": "A",
+            "datasource": {
+              "type": "postgres",
+              "uid": "postgres-automation"
+            }
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 5,
+        "title": "Update Execution Time",
+        "type": "bargauge",
+        "targets": [
+          {
+            "format": "table",
+            "rawSql": "SELECT container_id, AVG(execution_time) as avg_time FROM update_log WHERE timestamp >= NOW() - INTERVAL '7 days' AND status = 'completed' GROUP BY container_id ORDER BY avg_time DESC",
+            "refId": "A",
+            "datasource": {
+              "type": "postgres",
+              "uid": "postgres-automation"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "custom": {
+              "displayMode": "basic",
+              "orientation": "horizontal"
+            },
+            "mappings": [],
+            "max": 300,
+            "min": 0,
+            "unit": "s"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 6,
+        "title": "Recent Automation Logs",
+        "type": "logs",
+        "targets": [
+          {
+            "format": "table",
+            "rawSql": "SELECT timestamp, container_id, status, COALESCE(error_message, 'Success') as message FROM update_log WHERE timestamp >= NOW() - INTERVAL '6 hours' ORDER BY timestamp DESC LIMIT 100",
+            "refId": "A",
+            "datasource": {
+              "type": "postgres",
+              "uid": "postgres-automation"
+            }
+          }
+        ],
+        "options": {
+          "showTime": true,
+          "showLabels": false,
+          "showCommonLabels": false,
+          "wrapLogMessage": false,
+          "prettifyLogMessage": false,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-automation"
+          },
+          "enable": true,
+          "iconColor": "red",
+          "name": "Update Failures",
+          "rawQuery": "SELECT timestamp as time, CONCAT('Container ', container_id, ' update failed') as text, 'failure' as tags FROM update_log WHERE status = 'failed' AND timestamp >= $__timeFrom() AND timestamp <= $__timeTo()"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-automation"
+          },
+          "enable": true,
+          "iconColor": "green",
+          "name": "Successful Updates",
+          "rawQuery": "SELECT timestamp as time, CONCAT('Container ', container_id, ' updated successfully') as text, 'success' as tags FROM update_log WHERE status = 'completed' AND success = true AND timestamp >= $__timeFrom() AND timestamp <= $__timeTo()"
+        }
+      ]
+    },
+    "variables": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          "datasource": {
+            "type": "postgres",
+            "uid": "postgres-automation"
+          },
+          "definition": "SELECT DISTINCT container_id FROM container_metadata ORDER BY container_id",
+          "hide": 0,
+          "includeAll": true,
+          "label": "Container",
+          "multi": true,
+          "name": "container",
+          "options": [],
+          "query": "SELECT DISTINCT container_id FROM container_metadata ORDER BY container_id",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "type": "query"
+        }
+      ]
+    }
+  },
+  "folderTitle": "Automation",
+  "message": "Production automation dashboard for Proxmox stack management",
+  "overwrite": true
+}

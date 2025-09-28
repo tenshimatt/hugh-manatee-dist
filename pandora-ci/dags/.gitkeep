@@ -1,0 +1,2 @@
+# This file keeps the dags directory in git
+# Airflow DAGs will be placed in this directory

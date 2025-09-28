@@ -1,0 +1,276 @@
+version: '3.8'
+
+services:
+  # DATABASE - WIDE OPEN
+  postgres:
+    image: postgres:15-alpine
+    container_name: pandora-postgres
+    restart: always
+    user: root
+    privileged: true
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust  # NO PASSWORD REQUIRED
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: "--auth-host=trust --auth-local=trust"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pandora-network
+
+  # REDIS - WIDE OPEN
+  redis:
+    image: redis:7-alpine
+    container_name: pandora-redis
+    restart: always
+    user: root
+    privileged: true
+    command: redis-server --protected-mode no --bind 0.0.0.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - pandora-network
+
+  # N8N - NO AUTH
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: pandora-n8n
+    restart: always
+    user: root
+    privileged: true
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_SECURE_COOKIE=false
+      - WEBHOOK_URL=http://localhost:5678/
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=postgres
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+    networks:
+      - pandora-network
+
+  # AIRFLOW - STANDALONE, NO AUTH
+  airflow:
+    image: apache/airflow:2.7.0
+    container_name: pandora-airflow
+    restart: always
+    user: root
+    privileged: true
+    command: standalone
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=false
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://postgres@postgres:5432/airflow
+      - AIRFLOW__CORE__FERNET_KEY=ZmDfcTF7_60GrrY167zsiPd67pEvs0aGOv2oasOM1Pg=
+      - AIRFLOW__WEBSERVER__SECRET_KEY=secret
+      - AIRFLOW__WEBSERVER__AUTHENTICATE=false
+      - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.api.auth.backend.default
+      - _AIRFLOW_DB_MIGRATE=true
+      - _AIRFLOW_WWW_USER_CREATE=true
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=admin
+    ports:
+      - "8090:8080"
+    volumes:
+      - airflow_data:/opt/airflow
+    depends_on:
+      - postgres
+    networks:
+      - pandora-network
+
+  # GITLAB - SIMPLIFIED
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: pandora-gitlab
+    restart: always
+    privileged: true
+    hostname: gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:3000'
+        gitlab_rails['initial_root_password'] = 'password123'
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        postgresql['enable'] = false
+        gitlab_rails['db_host'] = 'postgres'
+        gitlab_rails['db_port'] = 5432
+        gitlab_rails['db_username'] = 'postgres'
+        gitlab_rails['db_database'] = 'gitlab'
+        redis['enable'] = false
+        gitlab_rails['redis_host'] = 'redis'
+        gitlab_rails['redis_port'] = 6379
+        prometheus_monitoring['enable'] = false
+        grafana['enable'] = false
+    ports:
+      - "3000:80"
+      - "2222:22"
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - pandora-network
+
+  # OPENPROJECT - HTTP ONLY
+  openproject:
+    image: openproject/openproject:14
+    container_name: pandora-openproject
+    restart: always
+    user: root
+    privileged: true
+    environment:
+      - SECRET_KEY_BASE=secret-key-must-be-at-least-30-chars-long-for-openproject-to-work
+      - OPENPROJECT_HTTPS=false
+      - OPENPROJECT_HOST__NAME=localhost:3002
+      - OPENPROJECT_PROTOCOL=http
+      - DATABASE_URL=postgresql://postgres@postgres:5432/openproject
+      - RAILS_CACHE_STORE=redis_store
+      - OPENPROJECT_CACHE__REDIS__URL=redis://redis:6379/1
+      - OPENPROJECT_DEFAULT__LANGUAGE=en
+    ports:
+      - "3002:80"
+    volumes:
+      - openproject_data:/var/openproject/assets
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - pandora-network
+
+  # GRAFANA - NO AUTH
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pandora-grafana
+    restart: always
+    user: root
+    privileged: true
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=postgres:5432
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=postgres
+      - GF_DATABASE_SSL_MODE=disable
+      - GF_SERVER_PROTOCOL=http
+      - GF_SERVER_HTTP_PORT=3000
+    ports:
+      - "3005:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+    networks:
+      - pandora-network
+
+  # PROMETHEUS - BASIC CONFIG
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pandora-prometheus
+    restart: always
+    user: root
+    privileged: true
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus-basic.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - pandora-network
+
+  # LOKI - BASIC LOGGING
+  loki:
+    image: grafana/loki:latest
+    container_name: pandora-loki
+    restart: always
+    user: root
+    privileged: true
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+    networks:
+      - pandora-network
+
+  # NODE EXPORTER - SYSTEM METRICS
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: pandora-node-exporter
+    restart: always
+    user: root
+    privileged: true
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - pandora-network
+
+  # CADVISOR - CONTAINER METRICS
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: pandora-cadvisor
+    restart: always
+    privileged: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - pandora-network
+
+networks:
+  pandora-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  n8n_data:
+  airflow_data:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:
+  openproject_data:
+  grafana_data:
+  prometheus_data:
+  loki_data:

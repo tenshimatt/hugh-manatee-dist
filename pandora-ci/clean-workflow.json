@@ -1,0 +1,91 @@
+{
+  "name": "Proxmox Automation",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron",
+      "name": "3AM Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const containers = [\n  {id: '100', name: 'postoffice'},\n  {id: '105', name: 'authentik-proxy'},\n  {id: '107', name: 'npmplus'},\n  {id: '108', name: 'bookstack'},\n  {id: '109', name: 'wazuh'},\n  {id: '115', name: 'stream'},\n  {id: '117', name: 'dev1rawgle'},\n  {id: '118', name: 'test-stack'},\n  {id: '119', name: 'jupyter-notebook'},\n  {id: '150', name: 'apt-cacher'}\n];\n\nconsole.log(`Starting automation for ${containers.length} containers`);\n\nreturn { containers };"
+      },
+      "id": "init",
+      "name": "Initialize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1
+      },
+      "id": "split",
+      "name": "Process Each",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "command": "echo \"Processing container {{$json.containers[$splitInBatches.index].id}}: {{$json.containers[$splitInBatches.index].name}}\""
+      },
+      "id": "process",
+      "name": "Process Container",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "3AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Initialize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize": {
+      "main": [
+        [
+          {
+            "node": "Process Each",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Each": {
+      "main": [
+        [
+          {
+            "node": "Process Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": {},
+  "triggerCount": 1
+}

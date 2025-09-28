@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # DATABASE - HOST NETWORKING
+  postgres:
+    image: postgres:15-alpine
+    container_name: pandora-postgres
+    restart: always
+    user: root
+    privileged: true
+    network_mode: host
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      PGPORT: 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # REDIS - HOST NETWORKING
+  redis:
+    image: redis:7-alpine
+    container_name: pandora-redis
+    restart: always
+    user: root
+    privileged: true
+    network_mode: host
+    command: redis-server --protected-mode no --bind 0.0.0.0 --port 6379
+    volumes:
+      - redis_data:/data
+
+  # N8N - HOST NETWORKING
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: pandora-n8n
+    restart: always
+    user: root
+    privileged: true
+    network_mode: host
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+
+  # OPENPROJECT - HOST NETWORKING
+  openproject:
+    image: openproject/openproject:14
+    container_name: pandora-openproject
+    restart: always
+    user: root
+    privileged: true
+    network_mode: host
+    environment:
+      - SECRET_KEY_BASE=secret-key-must-be-at-least-30-chars-long-for-openproject-to-work
+      - OPENPROJECT_HTTPS=false
+      - OPENPROJECT_HOST__NAME=10.90.10.6:3002
+      - OPENPROJECT_PROTOCOL=http
+      - PORT=3002
+      - RAILS_ENV=production
+    volumes:
+      - openproject_data:/var/openproject/assets
+    depends_on:
+      - postgres
+
+  # GRAFANA - HOST NETWORKING
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pandora-grafana
+    restart: always
+    user: root
+    privileged: true
+    network_mode: host
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SERVER_PROTOCOL=http
+      - GF_SERVER_HTTP_PORT=3005
+      - GF_SERVER_DOMAIN=10.90.10.6
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  redis_data:
+  n8n_data:
+  openproject_data:
+  grafana_data:

@@ -1,0 +1,232 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('H/30 * * * *')  // Every 30 minutes
+    }
+
+    environment {
+        GITLAB_URL = 'http://pandora-gitlab:3000'
+        OLLAMA_URL = 'http://pandora-ollama:11434'
+        OPENPROJECT_URL = 'http://pandora-openproject:3002'
+        OPENWEBUI_URL = 'https://openwebui.beyondpandora.com'
+        MODEL_NAME = 'qwen2.5-coder:latest'
+    }
+
+    parameters {
+        string(name: 'TEST_RESULTS', defaultValue: '', description: 'Base64 encoded test results')
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to fix')
+    }
+
+    stages {
+        stage('Parse Test Failures') {
+            steps {
+                script {
+                    if (params.TEST_RESULTS) {
+                        sh """
+                            echo '${params.TEST_RESULTS}' | base64 -d > test-results.json
+                            python3 scripts/parse_failures.py test-results.json > failures.txt
+                        """
+                        env.FAILURES = readFile('failures.txt').trim()
+                    } else {
+                        // Run tests to find failures
+                        sh """
+                            cd /workspace/rawgle-platform
+                            npm test --json > test-results.json || true
+                            python3 scripts/parse_failures.py test-results.json > failures.txt
+                        """
+                        env.FAILURES = readFile('failures.txt').trim()
+                    }
+                }
+            }
+        }
+
+        stage('Create Issue & Task') {
+            when {
+                expression { env.FAILURES != '' }
+            }
+            steps {
+                script {
+                    // Create GitLab issue
+                    sh """
+                        curl -X POST ${GITLAB_URL}/api/v4/projects/1/issues \
+                          -H "Content-Type: application/json" \
+                          -d '{
+                            "title": "Automated: Test failures detected",
+                            "description": "${env.FAILURES}",
+                            "labels": ["automated", "test-failure"]
+                          }' > gitlab-issue.json
+                    """
+
+                    // Create OpenProject task
+                    sh """
+                        curl -X POST ${OPENPROJECT_URL}/api/v3/projects/1/work_packages \
+                          -H "Content-Type: application/json" \
+                          -d '{
+                            "subject": "AI Fix: Test failures",
+                            "description": {"raw": "${env.FAILURES}"},
+                            "type": {"href": "/api/v3/types/1"}
+                          }' > openproject-task.json
+                    """
+                }
+            }
+        }
+
+        stage('Read Documentation') {
+            when {
+                expression { env.FAILURES != '' }
+            }
+            steps {
+                script {
+                    // Identify which docs to read based on failure context
+                    sh """
+                        python3 scripts/identify_docs.py failures.txt > relevant-docs.txt
+                        python3 scripts/read_documentation.py relevant-docs.txt > documentation.txt
+                    """
+                    env.DOCUMENTATION = readFile('documentation.txt').trim()
+                }
+            }
+        }
+
+        stage('Generate AI Fix') {
+            when {
+                expression { env.FAILURES != '' }
+            }
+            steps {
+                script {
+                    sh """
+                        python3 scripts/ai_fix_generator.py \
+                          --failures "${env.FAILURES}" \
+                          --documentation "${env.DOCUMENTATION}" \
+                          --model ${MODEL_NAME} \
+                          --ollama-url ${OLLAMA_URL} \
+                          > fix.patch
+                    """
+
+                    // Store AI prompt and response for analysis
+                    sh """
+                        python3 scripts/log_ai_interaction.py \
+                          --prompt "prompt.txt" \
+                          --response "fix.patch" \
+                          --timestamp "\$(date +%s)"
+                    """
+                }
+            }
+        }
+
+        stage('Apply Fix') {
+            when {
+                expression { env.FAILURES != '' }
+            }
+            steps {
+                script {
+                    def branchName = "ai-fix/${env.BUILD_NUMBER}"
+                    sh """
+                        cd /workspace/rawgle-platform
+                        git checkout -b ${branchName}
+                        git apply ${WORKSPACE}/fix.patch
+                        git add .
+                        git commit -m "AI Fix: Automated test failure resolution
+
+                        - Fixed failing tests based on documentation
+                        - Generated by ${MODEL_NAME}
+                        - Jenkins Build: ${env.BUILD_NUMBER}
+                        "
+                    """
+                    env.FIX_BRANCH = branchName
+                }
+            }
+        }
+
+        stage('Validate Fix') {
+            when {
+                expression { env.FAILURES != '' }
+            }
+            steps {
+                script {
+                    def testResult = sh(
+                        script: """
+                            cd /workspace/rawgle-platform
+                            npm test
+                        """,
+                        returnStatus: true
+                    )
+                    env.TEST_PASSED = (testResult == 0) ? 'true' : 'false'
+                }
+            }
+        }
+
+        stage('Auto-Merge') {
+            when {
+                expression { env.TEST_PASSED == 'true' }
+            }
+            steps {
+                script {
+                    sh """
+                        cd /workspace/rawgle-platform
+                        git push origin ${env.FIX_BRANCH}
+
+                        # Create merge request
+                        curl -X POST ${GITLAB_URL}/api/v4/projects/1/merge_requests \
+                          -H "Content-Type: application/json" \
+                          -d '{
+                            "source_branch": "${env.FIX_BRANCH}",
+                            "target_branch": "main",
+                            "title": "AI Fix: Automated test resolution",
+                            "description": "Automatically generated fix for failing tests",
+                            "remove_source_branch": true,
+                            "merge_when_pipeline_succeeds": true
+                          }'
+
+                        # Auto-merge immediately (DANGEROUS MODE)
+                        sleep 5
+                        curl -X PUT ${GITLAB_URL}/api/v4/projects/1/merge_requests/1/merge
+                    """
+                }
+            }
+        }
+
+        stage('Update Metrics') {
+            always {
+                script {
+                    def status = env.TEST_PASSED == 'true' ? 'success' : 'failure'
+                    sh """
+                        # Send metrics to Prometheus
+                        echo "ai_fix_attempts_total{status='${status}'} 1" | curl --data-binary @- http://pandora-prometheus:3006/metrics/job/ai_fixes
+
+                        # Log to Elasticsearch
+                        curl -X POST http://pandora-elasticsearch:9200/ai-fixes/_doc \
+                          -H "Content-Type: application/json" \
+                          -d '{
+                            "timestamp": "\$(date -Iseconds)",
+                            "build_number": ${env.BUILD_NUMBER},
+                            "status": "${status}",
+                            "failures": "${env.FAILURES}",
+                            "fix_applied": ${env.TEST_PASSED}
+                          }'
+                    """
+                }
+            }
+        }
+
+        stage('Notify') {
+            when {
+                expression { env.TEST_PASSED == 'false' }
+            }
+            steps {
+                script {
+                    echo "AI fix failed - manual intervention required"
+                    echo "Review at: ${OPENWEBUI_URL}"
+                    echo "Prompt used: ${env.FAILURES}"
+                    echo "Documentation provided: ${env.DOCUMENTATION}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

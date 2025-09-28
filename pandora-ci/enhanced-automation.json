@@ -1,0 +1,304 @@
+{
+  "name": "Proxmox Auto-Update Enhanced",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "3AM Daily",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 200]
+    },
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 380]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define containers for automation (excluding critical Docker hosts)\nconst containers = [\n  {id: '100', name: 'postoffice', critical: 'high'},\n  {id: '105', name: 'authentik-proxy', critical: 'high'},\n  {id: '107', name: 'npmplus', critical: 'medium'},\n  {id: '108', name: 'bookstack', critical: 'low'},\n  {id: '109', name: 'wazuh', critical: 'high'},\n  {id: '115', name: 'stream', critical: 'low'},\n  {id: '117', name: 'dev1rawgle', critical: 'low'},\n  {id: '118', name: 'test-stack', critical: 'low'},\n  {id: '119', name: 'jupyter-notebook', critical: 'low'},\n  {id: '150', name: 'apt-cacher', critical: 'medium'}\n];\n\nconst startTime = new Date();\nconst execution = {\n  id: $execution.id,\n  startTime: startTime.toISOString(),\n  totalContainers: containers.length\n};\n\nconsole.log(`🚀 Starting Proxmox automation for ${containers.length} containers at ${startTime}`);\nconsole.log('📦 Containers to process:', containers.map(c => `${c.id}:${c.name}`).join(', '));\n\nreturn { containers, execution };"
+      },
+      "id": "initialize",
+      "name": "Initialize Automation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 290]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-containers",
+      "name": "Process Each Container",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 290]
+    },
+    {
+      "parameters": {
+        "command": "ssh root@10.90.10.10 \"pct status {{$json.containers[$splitInBatches.index].id}} 2>/dev/null || echo 'status: stopped'\"",
+        "options": {}
+      },
+      "id": "check-status",
+      "name": "Check Status",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [900, 290]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.stdout}}",
+              "rightValue": "status: running",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-running",
+      "name": "Container Running?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 290]
+    },
+    {
+      "parameters": {
+        "command": "ssh root@10.90.10.10 \"pct exec {{$json.containers[$splitInBatches.index].id}} -- bash -c 'apt update -qq 2>/dev/null && apt list --upgradable 2>/dev/null | grep -c upgradable || echo 0'\"",
+        "options": {
+          "timeout": 300
+        }
+      },
+      "id": "check-updates",
+      "name": "Check Updates",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1340, 190]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{parseInt($json.stdout) || 0}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "has-updates",
+      "name": "Updates Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1560, 190]
+    },
+    {
+      "parameters": {
+        "command": "ssh root@10.90.10.10 \"pct exec {{$json.containers[$splitInBatches.index].id}} -- bash -c 'echo \\\"Updating container {{$json.containers[$splitInBatches.index].id}} ({{$json.containers[$splitInBatches.index].name}})...\\\" && DEBIAN_FRONTEND=noninteractive apt upgrade -y 2>&1'\"",
+        "options": {
+          "timeout": 1800
+        }
+      },
+      "id": "perform-update",
+      "name": "Perform Update",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1780, 90]
+    },
+    {
+      "parameters": {
+        "jsCode": "const container = $json.containers[$splitInBatches.index];\nconst success = $json.exitCode === 0;\nconst timestamp = new Date().toISOString();\n\nif (success) {\n  console.log(`✅ Container ${container.id} (${container.name}): Update completed successfully`);\n} else {\n  console.log(`❌ Container ${container.id} (${container.name}): Update failed with exit code ${$json.exitCode}`);\n  console.log(`Error output: ${$json.stderr || 'No error details'}`);\n}\n\nreturn {\n  container_id: container.id,\n  container_name: container.name,\n  status: success ? 'completed' : 'failed',\n  success: success,\n  timestamp: timestamp,\n  exitCode: $json.exitCode,\n  updatesApplied: parseInt($json.stdout?.match(/upgraded, (\\d+)/)?.[1]) || 0,\n  executionTime: Math.floor((new Date() - new Date($json.execution?.startTime || Date.now())) / 1000),\n  output: $json.stdout?.substring(0, 500) || '',\n  error: $json.stderr?.substring(0, 200) || ''\n};"
+      },
+      "id": "log-success",
+      "name": "Log Update Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 90]
+    },
+    {
+      "parameters": {
+        "jsCode": "const container = $json.containers[$splitInBatches.index];\nconst timestamp = new Date().toISOString();\nconst isRunning = $json.stdout && $json.stdout.includes('status: running');\nconst hasUpdates = parseInt($json.stdout) > 0;\n\nlet reason, status;\nif (!isRunning) {\n  reason = 'Container not running';\n  status = 'container_down';\n  console.log(`⚠️ Container ${container.id} (${container.name}): Skipped - not running`);\n} else if (!hasUpdates) {\n  reason = 'No updates available';\n  status = 'no_updates';\n  console.log(`✅ Container ${container.id} (${container.name}): Up to date - no updates needed`);\n} else {\n  reason = 'Unknown';\n  status = 'skipped';\n  console.log(`ℹ️ Container ${container.id} (${container.name}): Skipped - ${reason}`);\n}\n\nreturn {\n  container_id: container.id,\n  container_name: container.name,\n  status: status,\n  success: null,\n  timestamp: timestamp,\n  reason: reason,\n  availableUpdates: isRunning ? (parseInt($json.stdout) || 0) : null\n};"
+      },
+      "id": "log-skipped",
+      "name": "Log Skipped",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 290]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate comprehensive execution summary\nconst endTime = new Date();\nconst allResults = $input.all();\nconst startTime = new Date($input.first().json.execution?.startTime || Date.now());\nconst totalExecutionTime = Math.floor((endTime - startTime) / 1000);\n\n// Categorize results\nconst successful = allResults.filter(item => item.json.success === true).length;\nconst failed = allResults.filter(item => item.json.success === false).length;\nconst noUpdates = allResults.filter(item => item.json.status === 'no_updates').length;\nconst containerDown = allResults.filter(item => item.json.status === 'container_down').length;\nconst skipped = allResults.filter(item => item.json.status === 'skipped').length;\n\n// Calculate totals\nconst totalProcessed = allResults.length;\nconst totalUpdatesApplied = allResults.reduce((sum, item) => sum + (item.json.updatesApplied || 0), 0);\n\n// Determine overall status\nlet overallStatus;\nif (failed > 0) {\n  overallStatus = failed === totalProcessed ? 'all_failed' : 'partial_failure';\n} else if (successful > 0) {\n  overallStatus = 'completed_with_updates';\n} else {\n  overallStatus = 'completed_no_updates';\n}\n\nconst summary = {\n  execution_date: endTime.toISOString().split('T')[0],\n  execution_start: startTime.toISOString(),\n  execution_end: endTime.toISOString(),\n  total_execution_time: totalExecutionTime,\n  total_containers: totalProcessed,\n  successful_updates: successful,\n  failed_updates: failed,\n  no_updates_needed: noUpdates,\n  containers_down: containerDown,\n  other_skipped: skipped,\n  total_packages_updated: totalUpdatesApplied,\n  overall_status: overallStatus\n};\n\n// Log comprehensive summary\nconsole.log('🎯 AUTOMATION EXECUTION SUMMARY');\nconsole.log('================================');\nconsole.log(`⏱️ Execution Time: ${totalExecutionTime} seconds`);\nconsole.log(`📦 Total Containers: ${totalProcessed}`);\nconsole.log(`✅ Successful Updates: ${successful}`);\nconsole.log(`❌ Failed Updates: ${failed}`);\nconsole.log(`ℹ️ No Updates Needed: ${noUpdates}`);\nconsole.log(`⚠️ Containers Down: ${containerDown}`);\nconsole.log(`🔧 Total Packages Updated: ${totalUpdatesApplied}`);\nconsole.log(`🎯 Overall Status: ${overallStatus}`);\n\nif (failed > 0) {\n  console.log('❗ Failed Containers:');\n  allResults.filter(item => item.json.success === false).forEach(item => {\n    console.log(`  - ${item.json.container_id} (${item.json.container_name}): ${item.json.error || 'Unknown error'}`);\n  });\n}\n\nreturn { summary, details: allResults };"
+      },
+      "id": "generate-summary",
+      "name": "Generate Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2220, 290]
+    }
+  ],
+  "connections": {
+    "3AM Daily": {
+      "main": [
+        [
+          {
+            "node": "Initialize Automation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Initialize Automation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Automation": {
+      "main": [
+        [
+          {
+            "node": "Process Each Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Each Container": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status": {
+      "main": [
+        [
+          {
+            "node": "Container Running?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Container Running?": {
+      "main": [
+        [
+          {
+            "node": "Check Updates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Skipped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Updates": {
+      "main": [
+        [
+          {
+            "node": "Updates Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updates Available?": {
+      "main": [
+        [
+          {
+            "node": "Perform Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Skipped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perform Update": {
+      "main": [
+        [
+          {
+            "node": "Log Update Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {},
+  "triggerCount": 2
+}

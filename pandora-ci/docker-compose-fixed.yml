@@ -1,0 +1,405 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # DATABASE SERVICES
+  # ============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: pandora-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pandora
+      POSTGRES_PASSWORD: pandora123
+      POSTGRES_DB: pandora_db
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pandora -d pandora_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: pandora-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ============================================
+  # ORCHESTRATION & AUTOMATION
+  # ============================================
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: pandora-n8n
+    restart: unless-stopped
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=pandora123
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=UTC
+      - N8N_LOG_LEVEL=info
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/home/node/.n8n/workflows:rw
+    networks:
+      - pandora-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  airflow:
+    image: apache/airflow:2.7.0
+    container_name: pandora-airflow
+    restart: unless-stopped
+    command: standalone
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=false
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:pandora123@postgres:5432/airflow_db
+      - AIRFLOW__CORE__FERNET_KEY=ZmDfcTF7_60GrrY167zsiPd67pEvs0aGOv2oasOM1Pg=
+      - AIRFLOW__WEBSERVER__SECRET_KEY=pandora-airflow-secret-key-2024
+      - _AIRFLOW_DB_MIGRATE=true
+      - _AIRFLOW_WWW_USER_CREATE=true
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=pandora123
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=true
+      - AIRFLOW__LOGGING__LOGGING_LEVEL=INFO
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags:rw
+      - ./claude_scripts:/opt/airflow/scripts:rw
+      - ./logs:/opt/airflow/logs:rw
+      - ./plugins:/opt/airflow/plugins:rw
+      - airflow_data:/opt/airflow
+    networks:
+      - pandora-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # CODE MANAGEMENT & CI/CD
+  # ============================================
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: pandora-gitlab
+    restart: unless-stopped
+    hostname: gitlab.pandora.local
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:3000'
+        gitlab_rails['initial_root_password'] = 'pandora123'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        postgresql['enable'] = false
+        gitlab_rails['db_host'] = 'postgres'
+        gitlab_rails['db_port'] = 5432
+        gitlab_rails['db_username'] = 'gitlab'
+        gitlab_rails['db_password'] = 'pandora123'
+        gitlab_rails['db_database'] = 'gitlab_db'
+        redis['enable'] = false
+        gitlab_rails['redis_host'] = 'redis'
+        gitlab_rails['redis_port'] = 6379
+        prometheus_monitoring['enable'] = true
+        grafana['enable'] = false
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+    ports:
+      - "3000:80"
+      - "2222:22"
+    volumes:
+      - gitlab_config:/etc/gitlab:Z
+      - gitlab_logs:/var/log/gitlab:Z
+      - gitlab_data:/var/opt/gitlab:Z
+    networks:
+      - pandora-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/opt/gitlab/bin/gitlab-healthcheck", "--fail", "--max-time", "10"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 180s
+
+  # ============================================
+  # PROJECT MANAGEMENT
+  # ============================================
+  openproject:
+    image: openproject/openproject:14
+    container_name: pandora-openproject
+    restart: unless-stopped
+    ports:
+      - "3002:80"
+    environment:
+      SECRET_KEY_BASE: 'pandora-openproject-secret-key-must-be-at-least-30-chars-long-2024'
+      DATABASE_URL: 'postgresql://openproject:pandora123@postgres:5432/openproject_db'
+      RAILS_CACHE_STORE: 'redis'
+      OPENPROJECT_CACHE__REDIS__URL: 'redis://redis:6379/1'
+      OPENPROJECT_DEFAULT__LANGUAGE: 'en'
+      OPENPROJECT_HTTPS: 'false'
+      OPENPROJECT_HOST__NAME: 'localhost:3002'
+    volumes:
+      - openproject_data:/var/openproject/assets:Z
+      - openproject_files:/var/openproject/files:Z
+    networks:
+      - pandora-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health_checks/default"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # ============================================
+  # MONITORING & OBSERVABILITY
+  # ============================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pandora-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus:Z
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+      - '--web.external-url=http://localhost:9090'
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pandora-grafana
+    restart: unless-stopped
+    environment:
+      # Security
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: pandora123
+      GF_SECURITY_SECRET_KEY: pandora-grafana-secret-key-2024
+
+      # Database
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: postgres:5432
+      GF_DATABASE_NAME: grafana_db
+      GF_DATABASE_USER: grafana
+      GF_DATABASE_PASSWORD: pandora123
+      GF_DATABASE_SSL_MODE: disable
+
+      # Server
+      GF_SERVER_HTTP_PORT: 3000
+      GF_SERVER_PROTOCOL: http
+      GF_SERVER_DOMAIN: localhost
+      GF_SERVER_ROOT_URL: http://localhost:3005
+
+      # Auth
+      GF_AUTH_ANONYMOUS_ENABLED: false
+      GF_USERS_ALLOW_SIGN_UP: false
+
+      # Plugins
+      GF_INSTALL_PLUGINS: >-
+        grafana-clock-panel,
+        grafana-simple-json-datasource,
+        grafana-piechart-panel,
+        yesoreyeram-boomtable-panel,
+        grafana-worldmap-panel
+
+      # Logging
+      GF_LOG_LEVEL: info
+      GF_LOG_MODE: console
+    ports:
+      - "3005:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana:Z
+      - ./config/grafana:/etc/grafana/provisioning:ro
+    networks:
+      - pandora-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Node Exporter for system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: pandora-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - pandora-network
+
+  # cAdvisor for container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: pandora-cadvisor
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    privileged: true
+    networks:
+      - pandora-network
+
+  # ============================================
+  # LOG MANAGEMENT
+  # ============================================
+  loki:
+    image: grafana/loki:latest
+    container_name: pandora-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki:Z
+      - ./config/loki.yml:/etc/loki/local-config.yaml:ro
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: pandora-promtail
+    restart: unless-stopped
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./config/promtail.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - pandora-network
+    depends_on:
+      loki:
+        condition: service_healthy
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  pandora-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1
+
+# ============================================
+# VOLUMES
+# ============================================
+volumes:
+  # Database volumes
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+  # Application volumes
+  n8n_data:
+    driver: local
+  airflow_data:
+    driver: local
+
+  # GitLab volumes
+  gitlab_config:
+    driver: local
+  gitlab_logs:
+    driver: local
+  gitlab_data:
+    driver: local
+
+  # Project Management
+  openproject_data:
+    driver: local
+  openproject_files:
+    driver: local
+
+  # Monitoring volumes
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  loki_data:
+    driver: local

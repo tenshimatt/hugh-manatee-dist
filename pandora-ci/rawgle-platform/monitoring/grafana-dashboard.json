@@ -1,0 +1,385 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Rawgle AI-Driven CI/CD Pipeline",
+    "tags": ["ai", "cicd", "automated"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Pipeline Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "ai_fix_attempts_total",
+            "legendFormat": "Total AI Fix Attempts"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list",
+              "orientation": "horizontal"
+            },
+            "mappings": [],
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "AI Fix Success Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "rate(ai_fix_attempts_total{status=\"success\"}[5m]) / rate(ai_fix_attempts_total[5m]) * 100",
+            "legendFormat": "Success Rate %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 50},
+                {"color": "green", "value": 80}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Test Results Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "test_results_total{status=\"passed\"}",
+            "legendFormat": "Tests Passed"
+          },
+          {
+            "expr": "test_results_total{status=\"failed\"}",
+            "legendFormat": "Tests Failed"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "barAlignment": 0,
+              "lineWidth": 1,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": false,
+              "insertNulls": false,
+              "showPoints": "never",
+              "pointSize": 5,
+              "stacking": {"mode": "none", "group": "A"},
+              "axisPlacement": "auto",
+              "axisLabel": "",
+              "scaleDistribution": {"type": "linear"},
+              "hideFrom": {"legend": false, "tooltip": false, "vis": false},
+              "thresholdsStyle": {"mode": "off"}
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "AI Model Performance",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "ai_model_response_time_seconds",
+            "legendFormat": "Response Time",
+            "format": "table"
+          },
+          {
+            "expr": "ai_model_token_usage_total",
+            "legendFormat": "Token Usage",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Pipeline Execution Time",
+        "type": "histogram",
+        "targets": [
+          {
+            "expr": "pipeline_execution_duration_seconds_bucket",
+            "legendFormat": "Execution Time"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "bucketSize": 10
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            },
+            "unit": "s"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Test Categories and Failure Types",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "test_failures_by_category",
+            "legendFormat": "{{category}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayLabels": ["name", "percent"]
+            },
+            "mappings": [],
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 7,
+        "title": "Documentation Coverage",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "documentation_files_total",
+            "legendFormat": "Total Docs"
+          },
+          {
+            "expr": "documentation_coverage_ratio",
+            "legendFormat": "Coverage %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 50},
+                {"color": "green", "value": 80}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 8,
+        "title": "Real-time Pipeline Status",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"jenkins\"} |= \"ai-fix\"",
+            "legendFormat": "Pipeline Logs"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+      },
+      {
+        "id": 9,
+        "title": "AI Model Confidence Scores",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "ai_confidence_score",
+            "legendFormat": "Confidence Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 20
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 0.6},
+                {"color": "green", "value": 0.8}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40}
+      },
+      {
+        "id": 10,
+        "title": "Auto-Merge Statistics",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "auto_merge_total{status=\"success\"}",
+            "legendFormat": "Successful Auto-Merges"
+          },
+          {
+            "expr": "auto_merge_total{status=\"failed\"}",
+            "legendFormat": "Failed Auto-Merges"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 40}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "model",
+          "type": "query",
+          "query": "label_values(ai_fix_attempts_total, model)",
+          "current": {
+            "value": "qwen2.5-coder:latest",
+            "text": "qwen2.5-coder:latest"
+          }
+        },
+        {
+          "name": "environment",
+          "type": "query",
+          "query": "label_values(test_results_total, environment)",
+          "current": {
+            "value": "ci",
+            "text": "ci"
+          }
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "prometheus",
+          "expr": "deployment_timestamp",
+          "textFormat": "Deployment: {{version}}",
+          "iconColor": "blue"
+        },
+        {
+          "name": "AI Model Updates",
+          "datasource": "prometheus",
+          "expr": "model_update_timestamp",
+          "textFormat": "Model Updated: {{model}}",
+          "iconColor": "green"
+        }
+      ]
+    },
+    "links": [
+      {
+        "title": "GitLab Repository",
+        "url": "http://pandora-gitlab:3000/rawgle/platform"
+      },
+      {
+        "title": "Jenkins Pipeline",
+        "url": "http://pandora-jenkins:3001/job/ai-fix-pipeline"
+      },
+      {
+        "title": "Open WebUI",
+        "url": "https://openwebui.beyondpandora.com"
+      },
+      {
+        "title": "SonarQube",
+        "url": "http://pandora-sonarqube:3004"
+      }
+    ]
+  }
+}

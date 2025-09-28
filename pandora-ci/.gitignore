@@ -1,0 +1,19 @@
+# Secrets and environment files
+.env.production
+.env.pandora-extended
+.env.superluxe
+.env.*
+.secrets/
+env-backups/
+*.key
+*.pem
+*.log
+
+# Temporary files
+/tmp/
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db

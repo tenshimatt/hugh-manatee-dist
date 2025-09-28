@@ -1,0 +1,456 @@
+{
+  "name": "Proxmox Stack Auto-Update System",
+  "description": "Production workflow for automated Proxmox container updates with monitoring and alerting",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 3AM Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://10.90.10.10:8006/api2/json/nodes/pve/lxc",
+        "authentication": "basicAuth",
+        "options": {}
+      },
+      "id": "get-containers",
+      "name": "Get Proxmox Containers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [480, 300],
+      "credentials": {
+        "basicAuth": {
+          "id": "proxmox-auth",
+          "name": "Proxmox Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.status}}",
+              "operation": "equal",
+              "value2": "running"
+            }
+          ]
+        }
+      },
+      "id": "filter-running",
+      "name": "Filter Running Containers",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "url": "=http://10.90.10.10:8006/api2/json/nodes/pve/lxc/{{$json.vmid}}/status/current",
+        "authentication": "basicAuth"
+      },
+      "id": "get-container-status",
+      "name": "Get Container Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "command": "pct exec {{$json.vmid}} -- bash -c 'apt update && apt list --upgradable | wc -l'"
+      },
+      "id": "check-updates",
+      "name": "Check Available Updates",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1140, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{parseInt($json.stdout)}}",
+              "operation": "larger",
+              "value2": 1
+            }
+          ]
+        }
+      },
+      "id": "updates-available",
+      "name": "Updates Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1360, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "update_log",
+        "columns": "container_id, status, timestamp, available_updates, execution_time",
+        "values": "={{$json.vmid}}, 'checking', '{{new Date().toISOString()}}', {{parseInt($json.stdout)}}, 0"
+      },
+      "id": "log-check",
+      "name": "Log Update Check",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1580, 200],
+      "credentials": {
+        "postgres": {
+          "id": "pandora-postgres",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "pct exec {{$json.vmid}} -- bash -c 'apt update && DEBIAN_FRONTEND=noninteractive apt upgrade -y'"
+      },
+      "id": "perform-update",
+      "name": "Perform Container Update",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1580, 400]
+    },
+    {
+      "parameters": {
+        "command": "pct exec {{$json.vmid}} -- bash -c 'systemctl daemon-reload && systemctl restart $(systemctl list-units --type=service --state=running --no-legend | grep -v systemd | awk \"{print \\$1}\" | head -5)'"
+      },
+      "id": "restart-services",
+      "name": "Restart Key Services",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1800, 400]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": "update_log",
+        "updateKey": "container_id",
+        "columns": "status, completion_time, success",
+        "values": "='completed', '{{new Date().toISOString()}}', {{$json.exitCode === 0 ? 'true' : 'false'}}"
+      },
+      "id": "log-completion",
+      "name": "Log Update Completion",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [2020, 400]
+    },
+    {
+      "parameters": {
+        "url": "http://prometheus:9090/api/v1/query",
+        "options": {
+          "bodyContentType": "form-urlencoded"
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "up{job=\"proxmox\"}"
+            }
+          ]
+        }
+      },
+      "id": "health-check",
+      "name": "Post-Update Health Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2240, 400]
+    },
+    {
+      "parameters": {
+        "url": "http://grafana:3000/api/annotations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$vars.grafana_api_key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "Automated update completed for container {{$json.vmid}}"
+            },
+            {
+              "name": "tags",
+              "value": "automation,update,container-{{$json.vmid}}"
+            }
+          ]
+        }
+      },
+      "id": "create-annotation",
+      "name": "Create Grafana Annotation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2460, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.exitCode}}",
+              "operation": "notEqual",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "check-failures",
+      "name": "Update Failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1800, 600]
+    },
+    {
+      "parameters": {
+        "url": "=http://slack-webhook-url",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "🚨 Container {{$json.vmid}} update failed with exit code {{$json.exitCode}}"
+            }
+          ]
+        }
+      },
+      "id": "alert-failure",
+      "name": "Alert on Failure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2020, 600]
+    },
+    {
+      "parameters": {
+        "operation": "aggregate",
+        "table": "update_log",
+        "columns": "COUNT(*) as total_containers, SUM(CASE WHEN success = true THEN 1 ELSE 0 END) as successful_updates",
+        "where": "DATE(timestamp) = CURRENT_DATE"
+      },
+      "id": "generate-summary",
+      "name": "Generate Daily Summary",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [2680, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://grafana:3000/api/dashboards/db",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$vars.grafana_api_key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "dashboard",
+              "value": "={{JSON.stringify($json.dashboard_config)}}"
+            }
+          ]
+        }
+      },
+      "id": "update-dashboard",
+      "name": "Update Management Dashboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2900, 300]
+    }
+  ],
+  "connections": {
+    "Daily 3AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Proxmox Containers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Proxmox Containers": {
+      "main": [
+        [
+          {
+            "node": "Filter Running Containers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Running Containers": {
+      "main": [
+        [
+          {
+            "node": "Get Container Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Container Details": {
+      "main": [
+        [
+          {
+            "node": "Check Available Updates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Available Updates": {
+      "main": [
+        [
+          {
+            "node": "Updates Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updates Available?": {
+      "main": [
+        [
+          {
+            "node": "Log Update Check",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Perform Container Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Update Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perform Container Update": {
+      "main": [
+        [
+          {
+            "node": "Restart Key Services",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Failures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restart Key Services": {
+      "main": [
+        [
+          {
+            "node": "Log Update Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Update Completion": {
+      "main": [
+        [
+          {
+            "node": "Post-Update Health Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post-Update Health Check": {
+      "main": [
+        [
+          {
+            "node": "Create Grafana Annotation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Grafana Annotation": {
+      "main": [
+        [
+          {
+            "node": "Generate Daily Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Failures": {
+      "main": [
+        [
+          {
+            "node": "Alert on Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Daily Summary": {
+      "main": [
+        [
+          {
+            "node": "Update Management Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "America/Chicago",
+    "saveExecutionProgress": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  },
+  "staticData": {},
+  "tags": ["production", "automation", "proxmox", "updates"],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

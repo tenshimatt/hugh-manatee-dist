@@ -1,0 +1,400 @@
+{
+  "name": "Proxmox Auto-Update Production",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "3AM Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Start automation execution logging\nconst executionId = $execution.id;\nconst startTime = new Date();\n\n// Get list of containers to process\nconst containersToCheck = [\n  {id: '100', name: 'postoffice', critical: 'high'},\n  {id: '105', name: 'authentik-proxy', critical: 'high'},\n  {id: '107', name: 'npmplus', critical: 'medium'},\n  {id: '108', name: 'bookstack', critical: 'low'},\n  {id: '109', name: 'wazuh', critical: 'high'},\n  {id: '115', name: 'stream', critical: 'low'},\n  {id: '117', name: 'dev1rawgle', critical: 'low'},\n  {id: '118', name: 'test-stack', critical: 'low'},\n  {id: '119', name: 'jupyter-notebook', critical: 'low'},\n  {id: '150', name: 'apt-cacher', critical: 'medium'}\n];\n\n// Initialize summary\nconst summary = {\n  executionId,\n  startTime: startTime.toISOString(),\n  totalContainers: containersToCheck.length,\n  containersProcessed: 0,\n  successfulUpdates: 0,\n  failedUpdates: 0,\n  skippedContainers: 0\n};\n\nreturn {\n  containers: containersToCheck,\n  summary: summary,\n  execution: {\n    id: executionId,\n    startTime: startTime.toISOString()\n  }\n};"
+      },
+      "id": "init-automation",
+      "name": "Initialize Automation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-containers",
+      "name": "Process Each Container",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "command": "ssh root@10.90.10.10 \"pct status {{$json.containers[$splitInBatches.index].id}}\"",
+        "options": {}
+      },
+      "id": "check-container-status",
+      "name": "Check Container Status",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.stdout}}",
+              "rightValue": "status: running",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-container-running",
+      "name": "Is Container Running?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "command": "ssh root@10.90.10.10 \"pct exec {{$json.containers[$splitInBatches.index].id}} -- bash -c 'apt update -qq && apt list --upgradable 2>/dev/null | grep -c upgradable || echo 0'\"",
+        "options": {}
+      },
+      "id": "check-updates",
+      "name": "Check Available Updates",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "update_log",
+        "columns": "container_id, container_name, status, timestamp, available_updates",
+        "values": "={{$json.containers[$splitInBatches.index].id}}, '{{$json.containers[$splitInBatches.index].name}}', 'checking', '{{new Date().toISOString()}}', {{parseInt($json.stdout) || 0}}"
+      },
+      "id": "log-check-start",
+      "name": "Log Check Started",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1560, 200],
+      "credentials": {
+        "postgres": "pandora-postgres"
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{parseInt($json.stdout)}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "updates-available",
+      "name": "Updates Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "command": "ssh root@10.90.10.10 \"pct exec {{$json.containers[$splitInBatches.index].id}} -- bash -c 'DEBIAN_FRONTEND=noninteractive apt upgrade -y 2>&1'\"",
+        "options": {
+          "timeout": 1800
+        }
+      },
+      "id": "perform-update",
+      "name": "Perform Update",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [2000, 100]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "update_log",
+        "columns": "container_id, container_name, status, timestamp, success, execution_time, error_message",
+        "values": "={{$json.containers[$splitInBatches.index].id}}, '{{$json.containers[$splitInBatches.index].name}}', 'completed', '{{new Date().toISOString()}}', {{$json.exitCode === 0}}, {{Math.floor((new Date() - new Date($json.execution.startTime)) / 1000)}}, '{{$json.stderr || \"\"}}'"
+      },
+      "id": "log-update-result",
+      "name": "Log Update Result",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [2220, 100]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "update_log",
+        "columns": "container_id, container_name, status, timestamp, available_updates",
+        "values": "={{$json.containers[$splitInBatches.index].id}}, '{{$json.containers[$splitInBatches.index].name}}', 'skipped', '{{new Date().toISOString()}}', 0"
+      },
+      "id": "log-no-updates",
+      "name": "Log No Updates",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "update_log",
+        "columns": "container_id, container_name, status, timestamp, error_message",
+        "values": "={{$json.containers[$splitInBatches.index].id}}, '{{$json.containers[$splitInBatches.index].name}}', 'skipped', '{{new Date().toISOString()}}', 'Container not running'"
+      },
+      "id": "log-container-down",
+      "name": "Log Container Down",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate final summary\nconst endTime = new Date();\nconst startTime = new Date($input.first().json.execution.startTime);\nconst executionTime = Math.floor((endTime - startTime) / 1000);\n\n// Count results from all processed containers\nconst allResults = $input.all();\nconst successful = allResults.filter(item => item.json.success === true).length;\nconst failed = allResults.filter(item => item.json.exitCode !== 0 && item.json.status !== 'skipped').length;\nconst skipped = allResults.filter(item => item.json.status === 'skipped').length;\n\nconst summary = {\n  execution_date: new Date().toISOString().split('T')[0],\n  total_containers: $input.first().json.summary.totalContainers,\n  containers_checked: allResults.length,\n  containers_updated: successful,\n  successful_updates: successful,\n  failed_updates: failed,\n  execution_start_time: startTime.toISOString(),\n  execution_end_time: endTime.toISOString(),\n  total_execution_time: executionTime,\n  overall_status: failed > 0 ? 'partial_failure' : 'completed',\n  notes: `Processed ${allResults.length} containers: ${successful} successful, ${failed} failed, ${skipped} skipped`\n};\n\nreturn { summary };"
+      },
+      "id": "generate-summary",
+      "name": "Generate Final Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "automation_summary",
+        "columns": "execution_date, total_containers, containers_checked, containers_updated, successful_updates, failed_updates, execution_start_time, execution_end_time, total_execution_time, overall_status, notes",
+        "values": "='{{$json.summary.execution_date}}', {{$json.summary.total_containers}}, {{$json.summary.containers_checked}}, {{$json.summary.containers_updated}}, {{$json.summary.successful_updates}}, {{$json.summary.failed_updates}}, '{{$json.summary.execution_start_time}}', '{{$json.summary.execution_end_time}}', {{$json.summary.total_execution_time}}, '{{$json.summary.overall_status}}', '{{$json.summary.notes}}'"
+      },
+      "id": "save-summary",
+      "name": "Save Execution Summary",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [2660, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://grafana:3000/api/annotations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$vars.GRAFANA_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={\n  \"text\": \"Automated update cycle completed: {{$json.summary.successful_updates}}/{{$json.summary.total_containers}} successful\",\n  \"tags\": [\"automation\", \"updates\", \"{{$json.summary.overall_status}}\"],\n  \"time\": {{new Date().getTime()}}\n}",
+        "options": {}
+      },
+      "id": "create-grafana-annotation",
+      "name": "Create Grafana Annotation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2880, 300]
+    }
+  ],
+  "connections": {
+    "3AM Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Initialize Automation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Automation": {
+      "main": [
+        [
+          {
+            "node": "Process Each Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Each Container": {
+      "main": [
+        [
+          {
+            "node": "Check Container Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Final Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Container Status": {
+      "main": [
+        [
+          {
+            "node": "Is Container Running?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Container Running?": {
+      "main": [
+        [
+          {
+            "node": "Check Available Updates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Container Down",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Available Updates": {
+      "main": [
+        [
+          {
+            "node": "Log Check Started",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Check Started": {
+      "main": [
+        [
+          {
+            "node": "Updates Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updates Available?": {
+      "main": [
+        [
+          {
+            "node": "Perform Update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log No Updates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perform Update": {
+      "main": [
+        [
+          {
+            "node": "Log Update Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Final Summary": {
+      "main": [
+        [
+          {
+            "node": "Save Execution Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Execution Summary": {
+      "main": [
+        [
+          {
+            "node": "Create Grafana Annotation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "error-handler-workflow"
+  },
+  "staticData": {},
+  "tags": [
+    "production",
+    "automation",
+    "proxmox",
+    "updates"
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-09-28T17:30:00.000Z",
+  "versionId": "1"
+}

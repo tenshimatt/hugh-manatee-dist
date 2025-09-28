@@ -1,0 +1,198 @@
+groups:
+  - name: ai-pipeline-alerts
+    rules:
+      # High failure rate alert
+      - alert: HighAIFixFailureRate
+        expr: rate(ai_fix_attempts_total{status="failure"}[5m]) / rate(ai_fix_attempts_total[5m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          component: ai-pipeline
+        annotations:
+          summary: "High AI fix failure rate detected"
+          description: "AI fix failure rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+
+      # Model response time alert
+      - alert: SlowAIModelResponse
+        expr: ai_model_response_time_seconds > 60
+        for: 1m
+        labels:
+          severity: warning
+          component: ai-model
+        annotations:
+          summary: "AI model response time is too slow"
+          description: "AI model took {{ $value }} seconds to respond, which exceeds the 60s threshold"
+
+      # Test failure spike alert
+      - alert: TestFailureSpike
+        expr: increase(test_results_total{status="failed"}[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          component: testing
+        annotations:
+          summary: "Sudden spike in test failures"
+          description: "{{ $value }} tests have failed in the last 5 minutes"
+
+      # Pipeline stuck alert
+      - alert: PipelineStuck
+        expr: time() - pipeline_last_execution_timestamp > 3600
+        for: 5m
+        labels:
+          severity: critical
+          component: pipeline
+        annotations:
+          summary: "Pipeline has not executed for over an hour"
+          description: "The last pipeline execution was {{ $value | humanizeDuration }} ago"
+
+      # Documentation coverage alert
+      - alert: LowDocumentationCoverage
+        expr: documentation_coverage_ratio < 0.7
+        for: 10m
+        labels:
+          severity: warning
+          component: documentation
+        annotations:
+          summary: "Documentation coverage is below threshold"
+          description: "Documentation coverage is {{ $value | humanizePercentage }}, which is below the 70% threshold"
+
+      # Auto-merge failure alert
+      - alert: AutoMergeFailures
+        expr: increase(auto_merge_total{status="failed"}[1h]) > 3
+        for: 5m
+        labels:
+          severity: warning
+          component: auto-merge
+        annotations:
+          summary: "Multiple auto-merge failures detected"
+          description: "{{ $value }} auto-merge attempts have failed in the last hour"
+
+      # Selenium test environment alert
+      - alert: SeleniumGridDown
+        expr: up{job="selenium-hub"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: selenium
+        annotations:
+          summary: "Selenium Grid is down"
+          description: "Selenium Hub is not responding - E2E tests cannot run"
+
+      # High token usage alert
+      - alert: HighTokenUsage
+        expr: rate(ai_model_token_usage_total[1h]) > 50000
+        for: 10m
+        labels:
+          severity: warning
+          component: ai-model
+        annotations:
+          summary: "High AI model token usage"
+          description: "Token usage rate is {{ $value }} tokens/hour, which may indicate inefficient prompts"
+
+      # Database connection alert
+      - alert: DatabaseConnectionFailure
+        expr: database_connection_errors_total > 5
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection failures"
+          description: "{{ $value }} database connection failures in the last minute"
+
+      # Queue backup alert
+      - alert: TestQueueBackup
+        expr: test_queue_size > 20
+        for: 5m
+        labels:
+          severity: warning
+          component: queue
+        annotations:
+          summary: "Test queue is backing up"
+          description: "{{ $value }} tests are waiting in the queue for processing"
+
+  - name: ai-pipeline-recording-rules
+    rules:
+      # Success rate calculation
+      - record: ai_fix_success_rate
+        expr: rate(ai_fix_attempts_total{status="success"}[5m]) / rate(ai_fix_attempts_total[5m])
+
+      # Average response time
+      - record: ai_model_avg_response_time
+        expr: rate(ai_model_response_time_seconds_sum[5m]) / rate(ai_model_response_time_seconds_count[5m])
+
+      # Test pass rate
+      - record: test_pass_rate
+        expr: rate(test_results_total{status="passed"}[5m]) / rate(test_results_total[5m])
+
+      # Pipeline efficiency
+      - record: pipeline_efficiency
+        expr: rate(pipeline_execution_duration_seconds_sum[5m]) / rate(pipeline_execution_duration_seconds_count[5m])
+
+      # Documentation utilization
+      - record: documentation_utilization_rate
+        expr: rate(documentation_reads_total[5m]) / rate(ai_fix_attempts_total[5m])
+
+      # Auto-merge success rate
+      - record: auto_merge_success_rate
+        expr: rate(auto_merge_total{status="success"}[5m]) / rate(auto_merge_total[5m])
+
+  - name: ai-pipeline-health-checks
+    rules:
+      # Overall system health
+      - record: system_health_score
+        expr: |
+          (
+            (ai_fix_success_rate * 0.3) +
+            (test_pass_rate * 0.3) +
+            (auto_merge_success_rate * 0.2) +
+            (min(documentation_coverage_ratio, 1) * 0.2)
+          )
+
+      # Service availability
+      - record: service_availability
+        expr: |
+          avg(up{job=~"gitlab|jenkins|ollama|selenium-hub"})
+
+      # Performance index
+      - record: performance_index
+        expr: |
+          (
+            (1 / ai_model_avg_response_time * 0.4) +
+            (1 / pipeline_efficiency * 0.3) +
+            (test_pass_rate * 0.3)
+          )
+
+  - name: ai-model-specific-rules
+    rules:
+      # Qwen model performance
+      - record: qwen_model_performance
+        expr: ai_fix_success_rate{model="qwen2.5-coder:latest"}
+
+      # Model comparison
+      - record: model_performance_comparison
+        expr: |
+          ai_fix_success_rate by (model)
+
+      # Confidence vs success correlation
+      - record: confidence_success_correlation
+        expr: |
+          avg(ai_confidence_score{status="success"}) - avg(ai_confidence_score{status="failure"})
+
+  - name: business-metrics
+    rules:
+      # Development velocity
+      - record: development_velocity
+        expr: rate(auto_merge_total{status="success"}[1d])
+
+      # Bug fix automation rate
+      - record: bug_fix_automation_rate
+        expr: rate(ai_fix_attempts_total{status="success"}[1d]) / rate(bug_reports_total[1d])
+
+      # Cost efficiency
+      - record: cost_per_fix
+        expr: ai_model_token_usage_total / ai_fix_attempts_total{status="success"}
+
+      # Time to resolution
+      - record: avg_time_to_resolution
+        expr: rate(pipeline_execution_duration_seconds_sum[1h]) / rate(ai_fix_attempts_total{status="success"}[1h])

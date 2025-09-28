@@ -1,0 +1,35 @@
+# LiteLLM Configuration for Ollama Integration
+model_list:
+  - model_name: llama2
+    litellm_params:
+      model: ollama/llama2
+      api_base: http://ollama:11434
+
+  - model_name: codellama
+    litellm_params:
+      model: ollama/codellama
+      api_base: http://ollama:11434
+
+  - model_name: mistral
+    litellm_params:
+      model: ollama/mistral
+      api_base: http://ollama:11434
+
+  - model_name: neural-chat
+    litellm_params:
+      model: ollama/neural-chat
+      api_base: http://ollama:11434
+
+  # OpenAI-compatible endpoints
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: ollama/llama2
+      api_base: http://ollama:11434
+
+general_settings:
+  master_key: sk-1234567890abcdef
+  database_url: sqlite:///litellm.db
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false

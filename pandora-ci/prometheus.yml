@@ -1,0 +1,42 @@
+# Prometheus Configuration for Pandora Stack
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Container metrics via cAdvisor
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  # Application metrics
+  - job_name: 'openwebui'
+    static_configs:
+      - targets: ['openwebui:8080']
+    metrics_path: '/metrics'
+
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+
+  - job_name: 'ollama'
+    static_configs:
+      - targets: ['ollama:11434']
+
+  # Node metrics for container hosts
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets:
+        - '10.90.10.6:9100'   # Docker host
+        - '10.90.10.10:9100'  # Proxmox host
+        - '10.90.11.161:9100' # OpenWebUI host
+        - '10.90.11.189:9100' # n8n host

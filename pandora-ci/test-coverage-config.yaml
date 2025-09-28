@@ -1,0 +1,273 @@
+# ============================================================================
+# PANDORA CI/CD TEST COVERAGE ENFORCEMENT CONFIGURATION
+# ============================================================================
+# Defines quality gates and coverage requirements for Definition of Done
+# ============================================================================
+
+coverage:
+  # Global minimum coverage threshold (can be overridden per project)
+  global_minimum: 80.0
+
+  # Coverage types to measure
+  metrics:
+    - line_coverage      # Required
+    - branch_coverage     # Required
+    - function_coverage   # Optional
+    - statement_coverage  # Optional
+
+  # Fail conditions - pipeline fails if ANY of these are true
+  fail_conditions:
+    - coverage_below_minimum: true
+    - coverage_decrease: 5.0  # Fail if coverage drops by more than 5%
+    - uncovered_new_code: true  # Fail if new code is not covered
+
+  # Coverage tools by language
+  tools:
+    javascript:
+      command: "npm run test:coverage"
+      reporter: "jest"
+      output_format: "json-summary"
+      coverage_file: "coverage/coverage-summary.json"
+
+    typescript:
+      command: "npm run test:coverage"
+      reporter: "jest"
+      output_format: "json-summary"
+      coverage_file: "coverage/coverage-summary.json"
+
+    python:
+      command: "pytest --cov=. --cov-report=json --cov-report=html"
+      reporter: "pytest-cov"
+      output_format: "json"
+      coverage_file: "coverage.json"
+
+    go:
+      command: "go test -cover ./... -coverprofile=coverage.out"
+      reporter: "go-cover"
+      output_format: "text"
+      coverage_file: "coverage.out"
+
+    java:
+      command: "mvn clean test jacoco:report"
+      reporter: "jacoco"
+      output_format: "xml"
+      coverage_file: "target/site/jacoco/jacoco.xml"
+
+# ============================================================================
+# TEST REQUIREMENTS
+# ============================================================================
+tests:
+  # Required test types for Definition of Done
+  required_types:
+    - unit          # Must have unit tests
+    - integration   # Must have integration tests
+
+  optional_types:
+    - e2e           # End-to-end tests (recommended)
+    - smoke         # Smoke tests (recommended)
+    - performance   # Performance tests (optional)
+    - security      # Security tests (optional)
+
+  # Test execution requirements
+  execution:
+    parallel: true              # Run tests in parallel where possible
+    timeout_minutes: 30         # Maximum test execution time
+    retry_failed: 1            # Retry failed tests once
+    fail_fast: false           # Continue running all tests even if some fail
+
+  # Test naming conventions
+  naming_conventions:
+    unit: "*.test.{js,ts,py,go}"
+    integration: "*.integration.test.{js,ts,py,go}"
+    e2e: "*.e2e.test.{js,ts,py,go}"
+
+# ============================================================================
+# QUALITY GATES
+# ============================================================================
+quality_gates:
+  # All must pass for Definition of Done
+  mandatory:
+    - name: "Minimum Test Coverage"
+      type: "coverage"
+      threshold: 80.0
+      blocking: true
+
+    - name: "All Tests Pass"
+      type: "tests"
+      threshold: 100.0  # 100% of tests must pass
+      blocking: true
+
+    - name: "Documentation Updated"
+      type: "documentation"
+      threshold: 1  # Must exist
+      blocking: true
+
+    - name: "No Security Vulnerabilities"
+      type: "security"
+      threshold: 0  # Zero high/critical vulnerabilities
+      blocking: true
+
+    - name: "Code Review Approved"
+      type: "review"
+      threshold: 1  # At least one approval
+      blocking: true
+
+  # Optional quality improvements
+  optional:
+    - name: "Code Complexity"
+      type: "complexity"
+      threshold: 10  # Cyclomatic complexity
+      blocking: false
+
+    - name: "Duplicate Code"
+      type: "duplication"
+      threshold: 3.0  # Max 3% duplication
+      blocking: false
+
+    - name: "Technical Debt"
+      type: "debt"
+      threshold: 60  # Max 60 minutes of debt
+      blocking: false
+
+# ============================================================================
+# DOCUMENTATION REQUIREMENTS
+# ============================================================================
+documentation:
+  # Required documentation for Definition of Done
+  required_files:
+    - README.md
+    - CHANGELOG.md
+
+  # Required sections in README
+  readme_sections:
+    - "## Installation"
+    - "## Usage"
+    - "## Configuration"
+    - "## Testing"
+    - "## API Reference"  # If applicable
+
+  # API documentation requirements
+  api_documentation:
+    required_for: ["backend", "api", "service"]
+    formats: ["openapi", "swagger", "postman"]
+
+  # Code documentation requirements
+  inline_documentation:
+    minimum_ratio: 15.0  # 15% of lines should be comments/docs
+    required_elements:
+      - function_descriptions
+      - parameter_descriptions
+      - return_value_descriptions
+      - example_usage  # For public APIs
+
+# ============================================================================
+# REPORTING CONFIGURATION
+# ============================================================================
+reporting:
+  # Report generation
+  generate_on:
+    - pipeline_complete
+    - pipeline_failed
+    - daily_summary
+    - weekly_summary
+
+  # Report formats
+  formats:
+    - html
+    - json
+    - markdown
+    - slack
+    - email
+
+  # Report distribution
+  distribution:
+    success:
+      - email: "Tenshimatt@gmail.com"
+      - slack: "#ci-success"
+
+    failure:
+      - email: "Tenshimatt@gmail.com"
+      - slack: "#ci-failures"
+      - create_issue: true  # Auto-create GitHub/GitLab issue
+
+  # Report contents
+  include:
+    - test_summary
+    - coverage_report
+    - coverage_trends
+    - failed_tests_details
+    - quality_gate_results
+    - documentation_status
+    - build_artifacts
+    - deployment_status
+
+# ============================================================================
+# PROJECT-SPECIFIC OVERRIDES
+# ============================================================================
+projects:
+  pandora-automation:
+    minimum_coverage: 85.0
+    required_tests: ["unit", "integration", "e2e"]
+    ai_agent: "claude-code"
+
+  superluxe-tradeart:
+    minimum_coverage: 75.0
+    required_tests: ["unit", "integration"]
+    ai_agent: "claude-code"
+
+  rawgle-backend:
+    minimum_coverage: 90.0
+    required_tests: ["unit", "integration", "e2e", "performance"]
+    ai_agent: "qwen"
+
+# ============================================================================
+# ENFORCEMENT RULES
+# ============================================================================
+enforcement:
+  # What happens when quality gates fail
+  on_failure:
+    block_merge: true         # Block PR/MR merging
+    block_deployment: true    # Block deployment to production
+    create_issue: true        # Auto-create issue for tracking
+    notify_team: true         # Send notifications
+    require_override: true    # Require manual override with justification
+
+  # Override permissions (who can bypass quality gates)
+  override_permissions:
+    roles: ["lead", "architect"]
+    require_justification: true
+    audit_log: true
+
+  # Automatic actions
+  auto_actions:
+    revert_on_prod_failure: true  # Auto-revert if production fails
+    create_fix_branch: true        # Auto-create branch for fixes
+    assign_to_committer: true      # Auto-assign issues to committer
+
+# ============================================================================
+# SCHEDULING
+# ============================================================================
+scheduling:
+  # Automated pipeline runs
+  scheduled_runs:
+    - name: "Nightly Full Test Suite"
+      cron: "0 2 * * *"
+      timezone: "America/Chicago"
+      projects: ["all"]
+      test_types: ["all"]
+
+    - name: "Morning Smoke Tests"
+      cron: "0 6 * * *"
+      timezone: "America/Chicago"
+      projects: ["production"]
+      test_types: ["smoke"]
+
+    - name: "Weekly Coverage Report"
+      cron: "0 9 * * MON"
+      timezone: "America/Chicago"
+      action: "generate_report"
+
+    - name: "Monthly Security Scan"
+      cron: "0 0 1 * *"
+      timezone: "America/Chicago"
+      action: "security_scan"

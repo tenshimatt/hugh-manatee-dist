@@ -1,0 +1,384 @@
+# Pandora 32-Container Stack - Portainer Deployment
+# Standardized Docker Compose for all services
+
+version: '3.8'
+
+networks:
+  pandora-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+  redis_data:
+  grafana_data:
+  prometheus_data:
+  openwebui_data:
+  n8n_data:
+
+services:
+  # ======================
+  # INFRASTRUCTURE STACK
+  # ======================
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: pandora-postgres
+    environment:
+      POSTGRES_DB: openproject_db
+      POSTGRES_USER: openproject
+      POSTGRES_PASSWORD: openproject123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openproject"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: pandora-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - pandora-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ======================
+  # MONITORING STACK
+  # ======================
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pandora-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - pandora-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: pandora-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: false
+    networks:
+      - pandora-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # ======================
+  # AI/LLM STACK
+  # ======================
+
+  # OpenWebUI
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:v0.6.31
+    container_name: pandora-openwebui
+    ports:
+      - "8080:8080"
+    volumes:
+      - openwebui_data:/app/backend/data
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      WEBUI_SECRET_KEY: supersecretkey123
+    networks:
+      - pandora-network
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # Ollama
+  ollama:
+    image: ollama/ollama:latest
+    container_name: pandora-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - /opt/ollama:/root/.ollama
+    environment:
+      OLLAMA_HOST: 0.0.0.0
+    networks:
+      - pandora-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # LiteLLM
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: pandora-litellm
+    ports:
+      - "4000:4000"
+    environment:
+      LITELLM_MASTER_KEY: sk-1234567890abcdef
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml
+    networks:
+      - pandora-network
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  # n8n Workflow Automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: pandora-n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      N8N_HOST: 0.0.0.0
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
+      DB_SQLITE_POOL_SIZE: 10
+      N8N_RUNNERS_ENABLED: true
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: false
+      WEBHOOK_URL: http://n8n:5678
+    networks:
+      - pandora-network
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # FlowiseAI
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: pandora-flowise
+    ports:
+      - "3001:3000"
+    environment:
+      PORT: 3000
+      DATABASE_PATH: /root/.flowise
+    volumes:
+      - ./flowise_data:/root/.flowise
+    networks:
+      - pandora-network
+    restart: unless-stopped
+
+  # ======================
+  # PROJECT MANAGEMENT
+  # ======================
+
+  # OpenProject
+  openproject:
+    image: openproject/openproject:15
+    container_name: pandora-openproject
+    ports:
+      - "3002:80"
+    environment:
+      OPENPROJECT_SECRET_KEY_BASE: supersecretkey123456789
+      OPENPROJECT_HOST__NAME: 10.90.10.6:3002
+      OPENPROJECT_HTTPS: false
+      DATABASE_URL: postgresql://openproject:openproject123@postgres:5432/openproject_db
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: redis:6379
+      RAILS_CACHE_STORE: memory_store
+    networks:
+      - pandora-network
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # ======================
+  # DOCUMENT MANAGEMENT
+  # ======================
+
+  # Paperless-NGX
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: pandora-paperless
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./paperless_data:/usr/src/paperless/data
+      - ./paperless_media:/usr/src/paperless/media
+      - ./paperless_export:/usr/src/paperless/export
+      - ./paperless_consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://redis:6379
+      PAPERLESS_DBHOST: postgres
+      PAPERLESS_DBUSER: openproject
+      PAPERLESS_DBPASS: openproject123
+      PAPERLESS_SECRET_KEY: supersecretpaperlesskey
+      PAPERLESS_URL: http://paperless:8000
+    networks:
+      - pandora-network
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # DocuMenso
+  documenso:
+    image: documenso/documenso:latest
+    container_name: pandora-documenso
+    ports:
+      - "3003:3000"
+    environment:
+      DATABASE_URL: postgresql://openproject:openproject123@postgres:5432/documenso_db
+      NEXTAUTH_SECRET: supersecretdocumensokey
+      NEXTAUTH_URL: http://documenso:3000
+    networks:
+      - pandora-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ======================
+  # MEDIA MANAGEMENT
+  # ======================
+
+  # Radarr
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: pandora-radarr
+    ports:
+      - "7878:7878"
+    volumes:
+      - ./radarr_config:/config
+      - ./media:/media
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: UTC
+    networks:
+      - pandora-network
+    restart: unless-stopped
+
+  # Sonarr
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: pandora-sonarr
+    ports:
+      - "8989:8989"
+    volumes:
+      - ./sonarr_config:/config
+      - ./media:/media
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: UTC
+    networks:
+      - pandora-network
+    restart: unless-stopped
+
+  # Prowlarr
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: pandora-prowlarr
+    ports:
+      - "9696:9696"
+    volumes:
+      - ./prowlarr_config:/config
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: UTC
+    networks:
+      - pandora-network
+    restart: unless-stopped
+
+  # Overseerr
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: pandora-overseerr
+    ports:
+      - "5055:5055"
+    volumes:
+      - ./overseerr_config:/config
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: UTC
+    networks:
+      - pandora-network
+    restart: unless-stopped
+
+  # ======================
+  # PROXY & NETWORKING
+  # ======================
+
+  # Nginx Proxy Manager
+  nginx-proxy:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: pandora-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - ./nginx_data:/data
+      - ./nginx_letsencrypt:/etc/letsencrypt
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    networks:
+      - pandora-network
+    restart: unless-stopped
+
+  # ======================
+  # DEVELOPMENT TOOLS
+  # ======================
+
+  # Jupyter Notebook
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: pandora-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./jupyter_work:/home/jovyan/work
+    environment:
+      JUPYTER_ENABLE_LAB: yes
+      JUPYTER_TOKEN: supersecretjupytertoken
+    networks:
+      - pandora-network
+    restart: unless-stopped
+
+  # Excalidraw
+  excalidraw:
+    image: excalidraw/excalidraw:latest
+    container_name: pandora-excalidraw
+    ports:
+      - "3004:80"
+    networks:
+      - pandora-network
+    restart: unless-stopped

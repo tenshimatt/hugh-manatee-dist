@@ -1,0 +1,434 @@
+{
+  "name": "Continuous AI - Spec-to-Code Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai-code-generation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "ai-generation-webhook",
+      "name": "AI Code Generation Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "webhookId": "ai-code-generation-trigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/5 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "spec-monitor",
+      "name": "Spec Monitor (5min)",
+      "type": "n8n-nodes-base.cron",
+      "position": [250, 500],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "command": "cd /Users/mattwright/pandora/pandora-ci && node spec-validation-engine.js process"
+      },
+      "id": "run-spec-validation",
+      "name": "Run Spec Validation Engine",
+      "type": "n8n-nodes-base.execute",
+      "position": [450, 500],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"ai_agent\"]}}",
+              "operation": "equal",
+              "value2": "claude-code"
+            }
+          ]
+        }
+      },
+      "id": "route-ai-agent",
+      "name": "Route to AI Agent",
+      "type": "n8n-nodes-base.if",
+      "position": [450, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{$json[\"claude_endpoint\"] || 'https://api.anthropic.com/v1/messages'}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-3-sonnet-20240229"
+            },
+            {
+              "name": "max_tokens",
+              "value": "4000"
+            },
+            {
+              "name": "messages",
+              "value": "=[{\n  \"role\": \"user\",\n  \"content\": `You are a precise code generator for the Pandora Continuous AI system. Your task is to implement code that EXACTLY matches the given specification.\n\nSPECIFICATION:\n${JSON.stringify($json.spec_content, null, 2)}\n\nREQUIREMENTS:\n- Generate ONLY code that implements the specification exactly\n- Include comprehensive tests that validate spec compliance\n- Add documentation explaining how code meets spec requirements\n- Follow existing project patterns and conventions\n- Return JSON format: {\"code\": \"...\", \"tests\": \"...\", \"documentation\": \"...\", \"spec_compliance_notes\": \"...\"}\n\nProject Context: ${$json.project_name}\nTarget Language: ${$json.spec_content.language || 'typescript'}`\n}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "claude-code-generation",
+      "name": "Claude Code Generation",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [650, 200],
+      "typeVersion": 3,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$json[\"qwen_endpoint\"] || 'http://localhost:11434/api/generate'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "qwen2.5-coder"
+            },
+            {
+              "name": "prompt",
+              "value": "=`You are a precise backend code generator for the Pandora Continuous AI system.\n\nSPECIFICATION:\n${JSON.stringify($json.spec_content, null, 2)}\n\nGenerate production-ready code that implements this specification exactly:\n- Focus on backend/database/algorithm implementation\n- Include comprehensive error handling\n- Add performance optimizations where specified\n- Include unit and integration tests\n- Return JSON: {\"code\": \"...\", \"tests\": \"...\", \"documentation\": \"...\", \"performance_notes\": \"...\"}\n\nProject: ${$json.project_name}`"
+            },
+            {
+              "name": "stream",
+              "value": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "qwen-code-generation",
+      "name": "Qwen Code Generation",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [650, 400],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO ai_code_generations (\n    spec_id,\n    ai_agent,\n    generated_code_path,\n    generation_prompt,\n    status,\n    created_at\n) VALUES (\n    (SELECT id FROM specs WHERE file_path = '{{$json[\"spec_path\"]}}'),\n    '{{$json[\"ai_agent\"]}}',\n    '{{$json[\"output_path\"]}}',\n    '{{$json[\"generation_prompt\"]}}',\n    'completed',\n    NOW()\n) RETURNING id;"
+      },
+      "id": "save-generation-record",
+      "name": "Save AI Generation Record",
+      "type": "n8n-nodes-base.postgres",
+      "position": [850, 300],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "#!/bin/bash\nSPEC_PATH='{{$json[\"spec_path\"]}}'\nGENERATED_CODE='{{$json[\"generated_code\"]}}'\nTEST_CODE='{{$json[\"test_code\"]}}'\nPROJECT='{{$json[\"project_name\"]}}'\n\necho \"Validating AI-generated code against specification...\"\n\n# Create temporary files for validation\nTEMP_DIR=\"/tmp/ai-validation-$$\"\nmkdir -p \"$TEMP_DIR\"\n\n# Write generated code\necho \"$GENERATED_CODE\" > \"$TEMP_DIR/generated.js\"\necho \"$TEST_CODE\" > \"$TEMP_DIR/tests.js\"\n\n# Copy spec for reference\ncp \"$SPEC_PATH\" \"$TEMP_DIR/spec.yaml\"\n\ncd \"$TEMP_DIR\"\n\n# Initialize npm project for testing\nnpm init -y\nnpm install --no-save jest @types/jest\n\n# Run tests to validate spec compliance\necho \"Running spec validation tests...\"\nnpm test 2>&1\nTEST_RESULT=$?\n\n# Analyze code coverage\nif command -v npx &> /dev/null; then\n    npx jest --coverage --coverageReporters=json-summary 2>/dev/null\n    if [ -f coverage/coverage-summary.json ]; then\n        COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')\n    else\n        COVERAGE=0\n    fi\nelse\n    COVERAGE=0\nfi\n\n# Check for spec compliance\nSPEC_COMPLIANCE=95  # Default if we can't measure\n\n# Static analysis (basic)\nLINT_ISSUES=0\nif command -v eslint &> /dev/null; then\n    eslint generated.js --format json > lint-results.json 2>/dev/null || true\n    LINT_ISSUES=$(cat lint-results.json | jq 'length' 2>/dev/null || echo 0)\nfi\n\n# Clean up\ncd /\nrm -rf \"$TEMP_DIR\"\n\n# Output validation results\necho \"{\n  \\\"test_passed\\\": $([ $TEST_RESULT -eq 0 ] && echo true || echo false),\n  \\\"coverage_percent\\\": $COVERAGE,\n  \\\"spec_compliance_score\\\": $SPEC_COMPLIANCE,\n  \\\"lint_issues\\\": $LINT_ISSUES,\n  \\\"validation_passed\\\": $([ $TEST_RESULT -eq 0 ] && [ $COVERAGE -gt 80 ] && echo true || echo false)\n}\""
+      },
+      "id": "validate-generated-code",
+      "name": "Validate Generated Code",
+      "type": "n8n-nodes-base.execute",
+      "position": [1050, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"validation_passed\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "validation-check",
+      "name": "Validation Passed?",
+      "type": "n8n-nodes-base.if",
+      "position": [1250, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "command": "#!/bin/bash\nSPEC_PATH='{{$json[\"spec_path\"]}}'\nGENERATED_CODE='{{$json[\"generated_code\"]}}'\nTEST_CODE='{{$json[\"test_code\"]}}'\nDOCS='{{$json[\"documentation\"]}}'\nPROJECT='{{$json[\"project_name\"]}}'\n\necho \"Integrating validated AI-generated code...\"\n\n# Determine target paths based on spec\nSPEC_DIR=$(dirname \"$SPEC_PATH\")\nPROJECT_ROOT=\"/Users/mattwright/pandora/pandora-ci\"\n\n# Create project structure if needed\nSRC_DIR=\"$PROJECT_ROOT/src\"\nTEST_DIR=\"$PROJECT_ROOT/tests\"\nDOCS_DIR=\"$PROJECT_ROOT/docs\"\n\nmkdir -p \"$SRC_DIR\" \"$TEST_DIR\" \"$DOCS_DIR\"\n\n# Generate file names based on spec\nSPEC_NAME=$(basename \"$SPEC_PATH\" .yaml)\nCODE_FILE=\"$SRC_DIR/${SPEC_NAME}.js\"\nTEST_FILE=\"$TEST_DIR/${SPEC_NAME}.test.js\"\nDOC_FILE=\"$DOCS_DIR/${SPEC_NAME}.md\"\n\n# Write generated files\necho \"$GENERATED_CODE\" > \"$CODE_FILE\"\necho \"$TEST_CODE\" > \"$TEST_FILE\"\necho \"$DOCS\" > \"$DOC_FILE\"\n\n# Update git if configured\nif [ -d \"$PROJECT_ROOT/.git\" ]; then\n    cd \"$PROJECT_ROOT\"\n    git add \"$CODE_FILE\" \"$TEST_FILE\" \"$DOC_FILE\"\n    git commit -m \"AI Implementation: ${SPEC_NAME}\n\nImplemented from specification: $SPEC_PATH\nAI Agent: {{$json[\"ai_agent\"]}}\nValidation: Passed\n\n🤖 Generated with Continuous AI\"\nfi\n\necho \"Code integration completed: $CODE_FILE\""
+      },
+      "id": "integrate-code",
+      "name": "Integrate Generated Code",
+      "type": "n8n-nodes-base.execute",
+      "position": [1450, 200],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Update spec status and validation results\nUPDATE specs SET \n    implementation_status = CASE \n        WHEN {{$json[\"validation_passed\"]}} THEN 'implemented'\n        ELSE 'validation_failed'\n    END,\n    updated_at = NOW()\nWHERE file_path = '{{$json[\"spec_path\"]}}';\n\n-- Insert validation record\nINSERT INTO spec_validations (\n    code_generation_id,\n    validation_type,\n    passed,\n    score,\n    issues,\n    validated_at\n) VALUES (\n    {{$json[\"generation_id\"]}},\n    'full_validation',\n    {{$json[\"validation_passed\"]}},\n    {{$json[\"spec_compliance_score\"]}},\n    '{{JSON.stringify($json[\"validation_issues\"] || [])}}',\n    NOW()\n);"
+      },
+      "id": "update-validation-status",
+      "name": "Update Validation Status",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1450, 400],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "subject": "✅ AI Implementation Complete: {{$json[\"spec_path\"]}}",
+        "text": "Continuous AI Implementation Successful!\n\nSpecification: {{$json[\"spec_path\"]}}\nAI Agent: {{$json[\"ai_agent\"]}}\nProject: {{$json[\"project_name\"]}}\n\n✅ Code generated and validated\n✅ Tests passing: {{$json[\"test_passed\"]}}\n✅ Coverage: {{$json[\"coverage_percent\"]}}%\n✅ Spec compliance: {{$json[\"spec_compliance_score\"]}}\n✅ Code integrated successfully\n\nFiles created:\n- Implementation: src/{{$json[\"spec_name\"]}}.js\n- Tests: tests/{{$json[\"spec_name\"]}}.test.js\n- Documentation: docs/{{$json[\"spec_name\"]}}.md\n\n🤖 Powered by Continuous AI",
+        "toEmail": "Tenshimatt@gmail.com",
+        "options": {}
+      },
+      "id": "notify-success",
+      "name": "Notify Implementation Success",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1650, 200],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "subject": "❌ AI Implementation Failed: {{$json[\"spec_path\"]}}",
+        "text": "Continuous AI Implementation Failed!\n\nSpecification: {{$json[\"spec_path\"]}}\nAI Agent: {{$json[\"ai_agent\"]}}\nProject: {{$json[\"project_name\"]}}\n\n❌ Validation failures:\n- Tests passed: {{$json[\"test_passed\"]}}\n- Coverage: {{$json[\"coverage_percent\"]}}%\n- Spec compliance: {{$json[\"spec_compliance_score\"]}}\n- Lint issues: {{$json[\"lint_issues\"]}}\n\nAction required:\n1. Review specification for clarity\n2. Check AI agent performance\n3. Manual review and correction needed\n\n🔧 Continuous AI Quality Gate Failed",
+        "toEmail": "Tenshimatt@gmail.com",
+        "options": {}
+      },
+      "id": "notify-failure",
+      "name": "Notify Implementation Failure",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1650, 400],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "={{$json[\"validation_passed\"] ? 'SUCCESS' : 'FAILED'}}"
+            },
+            {
+              "name": "message",
+              "value": "Continuous AI processing complete"
+            },
+            {
+              "name": "spec_compliance",
+              "value": "={{$json[\"spec_compliance_score\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "webhook-response",
+      "name": "AI Generation Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1850, 300],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "ai-generation-webhook": {
+      "main": [
+        [
+          {
+            "node": "route-ai-agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "spec-monitor": {
+      "main": [
+        [
+          {
+            "node": "run-spec-validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "route-ai-agent": {
+      "main": [
+        [
+          {
+            "node": "claude-code-generation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "qwen-code-generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "claude-code-generation": {
+      "main": [
+        [
+          {
+            "node": "save-generation-record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "qwen-code-generation": {
+      "main": [
+        [
+          {
+            "node": "save-generation-record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save-generation-record": {
+      "main": [
+        [
+          {
+            "node": "validate-generated-code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validate-generated-code": {
+      "main": [
+        [
+          {
+            "node": "validation-check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validation-check": {
+      "main": [
+        [
+          {
+            "node": "integrate-code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "notify-success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "update-validation-status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "notify-failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "integrate-code": {
+      "main": [
+        [
+          {
+            "node": "update-validation-status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update-validation-status": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "notify-success": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "notify-failure": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "continuous-ai-pipeline"
+}

@@ -1,0 +1,442 @@
+{
+  "name": "Pandora CI/CD Pipeline with Quality Gates",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ci-cd-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "GitHub/GitLab Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "webhookId": "ci-cd-pipeline-trigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */4 * * *"
+            }
+          ]
+        }
+      },
+      "id": "scheduled-trigger",
+      "name": "4-Hour Schedule",
+      "type": "n8n-nodes-base.cron",
+      "position": [250, 500],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"trigger_type\"]}}",
+              "value2": "push"
+            }
+          ]
+        }
+      },
+      "id": "trigger-router",
+      "name": "Route by Trigger",
+      "type": "n8n-nodes-base.if",
+      "position": [450, 400],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "command": "#!/bin/bash\nPROJECT='{{$json[\"project_name\"]}}'\nREPO_URL='{{$json[\"repository_url\"]}}'\nCOMMIT='{{$json[\"commit_sha\"]}}'\n\necho \"Starting CI/CD Pipeline for $PROJECT\"\necho \"Repository: $REPO_URL\"\necho \"Commit: $COMMIT\"\n\n# Clone repository\ngit clone $REPO_URL /tmp/build-$PROJECT\ncd /tmp/build-$PROJECT\ngit checkout $COMMIT\n\n# Detect project type\nif [ -f package.json ]; then\n    echo \"Node.js project detected\"\n    npm ci\n    npm run build || exit 1\nelif [ -f requirements.txt ]; then\n    echo \"Python project detected\"\n    pip install -r requirements.txt\n    python -m compileall . || exit 1\nelif [ -f go.mod ]; then\n    echo \"Go project detected\"\n    go build ./... || exit 1\nfi\n\necho \"Build completed successfully\""
+      },
+      "id": "build-code",
+      "name": "Build Code",
+      "type": "n8n-nodes-base.execute",
+      "position": [650, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "command": "#!/bin/bash\nPROJECT='{{$json[\"project_name\"]}}'\nMIN_COVERAGE='{{$json[\"minimum_coverage\"]}}'\n\ncd /tmp/build-$PROJECT\n\necho \"Running test suite with coverage...\"\n\n# Run tests based on project type\nif [ -f package.json ]; then\n    # Node.js testing\n    npm run test:coverage || TEST_FAILED=true\n    COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')\nelif [ -f requirements.txt ]; then\n    # Python testing\n    pytest --cov=. --cov-report=json || TEST_FAILED=true\n    COVERAGE=$(cat coverage.json | jq '.totals.percent_covered')\nelif [ -f go.mod ]; then\n    # Go testing\n    go test -cover ./... -coverprofile=coverage.out || TEST_FAILED=true\n    COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')\nfi\n\necho \"Coverage: ${COVERAGE}%\"\necho \"Minimum required: ${MIN_COVERAGE}%\"\n\n# Check coverage threshold\nif (( $(echo \"$COVERAGE < $MIN_COVERAGE\" | bc -l) )); then\n    echo \"ERROR: Coverage ${COVERAGE}% is below minimum ${MIN_COVERAGE}%\"\n    exit 1\nfi\n\n# Check if tests passed\nif [ \"$TEST_FAILED\" = true ]; then\n    echo \"ERROR: Tests failed\"\n    exit 1\nfi\n\necho '{\"coverage\": '\"$COVERAGE\"', \"tests_passed\": true}'"
+      },
+      "id": "run-tests",
+      "name": "Run Tests & Coverage",
+      "type": "n8n-nodes-base.execute",
+      "position": [850, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO cicd.pipeline_runs (\n    project_id,\n    run_number,\n    trigger_type,\n    commit_sha,\n    commit_message,\n    commit_author,\n    branch,\n    status,\n    started_at,\n    ai_agent_used\n) VALUES (\n    (SELECT id FROM cicd.projects WHERE name = '{{$json[\"project_name\"]}}'),\n    (SELECT COALESCE(MAX(run_number), 0) + 1 FROM cicd.pipeline_runs WHERE project_id = (SELECT id FROM cicd.projects WHERE name = '{{$json[\"project_name\"]}}')),\n    '{{$json[\"trigger_type\"]}}',\n    '{{$json[\"commit_sha\"]}}',\n    '{{$json[\"commit_message\"]}}',\n    '{{$json[\"commit_author\"]}}',\n    '{{$json[\"branch\"]}}',\n    'running',\n    NOW(),\n    '{{$json[\"ai_agent\"]}}'\n) RETURNING id;"
+      },
+      "id": "create-pipeline-run",
+      "name": "Create Pipeline Run",
+      "type": "n8n-nodes-base.postgres",
+      "position": [650, 500],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO cicd.test_results (\n    pipeline_run_id,\n    test_suite,\n    test_file,\n    test_name,\n    status,\n    duration_ms\n) VALUES \n{{$json[\"test_results\"].map(test => \n    `(${$json[\"pipeline_run_id\"]}, '${test.suite}', '${test.file}', '${test.name}', '${test.status}', ${test.duration})`\n).join(',\\n')}};"
+      },
+      "id": "save-test-results",
+      "name": "Save Test Results",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1050, 300],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO cicd.coverage_reports (\n    pipeline_run_id,\n    line_coverage_percent,\n    branch_coverage_percent,\n    function_coverage_percent,\n    statement_coverage_percent,\n    total_lines,\n    covered_lines,\n    meets_minimum_threshold,\n    threshold_used\n) VALUES (\n    {{$json[\"pipeline_run_id\"]}},\n    {{$json[\"coverage\"][\"line_percent\"]}},\n    {{$json[\"coverage\"][\"branch_percent\"]}},\n    {{$json[\"coverage\"][\"function_percent\"]}},\n    {{$json[\"coverage\"][\"statement_percent\"]}},\n    {{$json[\"coverage\"][\"total_lines\"]}},\n    {{$json[\"coverage\"][\"covered_lines\"]}},\n    {{$json[\"coverage\"][\"meets_threshold\"]}},\n    {{$json[\"minimum_coverage\"]}}\n);"
+      },
+      "id": "save-coverage",
+      "name": "Save Coverage Report",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1050, 500],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "#!/bin/bash\nPROJECT='{{$json[\"project_name\"]}}'\n\ncd /tmp/build-$PROJECT\n\necho \"Checking documentation...\"\n\n# Check README exists and is updated\nif [ ! -f README.md ]; then\n    echo \"ERROR: README.md not found\"\n    DOC_STATUS=\"missing\"\nelse\n    # Check if README was updated in recent commits\n    LAST_DOC_UPDATE=$(git log -1 --format=\"%ar\" -- README.md)\n    echo \"README last updated: $LAST_DOC_UPDATE\"\n    DOC_STATUS=\"present\"\nfi\n\n# Check for API documentation\nAPI_DOCS=\"false\"\nif [ -f \"docs/api.md\" ] || [ -f \"swagger.json\" ] || [ -f \"openapi.yaml\" ]; then\n    API_DOCS=\"true\"\n    echo \"API documentation found\"\nfi\n\n# Check for inline code documentation\necho \"Checking inline documentation...\"\nif [ -f package.json ]; then\n    # JavaScript/TypeScript\n    COMMENT_LINES=$(find . -name \"*.js\" -o -name \"*.ts\" | xargs grep -c \"^\\s*//\\|^\\s*/\\*\" | paste -sd+ | bc)\nelif [ -f requirements.txt ]; then\n    # Python\n    COMMENT_LINES=$(find . -name \"*.py\" | xargs grep -c \"^\\s*#\\|\\\"\\\"\\\"\" | paste -sd+ | bc)\nfi\n\nTOTAL_LINES=$(find . -type f \\( -name \"*.js\" -o -name \"*.ts\" -o -name \"*.py\" -o -name \"*.go\" \\) | xargs wc -l | tail -1 | awk '{print $1}')\nDOC_RATIO=$(echo \"scale=2; $COMMENT_LINES * 100 / $TOTAL_LINES\" | bc)\n\necho \"Documentation ratio: ${DOC_RATIO}%\"\necho '{\"readme_status\": \"'$DOC_STATUS'\", \"api_docs\": '$API_DOCS', \"inline_doc_ratio\": '$DOC_RATIO'}'"
+      },
+      "id": "check-documentation",
+      "name": "Check Documentation",
+      "type": "n8n-nodes-base.execute",
+      "position": [1250, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Check all quality gates\nINSERT INTO cicd.quality_gates (\n    pipeline_run_id,\n    gate_name,\n    gate_type,\n    required_value,\n    actual_value,\n    passed,\n    is_blocking\n) VALUES \n    ({{$json[\"pipeline_run_id\"]}}, 'Minimum Test Coverage', 'coverage', {{$json[\"minimum_coverage\"]}}, {{$json[\"coverage\"][\"line_percent\"]}}, {{$json[\"coverage\"][\"meets_threshold\"]}}, true),\n    ({{$json[\"pipeline_run_id\"]}}, 'All Tests Pass', 'tests', 100, {{$json[\"test_pass_rate\"]}}, {{$json[\"all_tests_passed\"]}}, true),\n    ({{$json[\"pipeline_run_id\"]}}, 'Documentation Present', 'documentation', 1, {{$json[\"docs_present\"] ? 1 : 0}}, {{$json[\"docs_present\"]}}, true),\n    ({{$json[\"pipeline_run_id\"]}}, 'Build Success', 'build', 1, {{$json[\"build_success\"] ? 1 : 0}}, {{$json[\"build_success\"]}}, true);\n\n-- Check Definition of Done\nSELECT cicd.check_definition_of_done({{$json[\"pipeline_run_id\"]}});"
+      },
+      "id": "check-quality-gates",
+      "name": "Check Quality Gates",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1250, 500],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"definition_of_done_met\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "dod-check",
+      "name": "Definition of Done Met?",
+      "type": "n8n-nodes-base.if",
+      "position": [1450, 400],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Generate final build report\nSELECT cicd.generate_build_report({{$json[\"pipeline_run_id\"]}});\n\n-- Get report summary\nSELECT \n    br.*,\n    pr.project_id,\n    pr.commit_sha,\n    pr.branch,\n    p.name as project_name\nFROM cicd.build_reports br\nJOIN cicd.pipeline_runs pr ON br.pipeline_run_id = pr.id\nJOIN cicd.projects p ON pr.project_id = p.id\nWHERE br.pipeline_run_id = {{$json[\"pipeline_run_id\"]}};"
+      },
+      "id": "generate-report",
+      "name": "Generate Build Report",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1650, 300],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "subject": "✅ Build Success: {{$json[\"project_name\"]}} #{{$json[\"run_number\"]}}",
+        "text": "Build completed successfully!\n\nProject: {{$json[\"project_name\"]}}\nCommit: {{$json[\"commit_sha\"]}}\nBranch: {{$json[\"branch\"]}}\n\n✅ All tests passed: {{$json[\"tests_passed\"]}}/{{$json[\"total_tests\"]}}\n✅ Coverage: {{$json[\"coverage_percent\"]}}% (minimum: {{$json[\"minimum_coverage\"]}}%)\n✅ Documentation: Updated\n✅ Definition of Done: MET\n\nView full report: {{$json[\"report_url\"]}}",
+        "toEmail": "Tenshimatt@gmail.com",
+        "options": {}
+      },
+      "id": "notify-success",
+      "name": "Notify Success",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1850, 200],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "subject": "❌ Build Failed: {{$json[\"project_name\"]}} #{{$json[\"run_number\"]}}",
+        "text": "Build failed quality gates!\n\nProject: {{$json[\"project_name\"]}}\nCommit: {{$json[\"commit_sha\"]}}\nBranch: {{$json[\"branch\"]}}\n\n❌ Failed Quality Gates:\n{{$json[\"failed_gates\"].map(gate => `- ${gate.name}: Required ${gate.required}, Got ${gate.actual}`).join('\\n')}}\n\n⚠️ Definition of Done: NOT MET\n\nImmediate action required to fix the build.\n\nView full report: {{$json[\"report_url\"]}}",
+        "toEmail": "Tenshimatt@gmail.com",
+        "options": {}
+      },
+      "id": "notify-failure",
+      "name": "Notify Failure",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1850, 500],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE cicd.pipeline_runs SET\n    status = '{{$json[\"final_status\"]}}',\n    completed_at = NOW(),\n    duration_seconds = EXTRACT(EPOCH FROM (NOW() - started_at)),\n    build_success = {{$json[\"build_success\"]}},\n    tests_passed = {{$json[\"tests_passed\"]}},\n    coverage_met = {{$json[\"coverage_met\"]}},\n    definition_of_done_met = {{$json[\"dod_met\"]}}\nWHERE id = {{$json[\"pipeline_run_id\"]}};"
+      },
+      "id": "finalize-pipeline",
+      "name": "Finalize Pipeline Run",
+      "type": "n8n-nodes-base.postgres",
+      "position": [2050, 400],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Pandora PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "={{$json[\"definition_of_done_met\"] ? 'SUCCESS' : 'FAILED'}}"
+            },
+            {
+              "name": "message",
+              "value": "Pipeline completed. DOD: {{$json[\"definition_of_done_met\"] ? 'MET' : 'NOT MET'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [2250, 300],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "trigger-router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "scheduled-trigger": {
+      "main": [
+        [
+          {
+            "node": "trigger-router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "trigger-router": {
+      "main": [
+        [
+          {
+            "node": "create-pipeline-run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create-pipeline-run": {
+      "main": [
+        [
+          {
+            "node": "build-code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "build-code": {
+      "main": [
+        [
+          {
+            "node": "run-tests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "run-tests": {
+      "main": [
+        [
+          {
+            "node": "save-test-results",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "save-coverage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save-test-results": {
+      "main": [
+        [
+          {
+            "node": "check-documentation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save-coverage": {
+      "main": [
+        [
+          {
+            "node": "check-quality-gates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check-documentation": {
+      "main": [
+        [
+          {
+            "node": "check-quality-gates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check-quality-gates": {
+      "main": [
+        [
+          {
+            "node": "dod-check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dod-check": {
+      "main": [
+        [
+          {
+            "node": "generate-report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "notify-success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "generate-report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "notify-failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate-report": {
+      "main": [
+        [
+          {
+            "node": "finalize-pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "notify-success": {
+      "main": [
+        [
+          {
+            "node": "finalize-pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "notify-failure": {
+      "main": [
+        [
+          {
+            "node": "finalize-pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "finalize-pipeline": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "pandora-ci-cd-pipeline"
+}

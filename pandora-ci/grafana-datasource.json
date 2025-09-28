@@ -1,0 +1,20 @@
+{
+  "name": "postgres-automation",
+  "type": "postgres",
+  "access": "proxy",
+  "url": "10.90.10.6:5432",
+  "database": "openproject_db",
+  "user": "openproject",
+  "secureJsonData": {
+    "password": "openproject123"
+  },
+  "jsonData": {
+    "sslmode": "disable",
+    "maxOpenConns": 100,
+    "maxIdleConns": 100,
+    "maxIdleConnsAuto": true,
+    "connMaxLifetime": 14400,
+    "postgresVersion": 1300,
+    "timescaledb": false
+  }
+}

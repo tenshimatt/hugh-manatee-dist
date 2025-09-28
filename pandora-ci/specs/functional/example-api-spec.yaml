@@ -1,0 +1,104 @@
+title: "User Authentication API"
+description: "API endpoints for user registration, login, and profile management"
+version: "1.0.0"
+type: "api"
+language: "typescript"
+
+endpoints:
+  - path: "/api/auth/register"
+    method: "POST"
+    description: "Register new user account"
+    request_format:
+      content_type: "application/json"
+      required_fields:
+        - email: "string (valid email format)"
+        - password: "string (min 8 chars, 1 uppercase, 1 number)"
+        - name: "string (2-50 chars)"
+    response_format:
+      success:
+        status: 201
+        body:
+          user_id: "string (UUID)"
+          email: "string"
+          name: "string"
+          created_at: "string (ISO datetime)"
+      error:
+        status: 400
+        body:
+          error: "string"
+          details: "array of field errors"
+
+  - path: "/api/auth/login"
+    method: "POST"
+    description: "Authenticate user and return JWT token"
+    request_format:
+      content_type: "application/json"
+      required_fields:
+        - email: "string"
+        - password: "string"
+    response_format:
+      success:
+        status: 200
+        body:
+          token: "string (JWT)"
+          user:
+            id: "string (UUID)"
+            email: "string"
+            name: "string"
+          expires_at: "string (ISO datetime)"
+      error:
+        status: 401
+        body:
+          error: "Invalid credentials"
+
+  - path: "/api/auth/profile"
+    method: "GET"
+    description: "Get authenticated user profile"
+    auth_required: true
+    response_format:
+      success:
+        status: 200
+        body:
+          id: "string (UUID)"
+          email: "string"
+          name: "string"
+          created_at: "string (ISO datetime)"
+          updated_at: "string (ISO datetime)"
+
+validation_rules:
+  - email_must_be_unique: true
+  - password_complexity: "minimum 8 characters, 1 uppercase, 1 number"
+  - jwt_expiry: "24 hours"
+  - rate_limiting: "5 requests per minute per IP"
+
+security_requirements:
+  - password_hashing: "bcrypt with salt"
+  - jwt_signing: "HS256 algorithm"
+  - input_sanitization: "all user inputs"
+  - sql_injection_prevention: true
+
+test_scenarios:
+  - name: "successful_registration"
+    description: "Valid user registration creates account"
+    expected_outcome: "201 status, user created in database"
+
+  - name: "duplicate_email_registration"
+    description: "Registration with existing email fails"
+    expected_outcome: "400 status with email exists error"
+
+  - name: "successful_login"
+    description: "Valid credentials return JWT token"
+    expected_outcome: "200 status with valid JWT"
+
+  - name: "invalid_login"
+    description: "Invalid credentials are rejected"
+    expected_outcome: "401 status with error message"
+
+  - name: "protected_route_access"
+    description: "Profile endpoint requires valid JWT"
+    expected_outcome: "200 with user data when authenticated, 401 when not"
+
+performance_requirements:
+  response_time: "< 200ms for authentication endpoints"
+  concurrent_users: "100 simultaneous login attempts"
+  database_connections: "connection pooling required"

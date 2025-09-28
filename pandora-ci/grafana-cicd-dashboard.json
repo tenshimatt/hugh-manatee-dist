@@ -1,0 +1,305 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Pandora CI/CD Pipeline Monitor",
+    "tags": ["cicd", "pandora", "automation"],
+    "timezone": "America/Chicago",
+    "refresh": "30s",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Definition of Done Compliance",
+        "type": "stat",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  project_name,\n  dod_compliance_rate as value,\n  CASE \n    WHEN dod_compliance_rate >= 95 THEN 'green'\n    WHEN dod_compliance_rate >= 80 THEN 'yellow'\n    ELSE 'red'\n  END as color\nFROM cicd.dod_compliance\nORDER BY dod_compliance_rate DESC",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 80},
+                {"color": "green", "value": 95}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "background"
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Pipeline Success Rate (24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  COUNT(CASE WHEN status = 'success' THEN 1 END) * 100.0 / COUNT(*) as success_rate\nFROM cicd.pipeline_runs\nWHERE created_at > NOW() - INTERVAL '24 hours'",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 70},
+                {"color": "green", "value": 90}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Test Coverage Trends",
+        "type": "timeseries",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  pr.created_at as time,\n  cr.line_coverage_percent as coverage,\n  p.name as project\nFROM cicd.pipeline_runs pr\nJOIN cicd.coverage_reports cr ON pr.id = cr.pipeline_run_id\nJOIN cicd.projects p ON pr.project_id = p.id\nWHERE pr.created_at > $__timeFrom()\nORDER BY pr.created_at",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {"type": "linear"},
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {"group": "A", "mode": "none"},
+              "thresholdsStyle": {"mode": "off"}
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Failed Quality Gates",
+        "type": "table",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  p.name as Project,\n  pr.run_number as Run,\n  qg.gate_name as \"Quality Gate\",\n  qg.required_value as Required,\n  qg.actual_value as Actual,\n  qg.failure_reason as \"Failure Reason\",\n  pr.created_at as \"Failed At\"\nFROM cicd.quality_gates qg\nJOIN cicd.pipeline_runs pr ON qg.pipeline_run_id = pr.id\nJOIN cicd.projects p ON pr.project_id = p.id\nWHERE qg.passed = false\nAND pr.created_at > NOW() - INTERVAL '24 hours'\nORDER BY pr.created_at DESC",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Build Duration Trends",
+        "type": "timeseries",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  pr.created_at as time,\n  pr.duration_seconds as duration,\n  p.name as project\nFROM cicd.pipeline_runs pr\nJOIN cicd.projects p ON pr.project_id = p.id\nWHERE pr.created_at > $__timeFrom()\nAND pr.duration_seconds IS NOT NULL\nORDER BY pr.created_at",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "s"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 6,
+        "title": "Test Results Distribution",
+        "type": "piechart",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  status,\n  COUNT(*) as count\nFROM cicd.test_results tr\nJOIN cicd.pipeline_runs pr ON tr.pipeline_run_id = pr.id\nWHERE pr.created_at > NOW() - INTERVAL '24 hours'\nGROUP BY status",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              }
+            },
+            "mappings": [
+              {"options": {"passed": {"color": "green", "index": 0}}, "type": "value"},
+              {"options": {"failed": {"color": "red", "index": 1}}, "type": "value"},
+              {"options": {"skipped": {"color": "yellow", "index": 2}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 7,
+        "title": "AI Agent Usage",
+        "type": "stat",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  ai_agent_used as agent,\n  COUNT(*) as usage_count,\n  AVG(duration_seconds) as avg_duration\nFROM cicd.pipeline_runs\nWHERE created_at > NOW() - INTERVAL '7 days'\nAND ai_agent_used IS NOT NULL\nGROUP BY ai_agent_used\nORDER BY usage_count DESC",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+      },
+      {
+        "id": 8,
+        "title": "Documentation Status",
+        "type": "table",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  p.name as Project,\n  COUNT(CASE WHEN du.exists THEN 1 END) as \"Docs Exist\",\n  COUNT(CASE WHEN du.updated THEN 1 END) as \"Docs Updated\",\n  AVG(du.completeness_percent) as \"Completeness %\",\n  COUNT(CASE WHEN du.ai_generated THEN 1 END) as \"AI Generated\"\nFROM cicd.documentation_updates du\nJOIN cicd.pipeline_runs pr ON du.pipeline_run_id = pr.id\nJOIN cicd.projects p ON pr.project_id = p.id\nWHERE pr.created_at > NOW() - INTERVAL '7 days'\nGROUP BY p.name\nORDER BY \"Completeness %\" DESC",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 40}
+      },
+      {
+        "id": 9,
+        "title": "Live Pipeline Status",
+        "type": "table",
+        "targets": [
+          {
+            "datasource": "PostgreSQL",
+            "rawSql": "SELECT\n  p.name as Project,\n  pr.run_number as Run,\n  pr.status as Status,\n  pr.stage as Stage,\n  pr.commit_sha as Commit,\n  pr.branch as Branch,\n  EXTRACT(EPOCH FROM (NOW() - pr.started_at)) as \"Duration (s)\",\n  pr.ai_agent_used as \"AI Agent\"\nFROM cicd.pipeline_runs pr\nJOIN cicd.projects p ON pr.project_id = p.id\nWHERE pr.status IN ('pending', 'running')\nOR pr.created_at > NOW() - INTERVAL '2 hours'\nORDER BY pr.created_at DESC\nLIMIT 20",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            },
+            "mappings": [
+              {"options": {"success": {"color": "green", "index": 0}}, "type": "value"},
+              {"options": {"failed": {"color": "red", "index": 1}}, "type": "value"},
+              {"options": {"running": {"color": "yellow", "index": 2}}, "type": "value"},
+              {"options": {"pending": {"color": "blue", "index": 3}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 48}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "project",
+          "type": "query",
+          "datasource": "PostgreSQL",
+          "definition": "SELECT name FROM cicd.projects WHERE active = true ORDER BY name",
+          "refresh": 1,
+          "includeAll": true,
+          "allValue": "",
+          "multi": true
+        },
+        {
+          "name": "timerange",
+          "type": "interval",
+          "auto": true,
+          "auto_count": 30,
+          "auto_min": "10s",
+          "refresh": 2
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "PostgreSQL",
+          "enable": true,
+          "iconColor": "green",
+          "rawQuery": "SELECT\n  d.started_at as time,\n  CONCAT('Deployed ', p.name, ' to ', d.environment) as text,\n  CONCAT('Version: ', d.version_tag, ', Status: ', d.status) as tags\nFROM cicd.deployments d\nJOIN cicd.pipeline_runs pr ON d.pipeline_run_id = pr.id\nJOIN cicd.projects p ON pr.project_id = p.id\nWHERE d.started_at > $__timeFrom()\nAND d.started_at < $__timeTo()",
+          "textColumn": "text",
+          "timeColumn": "time",
+          "tagsColumn": "tags"
+        }
+      ]
+    },
+    "version": 1
+  }
+}
