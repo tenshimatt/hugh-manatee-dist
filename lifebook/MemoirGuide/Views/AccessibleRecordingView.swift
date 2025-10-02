@@ -62,9 +62,10 @@ struct AccessibleRecordingView: View {
                 // Header with theme switcher
                 headerSection
 
-                // Bug 18 fix: 10% space above Hello intro text (was 15%)
-                Spacer()
-                    .frame(height: UIScreen.main.bounds.height * 0.10)
+                // Bug 27: Welcome message section
+                welcomeMessageSection
+                    .accessibilityElement(children: .contain)
+                    .accessibilityLabel("Welcome message")
 
                 // AI Prompt Area - Top Priority for Screen Readers
                 aiPromptSection
@@ -134,7 +135,53 @@ struct AccessibleRecordingView: View {
         .padding(.top, 8)
         .padding(.horizontal, 4)
     }
-    
+
+    // MARK: - Welcome Message Section (Bug 27)
+    private var welcomeMessageSection: some View {
+        VStack(spacing: 12) {
+            // Get user name if available
+            let userName = coreDataManager.getUserProfile()?.name
+
+            // Welcome message with name or prompt to get started
+            if let name = userName {
+                Text("Welcome back, \(name)!")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.textPrimary)
+                    .multilineTextAlignment(.center)
+            } else {
+                Text("Welcome! Let's start by getting your name or continue from another story.")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .foregroundColor(theme.textPrimary)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Mandatory message: "What a life it has been..."
+            Text("What a life it has been. Can you believe we did all those things?")
+                .font(.body)
+                .foregroundColor(theme.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.top, 4)
+
+            // Mandatory message: "Share with your friends coming soon"
+            HStack(spacing: 6) {
+                Image(systemName: "person.2.fill")
+                    .foregroundColor(theme.secondary)
+                Text("Share with your friends coming soon")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(theme.secondary)
+            }
+            .padding(.top, 4)
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 16)
+        .background(theme.surface.opacity(0.5))
+        .cornerRadius(16)
+        .shadow(color: theme.primary.opacity(0.1), radius: 8, x: 0, y: 4)
+    }
+
     // MARK: - AI Prompt Section (Bug 1 & 2 fixes, Bug 19 modern styling)
     private var aiPromptSection: some View {
         VStack(spacing: 12) {

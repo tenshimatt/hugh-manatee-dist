@@ -8,6 +8,7 @@ struct StoryAssignmentView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var coreDataManager: CoreDataManager
+    @EnvironmentObject var audioPlayer: AudioPlaybackManager
     @Environment(\.managedObjectContext) var context
 
     let segment: MemoirSegmentEntity
@@ -22,6 +23,10 @@ struct StoryAssignmentView: View {
     @State private var selectedChapter: ChapterEntity?
     @State private var showingNewStoryField = false
     @State private var newStoryTitle = ""
+
+    // Bug 25 & 26: Audio playback states
+    @State private var isPlayingTranscription = false
+    @State private var isPlayingAIStory = false
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \ChapterEntity.chapterNumber, ascending: true)],
@@ -65,6 +70,10 @@ struct StoryAssignmentView: View {
         }
         .onAppear {
             generateStory()
+            updatePlayingStates()
+        }
+        .onChange(of: audioPlayer.isPlaying) { _ in
+            updatePlayingStates()
         }
         .alert("Error", isPresented: $showError) {
             Button("OK") { }
@@ -83,6 +92,15 @@ struct StoryAssignmentView: View {
                 Text("What I captured")  // Bug 7 fix
                     .font(.headline)
                 Spacer()
+
+                // Bug 25: Play audio button
+                Button(action: handlePlayTranscription) {
+                    Image(systemName: isPlayingTranscription ? "pause.circle.fill" : "play.circle.fill")
+                        .font(.system(size: 28))
+                        .foregroundColor(.blue)
+                }
+                .accessibilityLabel(isPlayingTranscription ? "Pause audio" : "Play audio")
+
                 Text("\(wordCount(rawTranscription)) words")
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -118,6 +136,14 @@ struct StoryAssignmentView: View {
                     ProgressView()
                         .scaleEffect(0.8)
                 } else {
+                    // Bug 26: Play audio button
+                    Button(action: handlePlayAIStory) {
+                        Image(systemName: isPlayingAIStory ? "pause.circle.fill" : "play.circle.fill")
+                            .font(.system(size: 28))
+                            .foregroundColor(.blue)
+                    }
+                    .accessibilityLabel(isPlayingAIStory ? "Pause audio" : "Play audio")
+
                     Text("\(versionHistory.currentVersion.wordCount) words")
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -408,6 +434,44 @@ struct StoryAssignmentView: View {
                 }
             }
         }
+    }
+
+    // Bug 25: Handle play/pause for transcription audio
+    private func handlePlayTranscription() {
+        let isCurrentSegment = audioPlayer.currentSegment?.id == segment.id
+
+        if isCurrentSegment && audioPlayer.isPlaying {
+            audioPlayer.pause()
+        } else if isCurrentSegment && !audioPlayer.isPlaying {
+            audioPlayer.resume()
+        } else {
+            Task {
+                await audioPlayer.playSegment(segment)
+            }
+        }
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+    }
+
+    // Bug 26: Handle play/pause for AI story audio (same source)
+    private func handlePlayAIStory() {
+        let isCurrentSegment = audioPlayer.currentSegment?.id == segment.id
+
+        if isCurrentSegment && audioPlayer.isPlaying {
+            audioPlayer.pause()
+        } else if isCurrentSegment && !audioPlayer.isPlaying {
+            audioPlayer.resume()
+        } else {
+            Task {
+                await audioPlayer.playSegment(segment)
+            }
+        }
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+    }
+
+    private func updatePlayingStates() {
+        let isCurrentSegment = audioPlayer.currentSegment?.id == segment.id
+        isPlayingTranscription = isCurrentSegment && audioPlayer.isPlaying
+        isPlayingAIStory = isCurrentSegment && audioPlayer.isPlaying
     }
 
     private func saveStory() {
