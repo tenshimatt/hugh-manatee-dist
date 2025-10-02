@@ -4,6 +4,7 @@
 import SwiftUI
 import Combine
 
+@MainActor
 class AppState: ObservableObject {
     @Published var currentView: ViewState = .recording
     @Published var isFirstLaunch: Bool = true
@@ -86,8 +87,9 @@ class ThemeManager: ObservableObject {
     private let themesKey = "selectedThemeID"
 
     // MARK: - 5 Modern Color Palettes
+    // nonisolated because it's a constant array that doesn't need MainActor isolation
 
-    static let themes: [AppTheme] = [
+    nonisolated static let themes: [AppTheme] = [
         // Theme 1: Forest Green (Original - warm, earthy)
         AppTheme(
             id: "forest",
