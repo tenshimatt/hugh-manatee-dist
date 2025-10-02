@@ -116,12 +116,13 @@ struct StoryAssignmentView: View {
             }
 
             // Bug 28 & 29: Highlighted text with auto-scroll
+            // Bug 33: Increased height to fill space (was 150, now 250)
             HighlightedTextView(
                 text: rawTranscription,
                 currentWordIndex: currentWordIndex,
                 isPlaying: isPlayingTranscription
             )
-            .frame(height: 150)
+            .frame(height: 250)
             .background(Color.gray.opacity(0.1))
             .cornerRadius(12)
             .overlay(
@@ -168,7 +169,7 @@ struct StoryAssignmentView: View {
                     Text("Generating story...")
                         .foregroundColor(.gray)
                 }
-                .frame(height: 200)
+                .frame(height: 300)
                 .frame(maxWidth: .infinity)
                 .background(Color.white)
                 .cornerRadius(12)
@@ -178,12 +179,13 @@ struct StoryAssignmentView: View {
                 )
             } else {
                 // Bug 28 & 29: Highlighted text with auto-scroll
+                // Bug 33: Increased height to fill space (was 200, now 300)
                 HighlightedTextView(
                     text: versionHistory.currentVersion.text,
                     currentWordIndex: currentWordIndex,
                     isPlaying: isPlayingAIStory
                 )
-                .frame(height: 200)
+                .frame(height: 300)
                 .background(Color.white)
                 .cornerRadius(12)
                 .overlay(
