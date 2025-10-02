@@ -27,6 +27,9 @@ struct AccessibleRecordingView: View {
     // Help popup (Bug 13)
     @State private var showingHelp = false
 
+    // Bug 31: No audio captured popup
+    @State private var showingNoAudioAlert = false
+
     // API key (should be moved to secure storage in production)
     private let anthropicAPIKey = "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"
 
@@ -120,6 +123,13 @@ struct AccessibleRecordingView: View {
         }
         .sheet(isPresented: $showingHelp) {
             HelpPopupView()
+        }
+        .alert("No Audio Captured", isPresented: $showingNoAudioAlert) {
+            Button("OK") {
+                showingNoAudioAlert = false
+            }
+        } message: {
+            Text("We didn't capture any audio. Just letting you know, please try again when you're ready.")
         }
     }
 
@@ -489,17 +499,27 @@ struct AccessibleRecordingView: View {
     private func stopRecording() {
         Task {
             let transcription = recordingManager.currentTranscription
+            let duration = recordingManager.recordingDuration
             _ = await recordingManager.stopRecording()
 
-            // Get the most recent segment from Core Data
-            let segments = coreDataManager.fetchRecentSegments(limit: 1)
+            // Bug 31: Check if any audio was captured
+            let hasAudio = !transcription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && duration > 1.0
 
             await MainActor.run {
-                if let segment = segments.first {
-                    completedSegment = segment
-                    completedTranscription = transcription
-                    showingStoryAssignment = true
-                    announceSuccess("Recording complete. Creating your story...")
+                if !hasAudio {
+                    // Bug 31: Show no audio alert and stay on home screen
+                    showingNoAudioAlert = true
+                    announceError("No audio was captured")
+                } else {
+                    // Get the most recent segment from Core Data
+                    let segments = coreDataManager.fetchRecentSegments(limit: 1)
+
+                    if let segment = segments.first {
+                        completedSegment = segment
+                        completedTranscription = transcription
+                        showingStoryAssignment = true
+                        announceSuccess("Recording complete. Creating your story...")
+                    }
                 }
             }
         }

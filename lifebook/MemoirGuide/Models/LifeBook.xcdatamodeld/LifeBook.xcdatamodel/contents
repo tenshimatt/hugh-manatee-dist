@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22A380" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="MemoirSession" representedClassName="MemoirSessionEntity" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="duration" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="sessionNumber" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="status" optional="YES" attributeType="String" defaultValueString="active"/>
+        <attribute name="totalWordCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="chapter" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Chapter" inverseName="sessions" inverseEntity="Chapter"/>
+        <relationship name="segments" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MemoirSegment" inverseName="session" inverseEntity="MemoirSegment"/>
+    </entity>
+    <entity name="MemoirSegment" representedClassName="MemoirSegmentEntity" syncable="YES">
+        <attribute name="aiModel" optional="YES" attributeType="String"/>
+        <attribute name="aiProcessed" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="aiPrompt" optional="YES" attributeType="String"/>
+        <attribute name="aiStoryText" optional="YES" attributeType="String"/>
+        <attribute name="audioFileName" optional="YES" attributeType="String"/>
+        <attribute name="audioFileSize" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="confidence" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="duration" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="editHistory" optional="YES" attributeType="Binary"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isAutoSave" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="sequenceNumber" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="transcription" optional="YES" attributeType="String"/>
+        <attribute name="wordCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MemoirSession" inverseName="segments" inverseEntity="MemoirSession"/>
+    </entity>
+    <entity name="Chapter" representedClassName="ChapterEntity" syncable="YES">
+        <attribute name="aiGeneratedSummary" optional="YES" attributeType="String"/>
+        <attribute name="chapterNumber" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="estimatedReadingTime" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="status" optional="YES" attributeType="String" defaultValueString="draft"/>
+        <attribute name="tags" optional="YES" attributeType="String"/>
+        <attribute name="timePeriod" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="totalDuration" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="totalWordCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="sessions" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MemoirSession" inverseName="chapter" inverseEntity="MemoirSession"/>
+        <relationship name="sharedWith" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FamilyMember" inverseName="sharedChapters" inverseEntity="FamilyMember"/>
+        <relationship name="userProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserProfile" inverseName="chapters" inverseEntity="UserProfile"/>
+    </entity>
+    <entity name="UserProfile" representedClassName="UserProfileEntity" syncable="YES">
+        <attribute name="accessibilitySettings" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="familyInviteCode" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="languagePreference" optional="YES" attributeType="String" defaultValueString="en"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="preferredRecordingQuality" optional="YES" attributeType="String" defaultValueString="high"/>
+        <attribute name="privacySettings" optional="YES" attributeType="String"/>
+        <attribute name="totalRecordingTime" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="chapters" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Chapter" inverseName="userProfile" inverseEntity="Chapter"/>
+        <relationship name="familyMembers" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="FamilyMember" inverseName="userProfile" inverseEntity="FamilyMember"/>
+    </entity>
+    <entity name="FamilyMember" representedClassName="FamilyMemberEntity" syncable="YES">
+        <attribute name="contactEmail" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="invitationStatus" optional="YES" attributeType="String" defaultValueString="pending"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="relationship" optional="YES" attributeType="String"/>
+        <relationship name="sharedChapters" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Chapter" inverseName="sharedWith" inverseEntity="Chapter"/>
+        <relationship name="userProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserProfile" inverseName="familyMembers" inverseEntity="UserProfile"/>
+    </entity>
+    <entity name="AIConversationContext" representedClassName="AIConversationContextEntity" syncable="YES">
+        <attribute name="conversationHistory" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="currentTopics" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastPrompt" optional="YES" attributeType="String"/>
+        <attribute name="preferredQuestionStyle" optional="YES" attributeType="String" defaultValueString="gentle"/>
+        <attribute name="successfulPrompts" optional="YES" attributeType="String"/>
+        <attribute name="userResponsePatterns" optional="YES" attributeType="String"/>
+    </entity>
+</model>
