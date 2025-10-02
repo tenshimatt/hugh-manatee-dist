@@ -13,6 +13,11 @@ enum AppError: Error, LocalizedError, Identifiable {
     case transcriptionFailed
     case audioSessionSetupFailed
     case insufficientStorage
+
+    // Camera Errors (Bug 34-36)
+    case cameraPermissionDenied
+    case cameraSetupFailed
+    case videoRecordingFailed
     
     // Core Data Errors
     case coreDataSaveFailed
@@ -58,7 +63,15 @@ enum AppError: Error, LocalizedError, Identifiable {
             return "Could not setup audio recording. Please check your device settings."
         case .insufficientStorage:
             return "Not enough storage space to continue recording. Please free up space and try again."
-            
+
+        // Camera Errors
+        case .cameraPermissionDenied:
+            return "Camera access is required to record video. Please enable it in Settings."
+        case .cameraSetupFailed:
+            return "Could not setup camera. Please check your device settings."
+        case .videoRecordingFailed:
+            return "Video recording failed. Audio recording will continue."
+
         // Core Data Errors
         case .coreDataSaveFailed:
             return "Failed to save your story. Please try again."
@@ -168,9 +181,11 @@ extension AppError {
     
     var category: ErrorCategory {
         switch self {
-        case .microphonePermissionDenied, .speechRecognitionUnavailable, .recordingFailed, 
+        case .microphonePermissionDenied, .speechRecognitionUnavailable, .recordingFailed,
              .transcriptionFailed, .audioSessionSetupFailed, .insufficientStorage:
             return .recording
+        case .cameraPermissionDenied, .cameraSetupFailed, .videoRecordingFailed:
+            return .camera
         case .coreDataSaveFailed, .coreDataLoadFailed, .entityNotFound:
             return .storage
         case .cloudKitUnavailable, .cloudKitSyncFailed, .cloudKitQuotaExceeded:
@@ -187,11 +202,12 @@ extension AppError {
     }
     
     enum ErrorCategory {
-        case recording, storage, sync, ai, file, network, userInput
-        
+        case recording, camera, storage, sync, ai, file, network, userInput
+
         var icon: String {
             switch self {
             case .recording: return "mic.slash"
+            case .camera: return "video.slash"
             case .storage: return "internaldrive"
             case .sync: return "icloud.slash"
             case .ai: return "brain"

@@ -108,6 +108,8 @@ public class MemoirSegmentEntity: NSManagedObject {
     @NSManaged public var transcription: String?
     @NSManaged public var audioFileName: String?
     @NSManaged public var audioFileSize: Int64
+    @NSManaged public var videoFileName: String? // Bug 36: Video file support
+    @NSManaged public var videoFileSize: Int64 // Bug 36: Video file support
     @NSManaged public var duration: Double
     @NSManaged public var wordCount: Int16
     @NSManaged public var sequenceNumber: Int16
@@ -159,7 +161,27 @@ public class MemoirSegmentEntity: NSManagedObject {
     var hasAudio: Bool {
         return audioFileName != nil && audioURL?.isFileExists == true
     }
-    
+
+    // Bug 36: Video file support
+    var videoURL: URL? {
+        guard let fileName = videoFileName else { return nil }
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+
+        // Check secure directory first (new recordings)
+        let secureDirectory = documentsURL.appendingPathComponent("SecureVideo", isDirectory: true)
+        let secureURL = secureDirectory.appendingPathComponent(fileName)
+        if FileManager.default.fileExists(atPath: secureURL.path) {
+            return secureURL
+        }
+
+        // Return secure path for new files (even if doesn't exist yet)
+        return secureURL
+    }
+
+    var hasVideo: Bool {
+        return videoFileName != nil && videoURL?.isFileExists == true
+    }
+
     // Convenience methods
     func updateWordCount() {
         wordCount = Int16(transcriptionText.wordCount)
@@ -168,13 +190,26 @@ public class MemoirSegmentEntity: NSManagedObject {
     
     func setAudioFile(url: URL) {
         audioFileName = url.lastPathComponent
-        
+
         // Get file size
         if let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
            let fileSize = attributes[.size] as? Int64 {
             audioFileSize = fileSize
         }
-        
+
+        lastModified = Date()
+    }
+
+    // Bug 36: Set video file
+    func setVideoFile(url: URL) {
+        videoFileName = url.lastPathComponent
+
+        // Get file size
+        if let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+           let fileSize = attributes[.size] as? Int64 {
+            videoFileSize = fileSize
+        }
+
         lastModified = Date()
     }
 }

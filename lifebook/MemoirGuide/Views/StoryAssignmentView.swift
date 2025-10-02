@@ -3,6 +3,7 @@
 
 import SwiftUI
 import CoreData
+import AVKit
 
 struct StoryAssignmentView: View {
     @Environment(\.dismiss) var dismiss
@@ -10,6 +11,9 @@ struct StoryAssignmentView: View {
     @EnvironmentObject var coreDataManager: CoreDataManager
     @EnvironmentObject var audioPlayer: AudioPlaybackManager
     @Environment(\.managedObjectContext) var context
+
+    // Bug 36: Video player for segments with video
+    @StateObject private var videoPlayerManager = VideoPlayerManager()
 
     let segment: MemoirSegmentEntity
     let rawTranscription: String
@@ -48,6 +52,11 @@ struct StoryAssignmentView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
+                    // Bug 36: Video preview (only if video exists)
+                    if segment.hasVideo {
+                        videoSection
+                    }
+
                     // Original Transcription
                     transcriptionSection
 
@@ -75,17 +84,50 @@ struct StoryAssignmentView: View {
         .onAppear {
             generateStory()
             updatePlayingStates()
+
+            // Bug 36: Setup video player if video exists
+            if segment.hasVideo, let videoURL = segment.videoURL {
+                videoPlayerManager.setupPlayer(with: videoURL)
+            }
         }
         .onChange(of: audioPlayer.isPlaying) { _ in
             updatePlayingStates()
+            syncVideoPlayback()
         }
         .onChange(of: audioPlayer.currentTime) { _ in
             updateWordHighlighting()
+            syncVideoTime()
         }
         .alert("Error", isPresented: $showError) {
             Button("OK") { }
         } message: {
             Text(errorMessage)
+        }
+    }
+
+    // MARK: - Video Section (Bug 36)
+
+    private var videoSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "video.fill")
+                    .foregroundColor(.purple)
+                Text("Video Recording")
+                    .font(.headline)
+
+                Spacer()
+            }
+
+            if let player = videoPlayerManager.player {
+                VideoPlayer(player: player)
+                    .frame(height: 200)
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.purple.opacity(0.3), lineWidth: 2)
+                    )
+                    .disabled(true) // Prevent manual controls, sync with audio
+            }
         }
     }
 
@@ -486,6 +528,25 @@ struct StoryAssignmentView: View {
         let isCurrentSegment = audioPlayer.currentSegment?.id == segment.id
         isPlayingTranscription = isCurrentSegment && audioPlayer.isPlaying
         isPlayingAIStory = isCurrentSegment && audioPlayer.isPlaying
+    }
+
+    // Bug 36: Sync video playback with audio
+    private func syncVideoPlayback() {
+        guard audioPlayer.currentSegment?.id == segment.id else { return }
+
+        if audioPlayer.isPlaying {
+            videoPlayerManager.play()
+        } else {
+            videoPlayerManager.pause()
+        }
+    }
+
+    // Bug 36: Sync video time with audio time
+    private func syncVideoTime() {
+        guard audioPlayer.currentSegment?.id == segment.id,
+              audioPlayer.isPlaying else { return }
+
+        videoPlayerManager.seek(to: audioPlayer.currentTime)
     }
 
     // Bug 28 & 29: Update word highlighting based on playback time

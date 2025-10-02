@@ -12,6 +12,7 @@ struct AccessibleRecordingView: View {
     @EnvironmentObject var cloudKit: CloudKitManager
     @EnvironmentObject var coreDataManager: CoreDataManager
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var cameraManager: CameraManager // Bug 34-36
 
     @State private var isFirstTap = true
     @State private var showingPrompt = false
@@ -70,7 +71,11 @@ struct AccessibleRecordingView: View {
                     .accessibilityElement(children: .contain)
                     .accessibilityLabel("Welcome message")
 
-                // Bug 32: AI Prompt section removed
+                // Bug 34: Camera preview (replaces AI prompt)
+                CameraPreviewView()
+                    .frame(height: 200)
+                    .padding(.horizontal, 24)
+                    .environmentObject(cameraManager)
 
                 Spacer()
 
@@ -97,6 +102,11 @@ struct AccessibleRecordingView: View {
             setupAccessibility()
             // Bug 32: setupInitialPrompt() removed - AI prompt section no longer displayed
             startPulseAnimation()
+
+            // Bug 34: Setup camera
+            Task {
+                await setupCamera()
+            }
         }
         .onChange(of: recordingManager.isRecording) { _ in
             provideHapticFeedback()
@@ -440,6 +450,12 @@ struct AccessibleRecordingView: View {
                 try await recordingManager.startRecording()
                 isFirstTap = false
 
+                // Bug 36: Start video recording if camera is enabled
+                if cameraManager.isCameraEnabled && cameraManager.isAuthorized {
+                    let videoURL = try getSecureVideoURL()
+                    try cameraManager.startVideoRecording(to: videoURL)
+                }
+
                 // Bug 32: AI prompt generation removed - no longer displayed
 
             } catch {
@@ -455,6 +471,9 @@ struct AccessibleRecordingView: View {
             let duration = recordingManager.recordingDuration
             _ = await recordingManager.stopRecording()
 
+            // Bug 36: Stop video recording if active
+            let videoURL = cameraManager.stopVideoRecording()
+
             // Bug 31: Check if any audio was captured
             let hasAudio = !transcription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && duration > 1.0
 
@@ -468,6 +487,16 @@ struct AccessibleRecordingView: View {
                     let segments = coreDataManager.fetchRecentSegments(limit: 1)
 
                     if let segment = segments.first {
+                        // Bug 36: Save video file if exists
+                        if let videoURL = videoURL, FileManager.default.fileExists(atPath: videoURL.path) {
+                            segment.setVideoFile(url: videoURL)
+                            do {
+                                try coreDataManager.save()
+                            } catch {
+                                print("[AccessibleRecordingView] Failed to save video file: \(error)")
+                            }
+                        }
+
                         completedSegment = segment
                         completedTranscription = transcription
                         showingStoryAssignment = true
@@ -479,7 +508,46 @@ struct AccessibleRecordingView: View {
     }
     
     // Bug 32: setupInitialPrompt() removed - AI prompt no longer displayed
-    
+
+    // Bug 34: Setup camera preview
+    private func setupCamera() async {
+        // Request camera permission
+        let granted = await cameraManager.requestCameraPermission()
+
+        if granted {
+            do {
+                try await cameraManager.setupCamera()
+                cameraManager.startSession()
+            } catch {
+                print("[AccessibleRecordingView] Camera setup failed: \(error)")
+                // Continue without camera - not critical for recording
+            }
+        }
+    }
+
+    // Bug 36: Generate secure video file URL
+    private func getSecureVideoURL() throws -> URL {
+        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let secureDirectory = documentsPath.appendingPathComponent("SecureVideo", isDirectory: true)
+
+        // Create directory if it doesn't exist
+        if !FileManager.default.fileExists(atPath: secureDirectory.path) {
+            try FileManager.default.createDirectory(
+                at: secureDirectory,
+                withIntermediateDirectories: true,
+                attributes: [
+                    .protectionKey: FileProtectionType.complete
+                ]
+            )
+        }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+        let fileName = "memoir_video_\(dateFormatter.string(from: Date()))_\(UUID().uuidString.prefix(8)).mov"
+
+        return secureDirectory.appendingPathComponent(fileName)
+    }
+
     private func setupAccessibility() {
         // Focus on record button for new users
         if isFirstTap {
@@ -624,23 +692,25 @@ struct HelpPopupView: View {
                     }
                     .padding(.top, 40)
 
-                    // Help message
+                    // Help message (Bugs 40 & 41)
                     VStack(spacing: 20) {
-                        Text("Hi, I am here to help you.")
-                            .font(.title2)
-                            .foregroundColor(theme.textPrimary)
-                            .multilineTextAlignment(.center)
-
+                        // Bug 40 & 41: New text, 50% larger
                         VStack(spacing: 16) {
-                            Text("I can only talk at the moment but I am building a help library that you can search soon.")
-                                .font(.body)
+                            Text("Hello there - let me help you out.")
+                                .font(.system(size: 34, weight: .semibold)) // Bug 41: 50% larger than .title2
+                                .foregroundColor(theme.textPrimary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 24)
+
+                            Text("For now, just tell me what you need and we'll sort it out together. Soon you'll also be able to search through helpful guides I'm putting together.")
+                                .font(.system(size: 25.5, weight: .regular)) // Bug 41: 50% larger than .body (17 * 1.5)
                                 .foregroundColor(theme.textSecondary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 24)
 
-                            Text("Till then, please explain what you are having trouble with and I will explain how I can help")
-                                .font(.body)
-                                .foregroundColor(theme.textSecondary)
+                            Text("What's on your mind?")
+                                .font(.system(size: 25.5, weight: .medium)) // Bug 41: 50% larger
+                                .foregroundColor(theme.textPrimary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 24)
                         }
