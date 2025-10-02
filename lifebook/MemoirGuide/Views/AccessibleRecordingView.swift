@@ -70,10 +70,7 @@ struct AccessibleRecordingView: View {
                     .accessibilityElement(children: .contain)
                     .accessibilityLabel("Welcome message")
 
-                // AI Prompt Area - Top Priority for Screen Readers
-                aiPromptSection
-                    .accessibilityElement(children: .contain)
-                    .accessibilityLabel("AI Conversation Guide")
+                // Bug 32: AI Prompt section removed
 
                 Spacer()
 
@@ -98,7 +95,7 @@ struct AccessibleRecordingView: View {
         }
         .onAppear {
             setupAccessibility()
-            setupInitialPrompt()
+            // Bug 32: setupInitialPrompt() removed - AI prompt section no longer displayed
             startPulseAnimation()
         }
         .onChange(of: recordingManager.isRecording) { _ in
@@ -192,44 +189,8 @@ struct AccessibleRecordingView: View {
         .shadow(color: theme.primary.opacity(0.1), radius: 8, x: 0, y: 4)
     }
 
-    // MARK: - AI Prompt Section (Bug 1 & 2 fixes, Bug 19 modern styling)
-    private var aiPromptSection: some View {
-        VStack(spacing: 12) {
-            // Bug 2 fix: Always show prompt (removed showingPrompt condition)
-            if !currentPrompt.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    // Bug 19 fix: Modern card design with theme colors
-                    Text(currentPrompt)
-                        .font(.title3)
-                        .fontWeight(.medium)
-                        .foregroundColor(theme.textPrimary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 20)
-                        .background(theme.surface)
-                        .cornerRadius(20)
-                        .shadow(color: theme.primary.opacity(0.15), radius: 12, x: 0, y: 6)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(
-                                    LinearGradient(
-                                        colors: [theme.primary.opacity(0.3), theme.secondary.opacity(0.3)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 1.5
-                                )
-                        )
-                        .accessibilityLabel("AI conversation prompt: \(currentPrompt)")
-                        .accessibilityAddTraits(.isStaticText)
-                }
-                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: currentPrompt)
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-        }
-        .frame(minHeight: 80)
-    }
+    // Bug 32: AI Prompt Section removed
+    // This section has been removed per user request
     
     // MARK: - Recording Button Section (Bug 4 & 6 fixes, Bug 19 modern styling)
     private var recordingButtonSection: some View {
@@ -478,17 +439,9 @@ struct AccessibleRecordingView: View {
             do {
                 try await recordingManager.startRecording()
                 isFirstTap = false
-                
-                // Generate AI prompt
-                if ai.conversationHistory.isEmpty {
-                    currentPrompt = await ai.getInitialPrompt()
-                } else {
-                    currentPrompt = await ai.generateSilencePrompt(afterSeconds: 3)
-                }
-                
-                showingPrompt = true
-                speakPrompt(currentPrompt)
-                
+
+                // Bug 32: AI prompt generation removed - no longer displayed
+
             } catch {
                 appState.error = error as? AppError ?? AppError.recordingFailed
                 announceError("Recording failed to start")
@@ -525,14 +478,7 @@ struct AccessibleRecordingView: View {
         }
     }
     
-    private func setupInitialPrompt() {
-        Task {
-            currentPrompt = await ai.getInitialPrompt()
-            withAnimation(.easeInOut(duration: 0.5)) {
-                showingPrompt = true
-            }
-        }
-    }
+    // Bug 32: setupInitialPrompt() removed - AI prompt no longer displayed
     
     private func setupAccessibility() {
         // Focus on record button for new users
