@@ -28,6 +28,10 @@ struct StoryAssignmentView: View {
     @State private var isPlayingTranscription = false
     @State private var isPlayingAIStory = false
 
+    // Bug 28 & 29: Word highlighting state
+    @State private var currentWordIndex: Int = 0
+    @State private var scrollToWordID: UUID?
+
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \ChapterEntity.chapterNumber, ascending: true)],
         animation: .default)
@@ -75,6 +79,9 @@ struct StoryAssignmentView: View {
         .onChange(of: audioPlayer.isPlaying) { _ in
             updatePlayingStates()
         }
+        .onChange(of: audioPlayer.currentTime) { _ in
+            updateWordHighlighting()
+        }
         .alert("Error", isPresented: $showError) {
             Button("OK") { }
         } message: {
@@ -86,14 +93,16 @@ struct StoryAssignmentView: View {
 
     private var transcriptionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
+            // Bug 30: Horizontal layout for icons
             HStack {
                 Image(systemName: "mic.fill")
                     .foregroundColor(.gray)
                 Text("What I captured")  // Bug 7 fix
                     .font(.headline)
+
                 Spacer()
 
-                // Bug 25: Play audio button
+                // Bug 30: Play audio button (left position)
                 Button(action: handlePlayTranscription) {
                     Image(systemName: isPlayingTranscription ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 28))
@@ -106,12 +115,12 @@ struct StoryAssignmentView: View {
                     .foregroundColor(.gray)
             }
 
-            ScrollView {
-                Text(rawTranscription)
-                    .font(.body)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-            }
+            // Bug 28 & 29: Highlighted text with auto-scroll
+            HighlightedTextView(
+                text: rawTranscription,
+                currentWordIndex: currentWordIndex,
+                isPlaying: isPlayingTranscription
+            )
             .frame(height: 150)
             .background(Color.gray.opacity(0.1))
             .cornerRadius(12)
@@ -126,17 +135,20 @@ struct StoryAssignmentView: View {
 
     private var aiStorySection: some View {
         VStack(alignment: .leading, spacing: 8) {
+            // Bug 30: Horizontal layout for icons
             HStack {
                 Image(systemName: "sparkles")
                     .foregroundColor(.blue)
                 Text("How I heard it")  // Bug 8 fix
                     .font(.headline)
+
                 Spacer()
+
                 if isGenerating {
                     ProgressView()
                         .scaleEffect(0.8)
                 } else {
-                    // Bug 26: Play audio button
+                    // Bug 30: Play audio button (left position)
                     Button(action: handlePlayAIStory) {
                         Image(systemName: isPlayingAIStory ? "pause.circle.fill" : "play.circle.fill")
                             .font(.system(size: 28))
@@ -165,12 +177,12 @@ struct StoryAssignmentView: View {
                         .stroke(Color.blue.opacity(0.3), lineWidth: 2)
                 )
             } else {
-                ScrollView {
-                    Text(versionHistory.currentVersion.text)
-                        .font(.body)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                }
+                // Bug 28 & 29: Highlighted text with auto-scroll
+                HighlightedTextView(
+                    text: versionHistory.currentVersion.text,
+                    currentWordIndex: currentWordIndex,
+                    isPlaying: isPlayingAIStory
+                )
                 .frame(height: 200)
                 .background(Color.white)
                 .cornerRadius(12)
@@ -474,6 +486,31 @@ struct StoryAssignmentView: View {
         isPlayingAIStory = isCurrentSegment && audioPlayer.isPlaying
     }
 
+    // Bug 28 & 29: Update word highlighting based on playback time
+    private func updateWordHighlighting() {
+        guard audioPlayer.currentSegment?.id == segment.id,
+              audioPlayer.isPlaying,
+              audioPlayer.duration > 0 else {
+            currentWordIndex = 0
+            return
+        }
+
+        // Determine which text to use for word count
+        let text = isPlayingAIStory ? versionHistory.currentVersion.text : rawTranscription
+        let words = text.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+        let totalWords = words.count
+
+        guard totalWords > 0 else { return }
+
+        // Estimate word index based on playback progress
+        // Simple linear interpolation: currentTime / duration * totalWords
+        let progress = audioPlayer.currentTime / audioPlayer.duration
+        let estimatedIndex = Int(progress * Double(totalWords))
+
+        // Clamp to valid range
+        currentWordIndex = max(0, min(estimatedIndex, totalWords - 1))
+    }
+
     private func saveStory() {
         let userProfile = coreDataManager.getUserProfile()
 
@@ -505,5 +542,73 @@ struct StoryAssignmentView: View {
 
     private func wordCount(_ text: String) -> Int {
         text.split(separator: " ").count
+    }
+}
+
+// MARK: - Highlighted Text View (Bugs 28 & 29)
+
+struct HighlightedTextView: View {
+    let text: String
+    let currentWordIndex: Int
+    let isPlaying: Bool
+
+    // Bug 28 & 29: Orange colors from palette
+    private let activeWordColor = Color.orange // Bug 28: Actively spoken word
+    private let previousWordColor = Color.orange.opacity(0.4) // Bug 29: Previous word (pale orange)
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                let words = text.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+
+                // Use FlowLayout-style wrapped text with individual word views
+                WrappedHStack(words: words, currentWordIndex: currentWordIndex, isPlaying: isPlaying)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .onChange(of: currentWordIndex) { newIndex in
+                        // Bug 29: Auto-scroll to keep current word in view
+                        if isPlaying && newIndex < words.count {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                proxy.scrollTo(newIndex, anchor: .center)
+                            }
+                        }
+                    }
+            }
+        }
+    }
+}
+
+// Custom view to display words with wrapping and highlighting
+struct WrappedHStack: View {
+    let words: [String]
+    let currentWordIndex: Int
+    let isPlaying: Bool
+
+    // Bug 28 & 29: Orange colors
+    private let activeWordColor = Color.orange
+    private let previousWordColor = Color.orange.opacity(0.4)
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ForEach(Array(words.enumerated()), id: \.offset) { index, word in
+                Text(word + " ")
+                    .foregroundColor(wordColor(for: index))
+                    .fontWeight(index == currentWordIndex && isPlaying ? .bold : .regular)
+                    .id(index) // Bug 29: ID for scrolling
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func wordColor(for index: Int) -> Color {
+        guard isPlaying else { return .primary }
+
+        if index == currentWordIndex {
+            return activeWordColor // Bug 28: Current word
+        } else if index == currentWordIndex - 1 {
+            return previousWordColor // Bug 29: Previous word
+        } else {
+            return .primary
+        }
     }
 }
