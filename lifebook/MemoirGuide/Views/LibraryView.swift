@@ -263,8 +263,8 @@ struct LibraryView: View {
                             }
                             .foregroundColor(.secondaryTheme)
                             .frame(maxWidth: .infinity)
-                            .frame(width: UIScreen.main.bounds.width * 0.85 * 0.85)  // 15% narrower than 85% width
                             .padding(.vertical, 20)
+                            .padding(.horizontal, 40)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
                                     .fill(Color.secondaryTheme.opacity(0.15))
