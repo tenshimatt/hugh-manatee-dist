@@ -27,6 +27,8 @@
         <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="sequenceNumber" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="transcription" optional="YES" attributeType="String"/>
+        <attribute name="videoFileName" optional="YES" attributeType="String"/>
+        <attribute name="videoFileSize" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="wordCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MemoirSession" inverseName="segments" inverseEntity="MemoirSession"/>
     </entity>
@@ -82,5 +84,19 @@
         <attribute name="preferredQuestionStyle" optional="YES" attributeType="String" defaultValueString="gentle"/>
         <attribute name="successfulPrompts" optional="YES" attributeType="String"/>
         <attribute name="userResponsePatterns" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="ProfileInfo" representedClassName="ProfileInfoEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fullName" optional="YES" attributeType="String"/>
+        <attribute name="dateOfBirth" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="placeOfBirth" optional="YES" attributeType="String"/>
+        <attribute name="motherFullName" optional="YES" attributeType="String"/>
+        <attribute name="motherMaidenName" optional="YES" attributeType="String"/>
+        <attribute name="motherBirthplace" optional="YES" attributeType="String"/>
+        <attribute name="fatherFullName" optional="YES" attributeType="String"/>
+        <attribute name="fatherBirthplace" optional="YES" attributeType="String"/>
+        <attribute name="spouseName" optional="YES" attributeType="String"/>
+        <attribute name="whereMetSpouse" optional="YES" attributeType="String"/>
     </entity>
 </model>

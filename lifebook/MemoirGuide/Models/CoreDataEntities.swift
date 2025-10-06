@@ -386,7 +386,7 @@ public class UserProfileEntity: NSManagedObject {
     
     // Computed properties
     var displayName: String {
-        return name ?? "Life Book User"
+        return name ?? "User"
     }
     
     var chaptersArray: [ChapterEntity] {
@@ -497,6 +497,190 @@ public class AIConversationContextEntity: NSManagedObject {
             currentTopics = try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)
             lastModified = Date()
         }
+    }
+}
+
+// MARK: - ProfileInfoEntity Extension
+
+@objc(ProfileInfoEntity)
+public class ProfileInfoEntity: NSManagedObject {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<ProfileInfoEntity> {
+        return NSFetchRequest<ProfileInfoEntity>(entityName: "ProfileInfo")
+    }
+
+    @NSManaged public var id: UUID?
+    @NSManaged public var lastModified: Date?
+
+    // User's basic info
+    @NSManaged public var fullName: String?
+    @NSManaged public var dateOfBirth: Date?
+    @NSManaged public var placeOfBirth: String?
+
+    // Mother's info
+    @NSManaged public var motherFullName: String?
+    @NSManaged public var motherMaidenName: String?
+    @NSManaged public var motherBirthplace: String?
+
+    // Father's info
+    @NSManaged public var fatherFullName: String?
+    @NSManaged public var fatherBirthplace: String?
+
+    // Spouse info (optional - not everyone is married)
+    @NSManaged public var spouseName: String?
+    @NSManaged public var whereMetSpouse: String?
+
+    // Checklist item data
+    struct ChecklistItem {
+        let field: ProfileField
+        let title: String
+        let subtitle: String
+        var isCompleted: Bool
+        var isCritical: Bool // Red if incomplete, green if complete
+    }
+
+    enum ProfileField: String, CaseIterable, Hashable {
+        case fullName = "Your full name"
+        case dateOfBirth = "Your date of birth"
+        case placeOfBirth = "Where you were born"
+        case motherFullName = "Mother's full name"
+        case motherMaidenName = "Mother's maiden name"
+        case motherBirthplace = "Mother's birthplace"
+        case fatherFullName = "Father's full name"
+        case fatherBirthplace = "Father's birthplace"
+        case spouseName = "Spouse's name"
+        case whereMetSpouse = "Where you met your spouse"
+
+        var subtitle: String {
+            switch self {
+            case .fullName: return "Include middle name if you have one"
+            case .dateOfBirth: return "Month, day, and year"
+            case .placeOfBirth: return "City and state/country"
+            case .motherFullName: return "Her full name (first, middle, last)"
+            case .motherMaidenName: return "Her last name before marriage"
+            case .motherBirthplace: return "Where she was born"
+            case .fatherFullName: return "His full name (first, middle, last)"
+            case .fatherBirthplace: return "Where he was born"
+            case .spouseName: return "Optional - if married"
+            case .whereMetSpouse: return "Optional - the story of how you met"
+            }
+        }
+
+        var isCritical: Bool {
+            // Spouse fields are optional
+            return self != .spouseName && self != .whereMetSpouse
+        }
+    }
+
+    // Computed properties
+    var completionPercentage: Int {
+        let total = ProfileField.allCases.filter { $0.isCritical }.count
+        let completed = completedCriticalFields.count
+        return Int((Double(completed) / Double(total)) * 100)
+    }
+
+    var completedCriticalFields: [ProfileField] {
+        ProfileField.allCases.filter { field in
+            field.isCritical && isFieldCompleted(field)
+        }
+    }
+
+    var allChecklistItems: [ChecklistItem] {
+        ProfileField.allCases.map { field in
+            ChecklistItem(
+                field: field,
+                title: field.rawValue,
+                subtitle: field.subtitle,
+                isCompleted: isFieldCompleted(field),
+                isCritical: field.isCritical
+            )
+        }
+    }
+
+    var criticalChecklistItems: [ChecklistItem] {
+        allChecklistItems.filter { $0.isCritical }
+    }
+
+    var isProfileComplete: Bool {
+        return completionPercentage == 100
+    }
+
+    // Field completion checks
+    func isFieldCompleted(_ field: ProfileField) -> Bool {
+        switch field {
+        case .fullName:
+            return fullName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .dateOfBirth:
+            return dateOfBirth != nil
+        case .placeOfBirth:
+            return placeOfBirth?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .motherFullName:
+            return motherFullName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .motherMaidenName:
+            return motherMaidenName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .motherBirthplace:
+            return motherBirthplace?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .fatherFullName:
+            return fatherFullName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .fatherBirthplace:
+            return fatherBirthplace?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .spouseName:
+            return spouseName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        case .whereMetSpouse:
+            return whereMetSpouse?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        }
+    }
+
+    // Update methods
+    func updateField(_ field: ProfileField, value: Any?) {
+        switch field {
+        case .fullName:
+            fullName = value as? String
+        case .dateOfBirth:
+            dateOfBirth = value as? Date
+        case .placeOfBirth:
+            placeOfBirth = value as? String
+        case .motherFullName:
+            motherFullName = value as? String
+        case .motherMaidenName:
+            motherMaidenName = value as? String
+        case .motherBirthplace:
+            motherBirthplace = value as? String
+        case .fatherFullName:
+            fatherFullName = value as? String
+        case .fatherBirthplace:
+            fatherBirthplace = value as? String
+        case .spouseName:
+            spouseName = value as? String
+        case .whereMetSpouse:
+            whereMetSpouse = value as? String
+        }
+        lastModified = Date()
+    }
+
+    func getValue(for field: ProfileField) -> Any? {
+        switch field {
+        case .fullName: return fullName
+        case .dateOfBirth: return dateOfBirth
+        case .placeOfBirth: return placeOfBirth
+        case .motherFullName: return motherFullName
+        case .motherMaidenName: return motherMaidenName
+        case .motherBirthplace: return motherBirthplace
+        case .fatherFullName: return fatherFullName
+        case .fatherBirthplace: return fatherBirthplace
+        case .spouseName: return spouseName
+        case .whereMetSpouse: return whereMetSpouse
+        }
+    }
+
+    func value(for field: ProfileField) -> String? {
+        let val = getValue(for: field)
+        if let date = val as? Date {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .long
+            return formatter.string(from: date)
+        }
+        return val as? String
     }
 }
 

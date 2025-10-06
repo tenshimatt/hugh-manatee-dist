@@ -4,54 +4,101 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var recordingManager: RecordingManager
-    @EnvironmentObject var cloudKit: CloudKitManager
-    @EnvironmentObject var ai: AIInterviewer
-
-    // Note: Privacy consent flow ready - files created but need manual Xcode add
-    // @AppStorage("hasAcceptedPrivacyPolicy") private var hasAcceptedPrivacyPolicy = false
-    // @State private var showingPrivacyConsent = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage("userName") private var userName = ""
 
     var body: some View {
-        ZStack {
-            Color(hex: "FFFEF5")
-                .ignoresSafeArea()
-            
-            switch appState.currentView {
-            case .recording:
-                AccessibleRecordingView()
-            case .library:
-                LibraryView()
-            case .reader(let chapter):
-                ReaderView(chapter: chapter)
+        NavigationView {
+            if hasCompletedOnboarding {
+                HomeView()
+            } else {
+                OnboardingView()
             }
         }
-        .alert(item: $appState.error) { error in
-            Alert(
-                title: Text("Notice"),
-                message: Text(error.localizedDescription),
-                dismissButton: .default(Text("OK"))
-            )
-        }
-        // Privacy consent integration (uncomment after adding files to Xcode):
-        // .fullScreenCover(isPresented: $showingPrivacyConsent) {
-        //     PrivacyConsentView(isPresented: $showingPrivacyConsent)
-        // }
-        // .onAppear {
-        //     if !hasAcceptedPrivacyPolicy {
-        //         showingPrivacyConsent = true
-        //     }
-        // }
+        .navigationViewStyle(.stack)
     }
 }
 
+// MARK: - Onboarding View
+struct OnboardingView: View {
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage("userName") private var userName = ""
+    @State private var nameInput = ""
+
+    var body: some View {
+        ZStack {
+            DesignSystem.backgroundBeige
+                .ignoresSafeArea()
+
+            VStack(spacing: 30) {
+                Spacer()
+
+                // App Icon / Logo
+                Image(systemName: "book.circle.fill")
+                    .font(.system(size: 100))
+                    .foregroundColor(DesignSystem.amber)
+
+                VStack(spacing: 10) {
+                    Text("Welcome to Hugh Manatee")
+                        .font(DesignSystem.largeTitle)
+                        .foregroundColor(DesignSystem.textPrimary)
+
+                    Text("Your memory companion for capturing life stories")
+                        .font(DesignSystem.body)
+                        .foregroundColor(DesignSystem.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
+
+                Spacer()
+
+                VStack(spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("What's your name?")
+                            .font(DesignSystem.body)
+                            .foregroundColor(DesignSystem.textPrimary)
+
+                        TextField("Enter your name", text: $nameInput)
+                            .font(DesignSystem.body)
+                            .padding()
+                            .frame(height: 55)
+                            .background(Color.white)
+                            .cornerRadius(DesignSystem.cardCornerRadius)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignSystem.cardCornerRadius)
+                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                            )
+                    }
+
+                    Button(action: {
+                        if !nameInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            userName = nameInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                            hasCompletedOnboarding = true
+                        }
+                    }) {
+                        Text("Get Started")
+                            .font(DesignSystem.buttonText)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: DesignSystem.primaryButtonHeight)
+                            .background(nameInput.isEmpty ? Color.gray : DesignSystem.amber)
+                            .cornerRadius(DesignSystem.cornerRadius)
+                    }
+                    .disabled(nameInput.isEmpty)
+                }
+                .padding(.horizontal, DesignSystem.largePadding)
+
+                Spacer()
+            }
+        }
+    }
+}
+
+// MARK: - Preview
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(AppState())
             .environmentObject(RecordingManager())
-            .environmentObject(CloudKitManager())
-            .environmentObject(AIInterviewer())
+            .environmentObject(CoreDataManager.shared)
+            .environmentObject(ProfileChecklistManager.shared)
     }
 }

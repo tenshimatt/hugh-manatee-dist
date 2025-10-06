@@ -114,7 +114,7 @@ struct SettingsView: View {
                     deleteAllData()
                 }
             } message: {
-                Text("This will permanently delete all your recordings, transcriptions, stories, and settings from this device. This cannot be undone.\n\nTo delete iCloud data, go to iOS Settings > iCloud > Manage Storage > MemoirGuide.")
+                Text("This will permanently delete all your recordings, transcriptions, stories, and settings from this device. This cannot be undone.\n\nTo delete iCloud data, go to iOS Settings > iCloud > Manage Storage > Hugh Manatee.")
             }
             .alert("Data Deleted", isPresented: $showingDeleteSuccess) {
                 Button("OK") {

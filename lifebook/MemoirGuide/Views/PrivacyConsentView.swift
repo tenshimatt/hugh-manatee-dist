@@ -26,7 +26,7 @@ struct PrivacyConsentView: View {
                             .font(.system(size: 32))
                             .multilineTextAlignment(.center)
 
-                        Text("Welcome to MemoirGuide")
+                        Text("Welcome to Hugh Manatee")
                             .font(.title3)
                             .foregroundColor(.gray)
                     }
@@ -74,7 +74,7 @@ struct PrivacyConsentView: View {
                             .fontWeight(.semibold)
 
                         Text("""
-                        MemoirGuide collects and stores:
+                        Hugh Manatee collects and stores:
                         • Audio recordings you create
                         • Text transcriptions (processed on-device)
                         • Your name and preferences
@@ -137,7 +137,7 @@ struct PrivacyConsentView: View {
                     Button(action: acceptAndContinue) {
                         HStack {
                             Spacer()
-                            Text("Continue to MemoirGuide")
+                            Text("Continue to Hugh Manatee")
                                 .font(.title3)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.white)
@@ -215,13 +215,13 @@ struct FullPrivacyPolicyView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("""
-                    # Privacy Policy for MemoirGuide
+                    # Privacy Policy for Hugh Manatee
 
                     **Last Updated:** September 30, 2025
 
                     ## Your Privacy is Our Priority
 
-                    MemoirGuide is built with privacy as the foundation. Your memories \
+                    Hugh Manatee is built with privacy as the foundation. Your memories \
                     are precious and personal - we take protecting them seriously.
 
                     ## What Data We Collect
@@ -310,11 +310,11 @@ struct FullPrivacyPolicyView: View {
 
                     Questions or concerns?
                     Email: tenshimatt@mac.com
-                    Subject: "MemoirGuide Privacy Inquiry"
+                    Subject: "Hugh Manatee Privacy Inquiry"
 
                     ## Consent
 
-                    By using MemoirGuide, you consent to this Privacy Policy. \
+                    By using Hugh Manatee, you consent to this Privacy Policy. \
                     Withdraw consent by deleting all data and uninstalling the app.
 
                     ---

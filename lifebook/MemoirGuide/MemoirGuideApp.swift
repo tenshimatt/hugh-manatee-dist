@@ -1,5 +1,5 @@
 // MemoirGuideApp.swift
-// Life Book - Memoir Recording App for Elderly Users
+// Hugh Manatee - AI-Powered Memory Companion for Life Stories
 // Created for tenshimatt@mac.com
 
 import SwiftUI
@@ -15,7 +15,7 @@ struct MemoirGuideApp: App {
     @StateObject private var aiInterviewer = AIInterviewer()
     @StateObject private var audioPlayer = AudioPlaybackManager.shared
     @StateObject private var themeManager = ThemeManager.shared
-    @StateObject private var cameraManager = CameraManager() // Bug 34-36
+    @StateObject private var profileManager = ProfileChecklistManager.shared
 
     init() {
         setupAudioSession()
@@ -34,7 +34,7 @@ struct MemoirGuideApp: App {
                 .environmentObject(aiInterviewer)
                 .environmentObject(audioPlayer)
                 .environmentObject(themeManager)
-                .environmentObject(cameraManager) // Bug 34-36
+                .environmentObject(profileManager)
                 .preferredColorScheme(.light)
         }
     }

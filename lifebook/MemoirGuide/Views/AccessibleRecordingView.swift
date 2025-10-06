@@ -12,7 +12,6 @@ struct AccessibleRecordingView: View {
     @EnvironmentObject var cloudKit: CloudKitManager
     @EnvironmentObject var coreDataManager: CoreDataManager
     @EnvironmentObject var themeManager: ThemeManager
-    @EnvironmentObject var cameraManager: CameraManager // Bug 34-36
 
     @State private var isFirstTap = true
     @State private var showingPrompt = false
@@ -30,6 +29,9 @@ struct AccessibleRecordingView: View {
 
     // Bug 31: No audio captured popup
     @State private var showingNoAudioAlert = false
+
+    // Profile checklist
+    @State private var showingProfile = false
 
     // API key (should be moved to secure storage in production)
     private let anthropicAPIKey = "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"
@@ -71,12 +73,6 @@ struct AccessibleRecordingView: View {
                     .accessibilityElement(children: .contain)
                     .accessibilityLabel("Welcome message")
 
-                // Bug 34: Camera preview (replaces AI prompt)
-                CameraPreviewView()
-                    .frame(height: 200)
-                    .padding(.horizontal, 24)
-                    .environmentObject(cameraManager)
-
                 Spacer()
 
                 // Main Recording Button - 120pt minimum touch target for elderly users
@@ -102,11 +98,6 @@ struct AccessibleRecordingView: View {
             setupAccessibility()
             // Bug 32: setupInitialPrompt() removed - AI prompt section no longer displayed
             startPulseAnimation()
-
-            // Bug 34: Setup camera
-            Task {
-                await setupCamera()
-            }
         }
         .onChange(of: recordingManager.isRecording) { _ in
             provideHapticFeedback()
@@ -130,6 +121,10 @@ struct AccessibleRecordingView: View {
         }
         .sheet(isPresented: $showingHelp) {
             HelpPopupView()
+        }
+        .sheet(isPresented: $showingProfile) {
+            ProfileChecklistView()
+                .environmentObject(ProfileChecklistManager.shared)
         }
         .alert("No Audio Captured", isPresented: $showingNoAudioAlert) {
             Button("OK") {
@@ -389,7 +384,7 @@ struct AccessibleRecordingView: View {
     
     // MARK: - Navigation Section (Bug 19 modern styling)
     private var navigationSection: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 20) {
             Button(action: {
                 appState.currentView = .library
                 announceNavigation("Stories library")
@@ -402,7 +397,7 @@ struct AccessibleRecordingView: View {
                         .font(.caption)
                 }
                 .foregroundColor(theme.primary)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 12)
                 .padding(.vertical, 12)
                 .background(theme.primary.opacity(0.1))
                 .cornerRadius(12)
@@ -410,7 +405,25 @@ struct AccessibleRecordingView: View {
             .accessibilityLabel("View my stories")
             .accessibilityHint("Double tap to see your recorded stories")
 
-            Spacer()
+            Button(action: {
+                showingProfile = true
+                announceNavigation("Family tree profile")
+            }) {
+                VStack(spacing: 6) {
+                    Image(systemName: "person.text.rectangle.fill")
+                        .font(.title2)
+                        .accessibilityHidden(true)
+                    Text("Profile")
+                        .font(.caption)
+                }
+                .foregroundColor(.purple)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
+                .background(Color.purple.opacity(0.1))
+                .cornerRadius(12)
+            }
+            .accessibilityLabel("View family tree profile")
+            .accessibilityHint("Double tap to complete your family history")
 
             Button(action: showHelp) {
                 VStack(spacing: 6) {
@@ -421,7 +434,7 @@ struct AccessibleRecordingView: View {
                         .font(.caption)
                 }
                 .foregroundColor(theme.secondary)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 12)
                 .padding(.vertical, 12)
                 .background(theme.secondary.opacity(0.1))
                 .cornerRadius(12)
@@ -450,12 +463,6 @@ struct AccessibleRecordingView: View {
                 try await recordingManager.startRecording()
                 isFirstTap = false
 
-                // Bug 36: Start video recording if camera is enabled
-                if cameraManager.isCameraEnabled && cameraManager.isAuthorized {
-                    let videoURL = try getSecureVideoURL()
-                    try cameraManager.startVideoRecording(to: videoURL)
-                }
-
                 // Bug 32: AI prompt generation removed - no longer displayed
 
             } catch {
@@ -471,9 +478,6 @@ struct AccessibleRecordingView: View {
             let duration = recordingManager.recordingDuration
             _ = await recordingManager.stopRecording()
 
-            // Bug 36: Stop video recording if active
-            let videoURL = cameraManager.stopVideoRecording()
-
             // Bug 31: Check if any audio was captured
             let hasAudio = !transcription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && duration > 1.0
 
@@ -487,16 +491,6 @@ struct AccessibleRecordingView: View {
                     let segments = coreDataManager.fetchRecentSegments(limit: 1)
 
                     if let segment = segments.first {
-                        // Bug 36: Save video file if exists
-                        if let videoURL = videoURL, FileManager.default.fileExists(atPath: videoURL.path) {
-                            segment.setVideoFile(url: videoURL)
-                            do {
-                                try coreDataManager.save()
-                            } catch {
-                                print("[AccessibleRecordingView] Failed to save video file: \(error)")
-                            }
-                        }
-
                         completedSegment = segment
                         completedTranscription = transcription
                         showingStoryAssignment = true
@@ -508,45 +502,6 @@ struct AccessibleRecordingView: View {
     }
     
     // Bug 32: setupInitialPrompt() removed - AI prompt no longer displayed
-
-    // Bug 34: Setup camera preview
-    private func setupCamera() async {
-        // Request camera permission
-        let granted = await cameraManager.requestCameraPermission()
-
-        if granted {
-            do {
-                try await cameraManager.setupCamera()
-                cameraManager.startSession()
-            } catch {
-                print("[AccessibleRecordingView] Camera setup failed: \(error)")
-                // Continue without camera - not critical for recording
-            }
-        }
-    }
-
-    // Bug 36: Generate secure video file URL
-    private func getSecureVideoURL() throws -> URL {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let secureDirectory = documentsPath.appendingPathComponent("SecureVideo", isDirectory: true)
-
-        // Create directory if it doesn't exist
-        if !FileManager.default.fileExists(atPath: secureDirectory.path) {
-            try FileManager.default.createDirectory(
-                at: secureDirectory,
-                withIntermediateDirectories: true,
-                attributes: [
-                    .protectionKey: FileProtectionType.complete
-                ]
-            )
-        }
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
-        let fileName = "memoir_video_\(dateFormatter.string(from: Date()))_\(UUID().uuidString.prefix(8)).mov"
-
-        return secureDirectory.appendingPathComponent(fileName)
-    }
 
     private func setupAccessibility() {
         // Focus on record button for new users

@@ -1,5 +1,5 @@
 // AppError.swift
-// Error handling and user-facing error messages for Life Book
+// Error handling and user-facing error messages for Hugh Manatee
 
 import Foundation
 
@@ -123,7 +123,7 @@ enum AppError: Error, LocalizedError, Identifiable {
     var recoverySuggestion: String? {
         switch self {
         case .microphonePermissionDenied:
-            return "Go to Settings > Privacy & Security > Microphone and enable access for Life Book."
+            return "Go to Settings > Privacy & Security > Microphone and enable access for Hugh Manatee."
         case .speechRecognitionUnavailable:
             return "Speech recognition requires iOS 10+ and internet connection for best results."
         case .insufficientStorage:
