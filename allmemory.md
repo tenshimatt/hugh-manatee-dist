@@ -1,12 +1,14 @@
 # AllMemory.md - Complete Project Summary
 
-**Last Updated**: 2026-02-16 21:00:05 UTC
+**Last Updated**: 2026-02-17 09:02:30 UTC
 **Updated By**: Scheduled Auto-Update
-**Deployment Status**: ✅ PRODUCTION LIVE
+**Deployment Status**: ❌ API DOWN
 
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -854,6 +856,8 @@
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -1686,6 +1690,8 @@
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -2518,6 +2524,8 @@ database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -3361,6 +3369,8 @@ database_id = "9dcf8539-f274-486c-807b-7e265146ce6b"
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -4185,6 +4195,8 @@ LOW (>70): $2.5k-$4k         (was $5k-$8k)
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -5006,6 +5018,8 @@ curl -X POST https://rawgle-sitereviver-prod.findrawdogfood.workers.dev/api/proc
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -5827,6 +5841,8 @@ npm run db:reset
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -6638,6 +6654,8 @@ result = rawgle.generate_email_campaign(business_data)
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -7456,6 +7474,8 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -8274,6 +8294,8 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -9085,6 +9107,8 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -9896,6 +9920,8 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -10711,6 +10737,8 @@ function sanitizeName(name) {
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -11530,6 +11558,8 @@ wrangler d1 execute findrawdogfood-db --command "SELECT COUNT(*) FROM siterevive
 ---
 
 ## 🔔 **RECENT UPDATES**
+- 2026-02-17 09:02:30 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
+
 - 2026-02-16 21:00:05 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: ONLINE, Last Core Change: 2025-08-18 10:51:05
 
 - 2026-02-16 09:23:18 UTC: Auto-update - Worker: WRANGLER_NOT_AVAILABLE, API: DOWN, Last Core Change: 2025-08-18 10:51:05
@@ -12353,3 +12383,11 @@ wrangler d1 execute findrawdogfood-db --command "SELECT COUNT(*) FROM siterevive
 - Command: `claude mcp list` to see all available servers
 
 **📝 NOTE**: This file should be updated after each deployment, configuration change, or major system update to maintain accurate system state documentation.
+
+<!-- OPENCLAW_TRELLO_CONTEXT:START -->
+## Trello Integration Context
+- Last inject: 2026-02-17 00:02 GMT+2
+- Trello crawl status: pending valid API key+token (current key returned `invalid key`)
+- Master sync note: [[openclaw/TRELLO_SYNC]]
+<!-- OPENCLAW_TRELLO_CONTEXT:END -->
+
