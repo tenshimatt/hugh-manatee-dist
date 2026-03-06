@@ -1,0 +1,170 @@
+{
+  "name": "YLDFX - Automated News Publisher",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            { "mode": "everyDay", "hour": 5, "minute": 0 },
+            { "mode": "everyDay", "hour": 12, "minute": 0 },
+            { "mode": "everyDay", "hour": 16, "minute": 0 }
+          ]
+        }
+      },
+      "id": "Trigger-Schedule",
+      "name": "Trigger - Schedule",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://www.reuters.com/markets/currencies/",
+        "responseFormat": "string",
+        "options": {}
+      },
+      "id": "Fetch-Reuters",
+      "name": "Fetch - Reuters",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://www.bloomberg.com/markets/currencies",
+        "responseFormat": "string",
+        "options": {}
+      },
+      "id": "Fetch-Bloomberg",
+      "name": "Fetch - Bloomberg",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://www.investing.com/news/forex-news",
+        "responseFormat": "string",
+        "options": {}
+      },
+      "id": "Fetch-Investing",
+      "name": "Fetch - Investing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://finance.yahoo.com/news/",
+        "responseFormat": "string",
+        "options": {}
+      },
+      "id": "Fetch-YahooFinance",
+      "name": "Fetch - YahooFinance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": { "mode": "mergeByIndex" },
+      "id": "Merge-AllNews",
+      "name": "Merge - All News",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "language": "javascript",
+        "functionCode": "return items\n  .map(i => ({ ...i.json }))\n  .filter(a => /(forex|currency|indices|stocks|USD|EUR|GBP|JPY|commodities|MetaTrader)/i.test(JSON.stringify(a)))\n  .map(a => ({\n    json: {\n      title: a.title || a.headline || '',\n      summary: a.summary || '',\n      url: a.url || '',\n      source: a.source || ''\n    }\n  }));"
+      },
+      "id": "Code-FilterNews",
+      "name": "Code - Filter News",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "options": {},
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{$env.OPENAI_API_KEY}}"
+        },
+        "body": {
+          "model": "gpt-4-turbo",
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are a financial analyst writing for YLDFX, a MetaTrader 5 brokerage. Write concise, professional daily market updates for forex and stock traders."
+            },
+            {
+              "role": "user",
+              "content": "Generate a 400-word blog post summarizing the key forex and indices market news below, formatted in Markdown for WordPress. Include headline, subheading, key bullet points, analysis, and short outlook.\\n\\n{{JSON.stringify($json)}}"
+            }
+          ]
+        }
+      },
+      "id": "AI-GenerateBlogPost",
+      "name": "AI - Generate Blog Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "language": "javascript",
+        "functionCode": "const text = $json.choices[0].message.content || '';\nconst categories = [];\nconst tags = [];\nif (/forex|currency/i.test(text)) categories.push('Forex Market News');\nif (/indices|index/i.test(text)) categories.push('Indices');\nif (/MetaTrader/i.test(text)) tags.push('MetaTrader 5');\nif (/EUR\\/?USD/i.test(text)) tags.push('EUR/USD');\nif (/GBP\\/?USD/i.test(text)) tags.push('GBP/USD');\nif (/gold/i.test(text)) tags.push('Gold');\nreturn [{\n  json: {\n    title: text.split('\\n')[0].replace(/^#\\s*/, '').slice(0, 80),\n    content: text,\n    categories,\n    tags\n  }\n}];"
+      },
+      "id": "Code-AssignTags",
+      "name": "Code - Assign Categories & Tags",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "{{$env.WORDPRESS_URL}}/wp-json/wp/v2/posts",
+        "method": "POST",
+        "authentication": "basicAuth",
+        "jsonParameters": true,
+        "options": {},
+        "body": {
+          "title": "{{$json.title}}",
+          "content": "{{$json.content}}",
+          "status": "publish",
+          "categories": "{{$json.categories.join(', ')}}",
+          "tags": "{{$json.tags.join(', ')}}"
+        }
+      },
+      "id": "Publish-WordPress",
+      "name": "Publish - WordPress",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "credentials": {
+        "httpBasicAuth": {
+          "user": "{{$env.WORDPRESS_USER}}",
+          "password": "{{$env.WORDPRESS_APP_PASS}}"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Trigger - Schedule": {
+      "main": [
+        [
+          { "node": "Fetch-Reuters", "type": "main", "index": 0 },
+          { "node": "Fetch-Bloomberg", "type": "main", "index": 0 },
+          { "node": "Fetch-Investing", "type": "main", "index": 0 },
+          { "node": "Fetch-YahooFinance", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Fetch-Reuters": { "main": [[{ "node": "Merge-AllNews", "type": "main", "index": 0 }]] },
+    "Fetch-Bloomberg": { "main": [[{ "node": "Merge-AllNews", "type": "main", "index": 1 }]] },
+    "Fetch-Investing": { "main": [[{ "node": "Merge-AllNews", "type": "main", "index": 2 }]] },
+    "Fetch-YahooFinance": { "main": [[{ "node": "Merge-AllNews", "type": "main", "index": 3 }]] },
+    "Merge-AllNews": { "main": [[{ "node": "Code-FilterNews", "type": "main", "index": 0 }]] },
+    "Code-FilterNews": { "main": [[{ "node": "AI-GenerateBlogPost", "type": "main", "index": 0 }]] },
+    "AI-GenerateBlogPost": { "main": [[{ "node": "Code-AssignTags", "type": "main", "index": 0 }]] },
+    "Code-AssignTags": { "main": [[{ "node": "Publish-WordPress", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["YLDFX", "Automation", "News"]
+}
+

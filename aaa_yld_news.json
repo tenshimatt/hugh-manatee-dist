@@ -1,0 +1,117 @@
+{
+  "name": "YLD Forex News Automation",
+  "nodes": [
+    {
+      "name": "Start",
+      "type": "start",
+      "parameters": {},
+      "position": [100, 100]
+    },
+    {
+      "name": "Schedule",
+      "type": "schedule",
+      "parameters": {
+        "cron": "30 9 * * *,30 15 * * *,0 21 * * *"
+      },
+      "position": [200, 100]
+    },
+    {
+      "name": "Fetch News from opennews.org",
+      "type": "http_request",
+      "parameters": {
+        "url": "https://api.opennews.org/v1/search",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer {{OPENNEWS_API_KEY}}"
+        },
+        "queryParameters": {
+          "q": "forex OR currency OR market OR macroeconomic",
+          "size": "10",
+          "sort": "date"
+        }
+      },
+      "position": [300, 100]
+    },
+    {
+      "name": "Filter Duplicates",
+      "type": "filter",
+      "parameters": {
+        "filterBy": "headline",
+        "uniqueField": "headline"
+      },
+      "position": [400, 100]
+    },
+    {
+      "name": "Process with Ollama GPT-20B",
+      "type": "ollama",
+      "parameters": {
+        "model": "gpt-oss:20b",
+        "prompt": "Rewrite the following news items into the YLD FX Brokerage template format:\n\n{{newsItems}}\n\nTemplate Rules:\n- Title: Daily Forex Insights: [Date]\n- Structure: Use ### for headings\n- Include Key Market Themes and Strategic Recommendations sections\n- Use professional tone with actionable insights"
+      },
+      "position": [500, 100]
+    },
+    {
+      "name": "Post to WordPress",
+      "type": "wp_rest_api",
+      "parameters": {
+        "url": "https://yldfx.wordpress.com/wp-json/wp/v2/posts",
+        "auth": {
+          "username": "{{WP_USERNAME}}",
+          "password": "{{WP_API_KEY}}"
+        },
+        "data": {
+          "title": "Daily Forex Insights: {{date}}",
+          "content": "{{processedContent}}",
+          "categories": [123],
+          "status": "publish"
+        }
+      },
+      "position": [600, 100]
+    },
+    {
+      "name": "Error Logging",
+      "type": "debug",
+      "parameters": {
+        "message": "Error occurred during workflow: {{error}}"
+      },
+      "position": [700, 100]
+    }
+  ],
+  "connections": [
+    {
+      "from": "Start",
+      "to": "Schedule",
+      "sequence": 1
+    },
+    {
+      "from": "Schedule",
+      "to": "Fetch News from opennews.org",
+      "sequence": 1
+    },
+    {
+      "from": "Fetch News from opennews.org",
+      "to": "Filter Duplicates",
+      "sequence": 1
+    },
+    {
+      "from": "Filter Duplicates",
+      "to": "Process with Ollama GPT-20B",
+      "sequence": 1
+    },
+    {
+      "from": "Process with Ollama GPT-20B",
+      "to": "Post to WordPress",
+      "sequence": 1
+    },
+    {
+      "from": "Process with Ollama GPT-20B",
+      "to": "Error Logging",
+      "sequence": 1
+    },
+    {
+      "from": "Post to WordPress",
+      "to": "Error Logging",
+      "sequence": 1
+    }
+  ]
+}
