@@ -1,0 +1,57 @@
+name: rebuild-summaries
+
+on:
+  push:
+    paths:
+      - 'chatgpt-history/data/raw/**'
+      - 'chatgpt-history/scripts/summarize_export.py'
+      - 'chatgpt-history/.github/workflows/rebuild-summaries.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Detect export input
+        id: input
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f chatgpt-history/data/raw/latest-export.zip ]; then
+            echo "input_path=chatgpt-history/data/raw/latest-export.zip" >> "$GITHUB_OUTPUT"
+          elif [ -f chatgpt-history/data/raw/conversations.json ]; then
+            echo "input_path=chatgpt-history/data/raw/conversations.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "No export input found under chatgpt-history/data/raw" >&2
+            exit 1
+          fi
+
+      - name: Generate summaries
+        run: |
+          python chatgpt-history/scripts/summarize_export.py "${{ steps.input.outputs.input_path }}" chatgpt-history/output
+
+      - name: Commit generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- chatgpt-history/output; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add chatgpt-history/output
+          git commit -m "Rebuild conversation summaries"
+          git push
