@@ -1,0 +1,549 @@
+/* JWM brand theme for ERPNext Desk + login */
+:root {
+  --jwm-navy: #064162;
+  --jwm-navy-dark: #052f47;
+  --jwm-gold: #e69b40;
+  --jwm-gold-dark: #c7842f;
+  --jwm-cream: #f8f5ef;
+}
+
+/* --- Desk top navbar ---------------------------------------------------- */
+.navbar, header.navbar, .navbar.sticky-top {
+  background: linear-gradient(90deg, var(--jwm-navy) 0%, var(--jwm-navy-dark) 100%) !important;
+  border-bottom: 3px solid var(--jwm-gold) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(6, 65, 98, 0.18);
+}
+.navbar a, .navbar .breadcrumb a, .navbar .breadcrumb-item,
+.navbar .breadcrumb-item a, .navbar .navbar-nav .nav-link,
+.navbar .navbar-brand, .navbar-collapse .nav-link,
+.navbar-collapse *, .navbar .title-text, .navbar .titled,
+.navbar .application-links li a, .navbar .custom-btn-group button,
+.navbar .input-with-feedback, .navbar span, .navbar svg,
+.navbar button, .navbar .btn, .navbar .dropdown-toggle,
+.navbar .indicator-pill {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+.navbar a:hover, .navbar .nav-link:hover {
+  color: var(--jwm-gold) !important;
+  fill: var(--jwm-gold) !important;
+}
+.navbar .breadcrumb-item + .breadcrumb-item::before {
+  color: rgba(255,255,255,0.45) !important;
+}
+.navbar .search-bar input, .navbar input[type="text"] {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: rgba(255,255,255,0.22) !important;
+  color: #ffffff !important;
+}
+.navbar .search-bar input::placeholder { color: rgba(255,255,255,0.55) !important; }
+
+/* Avatar pill on navbar */
+.navbar .avatar-frame, .navbar .avatar { border-color: var(--jwm-gold) !important; }
+
+/* Primary buttons + actions — gold */
+.btn-primary, .btn-primary:focus {
+  background: var(--jwm-gold) !important;
+  border-color: var(--jwm-gold) !important;
+  color: #ffffff !important;
+}
+.btn-primary:hover {
+  background: var(--jwm-gold-dark) !important;
+  border-color: var(--jwm-gold-dark) !important;
+}
+
+/* Links in content area */
+.page-container a, .layout-main-section a,
+.workspace-page a, .widget a { color: var(--jwm-navy) !important; }
+.page-container a:hover { color: var(--jwm-gold) !important; }
+
+/* Desk body background — soft cream wash */
+body, .layout-main, .layout-main-section, .page-body {
+  background: var(--jwm-cream) !important;
+}
+.container, .page-container, .workspace-page,
+.widget, .widget-group-body, .card, .frappe-card, .panel {
+  background: #ffffff !important;
+}
+.widget-head, .widget-title {
+  color: var(--jwm-navy) !important;
+}
+
+/* Sidebar accent */
+.desk-sidebar, .standard-sidebar,
+.layout-side-section, .sidebar-item, .sidebar-child-item {
+  background: #ffffff !important;
+}
+.desk-sidebar .sidebar-item.selected,
+.desk-sidebar .sidebar-item.selected > .sidebar-item-container,
+.standard-sidebar-item.selected {
+  background: rgba(230, 155, 64, 0.15) !important;
+  border-left: 3px solid var(--jwm-gold) !important;
+  color: var(--jwm-navy) !important;
+}
+.desk-sidebar .sidebar-item > a:hover,
+.standard-sidebar-item:hover {
+  background: rgba(6, 65, 98, 0.04) !important;
+}
+
+/* Inject small JWM logo into the collapsed navbar (left of breadcrumbs) */
+header.navbar::before {
+  content: "";
+  display: inline-block;
+  width: 36px;
+  height: 32px;
+  margin: 0 8px 0 4px;
+  background-image: url("/files/logo-master.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  filter: brightness(0) invert(1) drop-shadow(0 0 1px rgba(230,155,64,0.6));
+  flex-shrink: 0;
+  order: -1;
+}
+
+/* --- Login page --------------------------------------------------------- */
+body.login-page, body[data-path="login"], body[data-path="update-password"] {
+  background: linear-gradient(135deg, var(--jwm-navy) 0%, #0a5480 55%, var(--jwm-navy) 100%) !important;
+  color: #ffffff !important;
+}
+body.login-page::before, body[data-path="login"]::before {
+  content: "A Better Way to Build Since 1938.";
+  position: fixed;
+  top: 28px;
+  left: 32px;
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-size: 14px;
+  z-index: 5;
+}
+.for-login, .login-content, .for-login .page-card,
+.login-content .page-card, .login-signup, .login-box {
+  background: #ffffff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35) !important;
+  padding: 32px !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+.for-login h4, .for-login .page-card-head {
+  color: var(--jwm-navy) !important;
+}
+.for-login .app-logo, .for-login img, .login-content img {
+  max-height: 72px !important;
+  margin-bottom: 8px;
+}
+.for-login .btn-primary, .for-login .btn-login {
+  background: var(--jwm-navy) !important;
+  border-color: var(--jwm-navy) !important;
+  color: #ffffff !important;
+}
+.for-login .btn-primary:hover, .for-login .btn-login:hover {
+  background: var(--jwm-gold) !important;
+  border-color: var(--jwm-gold) !important;
+}
+.for-login a { color: var(--jwm-gold) !important; }
+.for-login .footer, .login-content .footer { color: rgba(255,255,255,0.7) !important; }
+
+/* Workspace headers */
+.workspace-title, .page-title, h1.title, .page-head h1 {
+  color: var(--jwm-navy) !important;
+}
+
+/* Indicators: use JWM gold for pending/in-progress states */
+.indicator-pill.orange, .indicator.orange {
+  background: var(--jwm-gold) !important;
+  color: #ffffff !important;
+}
+
+/* ========== PORTAL (non-Desk) — /me, /contact, public pages ========== */
+
+/* Portal top bar */
+.navbar.navbar-light, .navbar.navbar-expand-lg {
+  background: linear-gradient(90deg, var(--jwm-navy) 0%, var(--jwm-navy-dark) 100%) !important;
+  border-bottom: 3px solid var(--jwm-gold) !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+.navbar-light .navbar-brand,
+.navbar-light .navbar-brand a,
+.navbar-light .navbar-nav .nav-link,
+.navbar-light .navbar-toggler {
+  color: #ffffff !important;
+}
+.navbar-light .navbar-brand {
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  color: var(--jwm-gold) !important;
+}
+.navbar-light .navbar-nav .nav-link:hover { color: var(--jwm-gold) !important; }
+.navbar-light .navbar-toggler-icon {
+  filter: brightness(0) invert(1);
+}
+
+/* Portal body + sidebar */
+body[data-path="me"], body.website-layout, body.no-sidebar,
+.page_content, .web-page {
+  background: var(--jwm-cream) !important;
+}
+.web-sidebar {
+  background: #ffffff !important;
+  border-right: 1px solid #e5ddd0 !important;
+  border-radius: 12px !important;
+  padding: 8px !important;
+  box-shadow: 0 1px 3px rgba(6, 65, 98, 0.05) !important;
+}
+.web-sidebar .sidebar-item,
+.web-sidebar .list-group-item,
+.web-sidebar a {
+  color: var(--jwm-navy) !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  transition: all 150ms ease;
+}
+.web-sidebar .sidebar-item:hover,
+.web-sidebar .list-group-item:hover,
+.web-sidebar a:hover {
+  background: rgba(230, 155, 64, 0.1) !important;
+  color: var(--jwm-navy-dark) !important;
+}
+.web-sidebar .sidebar-item.active,
+.web-sidebar .list-group-item.active,
+.web-sidebar a.active {
+  background: rgba(230, 155, 64, 0.2) !important;
+  border-left: 3px solid var(--jwm-gold) !important;
+  color: var(--jwm-navy) !important;
+  font-weight: 600;
+}
+
+/* Portal page header */
+.page-header-wrapper, .page-header {
+  background: transparent !important;
+  padding-top: 20px !important;
+}
+.page-header h1, .page-header .title, h1.title {
+  color: var(--jwm-navy) !important;
+  font-weight: 700 !important;
+}
+
+/* Portal content cards */
+.my-account-header, .page-content,
+.web-form-container, .panel-body,
+.container .card, .page-container > div {
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  padding: 24px !important;
+  box-shadow: 0 1px 3px rgba(6, 65, 98, 0.06) !important;
+  border: 1px solid rgba(6, 65, 98, 0.08) !important;
+}
+
+/* My Account avatar */
+.my-account-header .avatar, .user-avatar {
+  border: 2px solid var(--jwm-gold) !important;
+}
+
+/* Dropdown menus on portal */
+.dropdown-menu {
+  border: 1px solid rgba(6, 65, 98, 0.15) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(6, 65, 98, 0.12) !important;
+}
+.dropdown-menu .dropdown-item {
+  color: var(--jwm-navy) !important;
+}
+.dropdown-menu .dropdown-item:hover {
+  background: rgba(230, 155, 64, 0.12) !important;
+  color: var(--jwm-navy-dark) !important;
+}
+.dropdown-menu .dropdown-item.text-danger,
+.dropdown-menu a[href*="logout"] {
+  color: var(--jwm-gold-dark) !important;
+}
+
+/* Links everywhere on portal */
+a { color: var(--jwm-navy); }
+a:hover { color: var(--jwm-gold); }
+
+/* Primary buttons on portal */
+.btn-primary, input[type="submit"].btn-primary {
+  background: var(--jwm-navy) !important;
+  border-color: var(--jwm-navy) !important;
+  color: #ffffff !important;
+}
+.btn-primary:hover {
+  background: var(--jwm-gold) !important;
+  border-color: var(--jwm-gold) !important;
+}
+
+/* ========== FIX: stop navbar white-text rule from bleeding into dropdowns ========== */
+
+/* Dropdown menus that live inside the navbar (search results, user menu, etc.)
+   must keep their own text/background contrast. */
+.navbar .dropdown-menu,
+.navbar .awesomplete ul,
+.navbar .awesomplete > ul,
+.navbar .search-dropdown,
+.navbar .search-bar .dropdown-menu,
+.navbar .dropdown-menu * {
+  color: var(--jwm-navy) !important;
+  fill: currentColor !important;
+  background-color: #ffffff !important;
+}
+
+.navbar .dropdown-menu {
+  background: #ffffff !important;
+  border: 1px solid rgba(6, 65, 98, 0.12) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 12px 32px rgba(6, 65, 98, 0.18) !important;
+  padding: 6px !important;
+}
+
+.navbar .dropdown-menu .dropdown-item,
+.navbar .dropdown-menu li,
+.navbar .dropdown-menu li a,
+.navbar .awesomplete li {
+  color: var(--jwm-navy) !important;
+  background: transparent !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+}
+
+.navbar .dropdown-menu .dropdown-item:hover,
+.navbar .dropdown-menu li:hover,
+.navbar .awesomplete li[aria-selected="true"],
+.navbar .awesomplete li:hover {
+  background: rgba(230, 155, 64, 0.14) !important;
+  color: var(--jwm-navy-dark) !important;
+}
+
+/* Search-match highlight inside awesomplete = the <mark> tag */
+.navbar .awesomplete mark,
+.navbar .dropdown-menu mark {
+  background: rgba(230, 155, 64, 0.35) !important;
+  color: var(--jwm-navy) !important;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 700;
+}
+
+/* Header text in dropdown sections */
+.navbar .dropdown-menu .dropdown-header,
+.navbar .dropdown-menu .text-muted,
+.navbar .dropdown-menu .small {
+  color: rgba(6, 65, 98, 0.6) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.72rem !important;
+}
+
+/* "Log out" style danger items */
+.navbar .dropdown-menu .text-danger,
+.navbar .dropdown-menu a[href*="logout"] {
+  color: var(--jwm-gold-dark) !important;
+}
+
+/* Descriptions / secondary lines inside a search result */
+.navbar .awesomplete li .description,
+.navbar .dropdown-menu li .description,
+.navbar .dropdown-menu li .text-extra-muted {
+  color: rgba(6, 65, 98, 0.55) !important;
+}
+
+/* Notification dropdown content */
+.navbar .notifications-list,
+.navbar .notifications-list * {
+  color: var(--jwm-navy) !important;
+  background: #ffffff !important;
+}
+.navbar .notifications-list .notification-item:hover {
+  background: rgba(230, 155, 64, 0.1) !important;
+}
+
+/* ========== FIX: search input + highlight contrast ========== */
+
+/* Search input itself — Frappe v15 uses white pill, my "white text" rule broke it.
+   Override: keep input navy-on-white like the rest of the content. */
+.navbar .search-bar input,
+.navbar .search-bar .input-with-feedback,
+.navbar input[type="text"],
+.navbar input.form-control,
+.navbar .awesomplete input,
+.search-bar input.form-control {
+  background: #ffffff !important;
+  color: var(--jwm-navy) !important;
+  border: 1px solid rgba(6, 65, 98, 0.18) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+.navbar .search-bar input::placeholder,
+.navbar input[type="text"]::placeholder,
+.search-bar input.form-control::placeholder {
+  color: rgba(6, 65, 98, 0.45) !important;
+}
+.navbar .search-bar input:focus,
+.search-bar input.form-control:focus {
+  border-color: var(--jwm-gold) !important;
+  box-shadow: 0 0 0 3px rgba(230, 155, 64, 0.18) !important;
+  outline: none;
+}
+
+/* Strengthen the "Search for X" pill in the search dropdown */
+.navbar .awesomplete li,
+.navbar .dropdown-menu li[data-index],
+.search-dropdown li {
+  color: var(--jwm-navy) !important;
+  font-weight: 500 !important;
+}
+
+/* The "Search for dgfdfg..." lead row */
+.navbar .awesomplete li:first-child,
+.search-dropdown li:first-child,
+.navbar .dropdown-menu .awesomplete-content {
+  color: var(--jwm-navy) !important;
+  background: rgba(230, 155, 64, 0.12) !important;
+  font-weight: 600 !important;
+}
+
+/* In-result term highlight — make <mark> pop clearly */
+.navbar .awesomplete mark,
+.navbar .dropdown-menu mark,
+.search-dropdown mark {
+  background: #e69b40 !important;
+  color: #ffffff !important;
+  padding: 1px 4px !important;
+  border-radius: 3px !important;
+  font-weight: 700 !important;
+}
+
+/* Icon inside search bar (magnifier) — should be dim navy, not white */
+.navbar .search-bar svg,
+.navbar .search-bar .search-icon,
+.navbar .search-bar i.fa-search {
+  color: rgba(6, 65, 98, 0.55) !important;
+  fill: rgba(6, 65, 98, 0.55) !important;
+}
+
+/* Keyboard-shortcut hint (⏎ icon) in awesomplete */
+.navbar .awesomplete .keyboard-shortcut,
+.navbar .awesomplete kbd {
+  background: rgba(6, 65, 98, 0.08) !important;
+  color: var(--jwm-navy) !important;
+  border: 1px solid rgba(6, 65, 98, 0.15) !important;
+  border-radius: 4px !important;
+  padding: 1px 5px !important;
+  font-size: 11px !important;
+}
+
+/* ========== FIX: reposition tagline away from navbar collision ========== */
+
+/* Kill the old top-left tagline */
+body.login-page::before,
+body[data-path="login"]::before,
+body[data-path="update-password"]::before {
+  content: none !important;
+}
+
+/* Put tagline bottom-left of login viewport — safely clear of navbar */
+body.login-page::after,
+body[data-path="login"]::after {
+  content: "A Better Way to Build Since 1938.";
+  position: fixed;
+  bottom: 20px;
+  left: 24px;
+  color: rgba(255,255,255,0.65);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  font-size: 12px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Kill the broad "header.navbar::before logo" rule for the LOGIN page — login already has the big logo */
+body.login-page header.navbar::before,
+body[data-path="login"] header.navbar::before {
+  display: none !important;
+}
+
+/* ========== TONE: quieten the search dropdown first-row ========== */
+
+/* Replace the peachy "Search for..." highlight with a subtle neutral strip,
+   keep a 2px gold accent line on the left to signal this is JWM. */
+.navbar .awesomplete li:first-child,
+.search-dropdown li:first-child,
+.navbar .dropdown-menu .awesomplete-content {
+  background: #ffffff !important;
+  color: var(--jwm-navy) !important;
+  font-weight: 500 !important;
+  border-left: 2px solid transparent !important;
+  padding-left: 10px !important;
+}
+.navbar .awesomplete li:first-child[aria-selected="true"],
+.navbar .awesomplete li:first-child:hover {
+  background: rgba(6, 65, 98, 0.04) !important;
+  border-left-color: var(--jwm-gold) !important;
+}
+
+/* Ensure the leading "Search for " text is clearly readable */
+.navbar .awesomplete li:first-child,
+.navbar .awesomplete li:first-child * {
+  color: rgba(6, 65, 98, 0.72) !important;
+}
+.navbar .awesomplete li:first-child b,
+.navbar .awesomplete li:first-child strong {
+  color: var(--jwm-navy) !important;
+  font-weight: 700 !important;
+}
+
+/* ========== TONE: result text must be navy, mark must be subtle ========== */
+
+/* Force result-row text to navy (was coming out white on white) */
+.navbar .awesomplete li,
+.navbar .awesomplete li a,
+.navbar .awesomplete li > *,
+.navbar .dropdown-menu li[data-index],
+.navbar .dropdown-menu li[data-index] *,
+.search-dropdown li,
+.search-dropdown li * {
+  color: var(--jwm-navy) !important;
+  fill: var(--jwm-navy) !important;
+}
+
+/* Subtle mark — light gold highlight, navy text, tiny padding — like a highlighter */
+.navbar .awesomplete mark,
+.navbar .dropdown-menu mark,
+.search-dropdown mark,
+.navbar .awesomplete b,
+.navbar .awesomplete strong {
+  background: rgba(230, 155, 64, 0.28) !important;
+  color: var(--jwm-navy) !important;
+  padding: 0 1px !important;
+  border-radius: 2px !important;
+  font-weight: 600 !important;
+  display: inline !important;
+  line-height: inherit !important;
+}
+
+/* When a row is selected/hovered, tint bg but keep text legible */
+.navbar .awesomplete li[aria-selected="true"],
+.navbar .awesomplete li:hover,
+.navbar .dropdown-menu li[aria-selected="true"] {
+  background: rgba(6, 65, 98, 0.04) !important;
+  color: var(--jwm-navy) !important;
+}
+.navbar .awesomplete li[aria-selected="true"] mark,
+.navbar .awesomplete li:hover mark {
+  background: rgba(230, 155, 64, 0.4) !important;
+  color: var(--jwm-navy) !important;
+}
+
+/* Description (2nd line, e.g. DocType name) muted */
+.navbar .awesomplete li .description,
+.navbar .awesomplete li small,
+.navbar .awesomplete li .text-muted,
+.navbar .dropdown-menu li small {
+  color: rgba(6, 65, 98, 0.55) !important;
+  font-size: 11px !important;
+}

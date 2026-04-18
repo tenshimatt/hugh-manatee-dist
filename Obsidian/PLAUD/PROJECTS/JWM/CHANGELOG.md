@@ -4,6 +4,27 @@ Chronological record of what shipped, when, and why.
 
 ---
 
+## 2026-04-19
+
+### ERPNext Desk + portal + login fully JWM-branded
+- New CSS layer `jwm-demo/erpnext-theme/jwm_brand.css` (549 lines) registered via `app_include_css` + `web_include_css` in the `jwm_manufacturing` app `hooks.py`.
+- **Desk** (`/app/*`): navy gradient navbar with gold accent strip, cream body wash, gold primary buttons, gold-accented sidebar selection, logo injected next to breadcrumbs when sidebar collapsed.
+- **Portal** (`/me`, etc.): navy top bar, gold JWM brand text, card-style panels, gold-hover sidebar items.
+- **Login page**: navy gradient backdrop, elevated white card, JWM logo prominent, tagline pinned bottom-left; title reads "Login to JWM" (was "Login to Frappe").
+- **Search dropdown**: navy text on white, subtle gold `<mark>` highlighting on matched letters, gold left-border on hover. Scoped so navbar white-text rule no longer bleeds into dropdowns.
+- **Frappe v15 gotcha captured**: backend + frontend containers have *separate* anonymous volumes mounted at `/home/frappe/frappe-bench/sites/assets`. Backend write doesn't reach nginx; deploy script `docker cp`s to both.
+- Idempotent `erpnext-theme/deploy.sh` re-applies CSS + brand settings + cache clear in one run.
+
+### Komodo removed from CT 171
+- Komodo-core, -periphery, -mongo stopped + removed; network `komodo_default` pruned; weekly cron `/etc/cron.d/komodo-core-restart` deleted; `/etc/komodo` + `/root/komodo.creds` archived at `/root/_archive-komodo-2026-04-18/`.
+- Frappe/ERPNext unaffected — verified `jwm-erp.beyondpandora.com` + `jwm-demo.beyondpandora.com` both HTTP 200 immediately after.
+- Root cause of CT slowness was two-stacked: (1) Komodo zombie process accumulation, (2) ZFS `arc_prune` storm on the Proxmox host. Host-side ZFS ARC cap deferred pending calm window (not demo-critical).
+
+### Third Authentik user provisioned
+- `ashaked` / `asafmandula@gmail.com` (pk=30), same temp password as Mark. Creds sent via Telegram.
+
+---
+
 ## 2026-04-18
 
 ### Authentik SSO end-to-end (fixed)
