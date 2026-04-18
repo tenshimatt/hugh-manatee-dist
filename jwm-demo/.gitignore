@@ -1,0 +1,30 @@
+# Environments
+.env
+.env.local
+.env.*.local
+docs/credentials.md
+
+# Dependencies / build
+node_modules/
+.next/
+.turbo/
+dist/
+out/
+*.log
+.DS_Store
+
+# Next.js
+.next/
+next-env.d.ts
+
+# Playwright
+shell/screenshots/
+test-results/
+playwright-report/
+
+# Python venv (estimates generator)
+.venv/
+
+# Temp
+/tmp/
+*.tgz

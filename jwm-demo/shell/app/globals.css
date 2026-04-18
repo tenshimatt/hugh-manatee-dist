@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --jwm-navy: #064162;
+  --jwm-navy-600: #0a5480;
+  --jwm-navy-50: #eaf3f8;
+  --jwm-gold: #e69b40;
+  --jwm-gold-600: #d0872f;
+  --jwm-gold-50: #fdf2e3;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-navy: var(--jwm-navy);
+  --color-navy-600: var(--jwm-navy-600);
+  --color-navy-50: var(--jwm-navy-50);
+  --color-gold: var(--jwm-gold);
+  --color-gold-600: var(--jwm-gold-600);
+  --color-gold-50: var(--jwm-gold-50);
+  --font-sans: "Inter", "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.jwm-gradient {
+  background: linear-gradient(135deg, #064162 0%, #0a5480 50%, #064162 100%);
+}
+
+@keyframes jwm-marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.jwm-marquee {
+  animation: jwm-marquee-scroll 60s linear infinite;
+  width: max-content;
+}
+.jwm-marquee:hover { animation-play-state: paused; }
+
+.jwm-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+}
+
+.jwm-card:hover {
+  box-shadow: 0 4px 20px rgba(6, 65, 98, 0.08);
+  transition: box-shadow 200ms ease;
+}
+
+.kiosk-btn {
+  min-height: 72px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 1rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+.fade-in {
+  animation: fadeIn 300ms ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

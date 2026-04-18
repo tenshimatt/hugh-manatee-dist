@@ -1,0 +1,186 @@
+{
+  "estimate_id": "EST-2026-0147",
+  "customer": "Ryman Hospitality Properties",
+  "project_name": "Opryland Resort — East Atrium Monumental Stair",
+  "division": "Architectural",
+  "extracted_at": "2026-04-17T15:42:11Z",
+  "confidence": 0.94,
+  "source_doc": "RFQ-Opryland-EastAtrium-Stair-Rev3.pdf",
+  "pages": 18,
+  "summary": {
+    "assemblies": 3,
+    "subassemblies": 9,
+    "line_items": 27,
+    "estimated_material_cost": 184220,
+    "estimated_labor_hours": 612,
+    "estimated_total": 341750
+  },
+  "assemblies": [
+    {
+      "id": "A1",
+      "name": "Stringer Assembly (LH + RH)",
+      "qty": 2,
+      "material": "ASTM A36 Plate, 1/2\"",
+      "finish": "Mill, primed",
+      "weight_lb": 1840,
+      "children": [
+        {
+          "id": "A1.1",
+          "name": "Outer Stringer Plate",
+          "qty": 2,
+          "material": "A36 PL 1/2\" x 14\" x 28'",
+          "cut_method": "Flat laser",
+          "finish": "Mill",
+          "unit_cost": 1420,
+          "total_cost": 2840
+        },
+        {
+          "id": "A1.2",
+          "name": "Inner Stringer Plate (curved)",
+          "qty": 2,
+          "material": "A36 PL 1/2\" x 14\" x 28'",
+          "cut_method": "Flat laser + press brake roll",
+          "finish": "Mill",
+          "unit_cost": 1680,
+          "total_cost": 3360
+        },
+        {
+          "id": "A1.3",
+          "name": "Stringer End Cap",
+          "qty": 4,
+          "material": "A36 PL 3/8\"",
+          "cut_method": "Flat laser",
+          "finish": "Mill",
+          "unit_cost": 85,
+          "total_cost": 340
+        },
+        {
+          "id": "A1.4",
+          "name": "Tread Support Angle",
+          "qty": 44,
+          "material": "A36 L3x3x3/8",
+          "cut_method": "Band saw + drill",
+          "finish": "Mill",
+          "unit_cost": 38,
+          "total_cost": 1672
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "name": "Tread & Riser Pans",
+      "qty": 22,
+      "material": "304 Stainless, #4 finish",
+      "finish": "Brushed SS #4",
+      "weight_lb": 980,
+      "children": [
+        {
+          "id": "A2.1",
+          "name": "Tread Pan (closed, 48\" run)",
+          "qty": 22,
+          "material": "304 SS PL 3/16\" x 12\" x 48\"",
+          "cut_method": "Flat laser",
+          "finish": "#4 brushed",
+          "unit_cost": 312,
+          "total_cost": 6864
+        },
+        {
+          "id": "A2.2",
+          "name": "Riser Pan",
+          "qty": 22,
+          "material": "304 SS PL 14ga x 7\" x 48\"",
+          "cut_method": "Flat laser + press brake",
+          "finish": "#4 brushed",
+          "unit_cost": 184,
+          "total_cost": 4048
+        },
+        {
+          "id": "A2.3",
+          "name": "Nosing (formed)",
+          "qty": 22,
+          "material": "304 SS PL 12ga x 2\" x 48\"",
+          "cut_method": "Shear + press brake",
+          "finish": "#4 brushed",
+          "unit_cost": 62,
+          "total_cost": 1364
+        },
+        {
+          "id": "A2.4",
+          "name": "Anti-slip inlay strip",
+          "qty": 22,
+          "material": "Aluminum oxide safety strip, 1.5\"",
+          "cut_method": "Purchase part",
+          "finish": "Black",
+          "unit_cost": 14,
+          "total_cost": 308
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "name": "Handrail System",
+      "qty": 1,
+      "material": "304 SS Pipe, 1.5\" OD",
+      "finish": "#4 brushed",
+      "weight_lb": 420,
+      "children": [
+        {
+          "id": "A3.1",
+          "name": "Top Rail (curved)",
+          "qty": 2,
+          "material": "304 SS Pipe 1.5\" OD x Sch 40 x 32'",
+          "cut_method": "Roll + weld",
+          "finish": "#4 brushed",
+          "unit_cost": 2840,
+          "total_cost": 5680
+        },
+        {
+          "id": "A3.2",
+          "name": "Intermediate Rail",
+          "qty": 2,
+          "material": "304 SS Pipe 1.25\" OD x 32'",
+          "cut_method": "Roll + weld",
+          "finish": "#4 brushed",
+          "unit_cost": 1960,
+          "total_cost": 3920
+        },
+        {
+          "id": "A3.3",
+          "name": "Balusters (vertical)",
+          "qty": 46,
+          "material": "304 SS Bar 5/8\" sq x 42\"",
+          "cut_method": "Saw + machine",
+          "finish": "#4 brushed",
+          "unit_cost": 48,
+          "total_cost": 2208
+        },
+        {
+          "id": "A3.4",
+          "name": "Base Flange (decorative)",
+          "qty": 46,
+          "material": "304 SS PL 1/4\" machined",
+          "cut_method": "CNC mill",
+          "finish": "#4 brushed",
+          "unit_cost": 72,
+          "total_cost": 3312
+        },
+        {
+          "id": "A3.5",
+          "name": "Wall Return Bracket",
+          "qty": 4,
+          "material": "304 SS cast bracket",
+          "cut_method": "Purchase part",
+          "finish": "#4 brushed",
+          "unit_cost": 89,
+          "total_cost": 356
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Extracted from RFQ Rev 3; customer confirmed brushed #4 finish per spec sheet p. 7.",
+    "Curved inner stringers will need flat-laser kerf compensation of 0.012\" (per historical JWM correction factor for A36 1/2\" plate).",
+    "Recommend QC hold point after stringer weld-up before tread installation.",
+    "Match to catalog: 4 line items flagged for manual review (A3.4 flange — multiple JWM variants exist)."
+  ]
+}

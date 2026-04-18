@@ -1,0 +1,107 @@
+flowchart TB
+    subgraph Users["Users"]
+        direction LR
+        U1["Admin &amp; Planners<br/><i>Paul, Estimators, Schedulers</i>"]
+        U2["Executives<br/><i>Chris, George, Josh</i>"]
+        U3["Shop Floor &amp; QC<br/><i>Operators, Inspectors, Shipping</i>"]
+    end
+
+    subgraph Sovereign["Sovereign Production System &nbsp; &nbsp; &nbsp; JWM-owned AWS or sovereign.ai-managed SaaS"]
+        direction TB
+
+        subgraph UI["Interfaces"]
+            direction LR
+            I1["ERPNext Desk<br/><i>Admin UI</i>"]
+            I2["Dashboards<br/>+ Natural Language Query"]
+            I3["Shop Floor PWA<br/><i>installs as app icon</i>"]
+        end
+
+        subgraph Apps["Core Applications"]
+            direction LR
+            ERPNext["<b>ERPNext</b><br/>Manufacturing<br/>Work Orders, Job Cards,<br/>BOM, Routing, Inventory,<br/>Quality, RMA, Overrun"]
+            CRM["<b>Frappe CRM</b><br/>Customer master"]
+            Docs["<b>Paperless-ngx</b><br/>Estimates, POs,<br/>drawings, shipping"]
+            Auth["<b>Authentik</b><br/>SSO / RBAC"]
+        end
+
+        subgraph Glue["Orchestration &amp; AI Gateway"]
+            direction LR
+            N8N["<b>n8n</b><br/>Workflow orchestration<br/>integrations, schedules"]
+            Gateway["<b>LiteLLM Gateway</b><br/>Policy, audit logging,<br/>guardrails, cost caps<br/><i>no data trains upstream</i>"]
+        end
+
+        DB[("<b>PostgreSQL</b><br/>System of record")]
+    end
+
+    subgraph External["External Systems"]
+        direction LR
+        E1["<b>Spectrum</b><br/>Financials<br/><i>outbound: costs, shipments</i>"]
+        E2["<b>Paycor</b><br/>Time &amp; payroll<br/><i>inbound: labor hours</i>"]
+        E3["<b>Epicor</b><br/>Migration / parallel run<br/><i>scenario TBD</i>"]
+        E4["<b>Email / SMTP</b><br/>Notifications"]
+    end
+
+    subgraph AIModels["AI Models via LiteLLM"]
+        direction LR
+        M1["Anthropic Claude<br/><i>quality work</i>"]
+        M2["Ollama Local<br/><i>sensitive / sovereign</i>"]
+        M3["Llama Guard<br/><i>safety &amp; PII filtering</i>"]
+    end
+
+    %% User flows
+    U1 --> I1
+    U2 --> I2
+    U3 --> I3
+
+    %% Interface to app
+    I1 --> ERPNext
+    I2 --> ERPNext
+    I2 -.-> Gateway
+    I3 --> ERPNext
+
+    %% Internal
+    ERPNext <--> CRM
+    ERPNext <--> Docs
+    ERPNext --> Auth
+    CRM --> Auth
+    ERPNext <--> DB
+    CRM --> DB
+    Docs --> DB
+
+    %% Orchestration
+    ERPNext <--> N8N
+    Docs <--> Gateway
+    N8N <--> Gateway
+
+    %% External
+    N8N <--> E1
+    E2 --> N8N
+    N8N <--> E3
+    N8N --> E4
+
+    %% AI
+    Gateway --> M1
+    Gateway --> M2
+    Gateway --> M3
+
+    %% Styling
+    classDef userClass fill:#dbeafe,stroke:#1e40af,color:#1e3a8a,stroke-width:1px
+    classDef interfaceClass fill:#e0e7ff,stroke:#4338ca,color:#312e81,stroke-width:1px
+    classDef appClass fill:#fef3c7,stroke:#a16207,color:#713f12,stroke-width:1px
+    classDef glueClass fill:#fce7f3,stroke:#be185d,color:#831843,stroke-width:1px
+    classDef extClass fill:#fee2e2,stroke:#b91c1c,color:#7f1d1d,stroke-width:1px
+    classDef aiClass fill:#ede9fe,stroke:#6d28d9,color:#4c1d95,stroke-width:1px
+    classDef dbClass fill:#dcfce7,stroke:#15803d,color:#14532d,stroke-width:1px
+
+    class U1,U2,U3 userClass
+    class I1,I2,I3 interfaceClass
+    class ERPNext,CRM,Docs,Auth appClass
+    class N8N,Gateway glueClass
+    class E1,E2,E3,E4 extClass
+    class M1,M2,M3 aiClass
+    class DB dbClass
+
+    style Users fill:#eff6ff,stroke:#1e40af,stroke-width:2px
+    style Sovereign fill:#fffbeb,stroke:#854d0e,stroke-width:3px
+    style External fill:#fef2f2,stroke:#991b1b,stroke-width:2px
+    style AIModels fill:#f5f3ff,stroke:#5b21b6,stroke-width:2px

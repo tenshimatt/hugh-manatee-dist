@@ -1,0 +1,24 @@
+{
+  "id": "ANOM-2026-0042",
+  "severity": "warn",
+  "title": "Scrap pattern detected on Laser #2",
+  "summary": "3 jobs affected this week. Hypothesis: nozzle wear.",
+  "detected_at": "2026-04-17T11:20:00Z",
+  "hypothesis": "Cut edge kerf has drifted +0.014\" over the last 72 hours on 1/2\" A36 plate. Consistent with a nozzle approaching end-of-life (typical replacement interval: ~420 pierce hours; current nozzle at 404 hrs).",
+  "evidence": [
+    "Scrap rate on laser-2 jumped from 1.8% (rolling 30d) to 4.9% (last 7d).",
+    "3 of 4 affected parts share the same cut program (PRG-A36-050-STRING-V2).",
+    "QC measurements show +0.012\" to +0.018\" kerf widening across samples.",
+    "No change in material vendor or sheet lot during this period."
+  ],
+  "affected_jobs": [
+    { "wo": "WO-2026-00203", "customer": "Vanderbilt Medical", "part": "Stair Stringer (curved)", "scrap_qty": 2, "scrap_cost": 1840 },
+    { "wo": "WO-2026-00209", "customer": "Opryland", "part": "Outer Stringer Plate", "scrap_qty": 1, "scrap_cost": 1420 },
+    { "wo": "WO-2026-00215", "customer": "Nissan HQ", "part": "Balcony Bracket", "scrap_qty": 3, "scrap_cost": 680 }
+  ],
+  "recommendations": [
+    "Replace nozzle tip on Laser #2 before next shift (est. downtime: 12 min).",
+    "Re-verify PRG-A36-050-STRING-V2 kerf offset after nozzle change.",
+    "Place a QC hold on WO-2026-00218 stringer cuts until verified."
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "as_of": "2026-04-17T16:00:00Z",
+  "kpis": [
+    {
+      "key": "on_time_delivery",
+      "label": "On-Time Delivery",
+      "value": 94.2,
+      "unit": "%",
+      "trend": "up",
+      "delta": 2.1,
+      "period": "30d",
+      "spark": [88.4, 89.1, 90.2, 90.8, 91.5, 92.0, 92.6, 93.1, 93.8, 94.2]
+    },
+    {
+      "key": "active_work_orders",
+      "label": "Active Work Orders",
+      "value": 47,
+      "unit": "",
+      "trend": "up",
+      "delta": 6,
+      "period": "vs last week",
+      "spark": [38, 40, 41, 39, 42, 44, 45, 44, 46, 47]
+    },
+    {
+      "key": "scrap_rate",
+      "label": "Scrap Rate",
+      "value": 3.4,
+      "unit": "%",
+      "trend": "up",
+      "delta": 0.8,
+      "period": "30d",
+      "tone": "warn",
+      "spark": [2.3, 2.4, 2.5, 2.6, 2.7, 3.0, 3.1, 3.2, 3.3, 3.4]
+    },
+    {
+      "key": "open_ncrs",
+      "label": "Open NCRs",
+      "value": 8,
+      "unit": "",
+      "trend": "down",
+      "delta": -3,
+      "period": "vs last week",
+      "spark": [12, 13, 12, 11, 11, 10, 10, 9, 9, 8]
+    }
+  ],
+  "division_mix": [
+    { "name": "Architectural", "value": 58, "color": "#064162" },
+    { "name": "Processing", "value": 42, "color": "#e69b40" }
+  ],
+  "weekly": [
+    { "week": "W11", "scheduled": 32, "completed": 28 },
+    { "week": "W12", "scheduled": 35, "completed": 34 },
+    { "week": "W13", "scheduled": 38, "completed": 37 },
+    { "week": "W14", "scheduled": 41, "completed": 39 },
+    { "week": "W15", "scheduled": 44, "completed": 43 },
+    { "week": "W16", "scheduled": 47, "completed": 41 }
+  ],
+  "activity": [
+    { "id": "a1", "at": "2026-04-17T15:42:00Z", "kind": "WO_RELEASED", "text": "WO-2026-00218 released — Opryland Stair (Arch)", "actor": "Chris Ball" },
+    { "id": "a2", "at": "2026-04-17T15:12:00Z", "kind": "NCR_RAISED", "text": "NCR-2026-019 raised on Laser #2 — kerf drift observed", "actor": "T. Henderson (Weld Bay A)" },
+    { "id": "a3", "at": "2026-04-17T14:38:00Z", "kind": "WO_COMPLETE", "text": "WO-2026-00201 completed — HVAC enclosure batch", "actor": "M. Ortiz (Assembly 1)" },
+    { "id": "a4", "at": "2026-04-17T13:55:00Z", "kind": "RMA_CREATED", "text": "RMA-2026-004 created for Vanderbilt stair nosing rework", "actor": "QC" },
+    { "id": "a5", "at": "2026-04-17T13:20:00Z", "kind": "WO_RELEASED", "text": "WO-2026-00217 released — Nissan HQ railing", "actor": "George McDougall" }
+  ]
+}
