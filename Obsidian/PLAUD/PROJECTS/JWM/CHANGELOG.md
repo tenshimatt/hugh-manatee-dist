@@ -6,6 +6,15 @@ Chronological record of what shipped, when, and why.
 
 ## 2026-04-19
 
+### Claude Council convened — full Epicor replacement scope quote produced
+- 4-seat Council analysed the new `/attachments/` drop (Drew Adams's Friday email thread + 3 operational workbooks totalling 80 sheets / 177 max columns).
+- **Finding:** JWM is running a hand-rolled MES inside Excel on top of Epicor. The `Uses Workaround` + `Corrected PEM/OS Start` columns show Epicor scheduling bugs baked into the data model.
+- **Finding:** Drew Adams (Master Scheduler + Inventory Control) is the hidden decision-maker. His 6 KPIs (efficiency by op/material/operator, est-vs-actual, part history) are NOT in Archer's Phase 1 but ARE already in the Daily Efficiency Log raw data. One new DocType + 3 charts surfaces all six.
+- **Headline quote:** $195K fixed / 11 months / Epicor retired 2027-03-31. Phases 1 ($55K live) + 2 ($40K) + 3 ($80K) + 4 ($20K).
+- **Monday ask:** 1-page engagement letter for Phases 1+2 ($95K); Phases 3+4 optioned.
+- **vs Archer 2yr TCO ~$430-550K** and never retires Epicor.
+- Council outputs in `council/`: `01-email-analysis.md`, `02-data-model-analysis.md`, `03-epicor-scope.md`, `04-commercial-quote.md`, `SYNTHESIS.md`.
+
 ### ERPNext Desk + portal + login fully JWM-branded
 - New CSS layer `jwm-demo/erpnext-theme/jwm_brand.css` (549 lines) registered via `app_include_css` + `web_include_css` in the `jwm_manufacturing` app `hooks.py`.
 - **Desk** (`/app/*`): navy gradient navbar with gold accent strip, cream body wash, gold primary buttons, gold-accented sidebar selection, logo injected next to breadcrumbs when sidebar collapsed.
