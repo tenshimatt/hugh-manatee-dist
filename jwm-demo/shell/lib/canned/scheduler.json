@@ -1,0 +1,1204 @@
+{
+  "generated_at": "2026-04-17T16:00:00Z",
+  "columns": [
+    {
+      "slug": "pgm",
+      "label": "PGM",
+      "division": "both"
+    },
+    {
+      "slug": "fl",
+      "label": "Flat Laser",
+      "division": "Processing"
+    },
+    {
+      "slug": "tl",
+      "label": "Tube Laser",
+      "division": "Processing"
+    },
+    {
+      "slug": "pu",
+      "label": "Punch",
+      "division": "Processing"
+    },
+    {
+      "slug": "shear",
+      "label": "Shear",
+      "division": "Processing"
+    },
+    {
+      "slug": "fm",
+      "label": "Form/Brake",
+      "division": "Processing"
+    },
+    {
+      "slug": "ma",
+      "label": "Machining",
+      "division": "Architectural"
+    },
+    {
+      "slug": "we",
+      "label": "Weld",
+      "division": "Architectural"
+    },
+    {
+      "slug": "grinding",
+      "label": "Grind",
+      "division": "Architectural"
+    },
+    {
+      "slug": "asm",
+      "label": "Assembly",
+      "division": "Architectural"
+    },
+    {
+      "slug": "pem",
+      "label": "PEM",
+      "division": "Processing"
+    },
+    {
+      "slug": "fin",
+      "label": "Finish",
+      "division": "Architectural"
+    },
+    {
+      "slug": "qa",
+      "label": "QA",
+      "division": "both"
+    },
+    {
+      "slug": "os",
+      "label": "Outsource",
+      "division": "both"
+    },
+    {
+      "slug": "ship",
+      "label": "Ship",
+      "division": "both"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "152700-1-1",
+      "customer": "Ryman Hospitality Properties",
+      "part": "JWM-ENC-47G-0407",
+      "qty": 1,
+      "due_date": "2026-05-05",
+      "division": "Processing",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 11.0
+        },
+        "fl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 1.5
+        },
+        "shear": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 3.3
+        },
+        "pem": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.2
+        },
+        "ship": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 11.4
+        }
+      }
+    },
+    {
+      "id": "152701-1-1",
+      "customer": "Nissan HQ",
+      "part": "JWM-ENC-13G-0634",
+      "qty": 20,
+      "due_date": "2026-05-02",
+      "division": "Processing",
+      "status": "on_track",
+      "cells": {
+        "tl": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 7.1
+        },
+        "pu": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 8.3
+        },
+        "shear": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 7.1
+        },
+        "os": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 1.6
+        }
+      }
+    },
+    {
+      "id": "152702-1-1",
+      "customer": "Nissan HQ",
+      "part": "JWM-ENC-46G-0809",
+      "qty": 100,
+      "due_date": "2026-05-10",
+      "division": "Processing",
+      "status": "behind",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 1.4
+        },
+        "tl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 6.2
+        },
+        "pu": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 5.7
+        },
+        "shear": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.3
+        },
+        "fm": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 2.4
+        },
+        "pem": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 11.2
+        },
+        "qa": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 5.3
+        },
+        "ship": {
+          "scheduled_date": "2026-05-04",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 11.6
+        }
+      }
+    },
+    {
+      "id": "152703-1-1",
+      "customer": "Nissan HQ",
+      "part": "JWM-STR-13G-0224",
+      "qty": 48,
+      "due_date": "2026-05-05",
+      "division": "Processing",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 1.2
+        },
+        "tl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 7.9
+        },
+        "pem": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 10.0
+        },
+        "qa": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 4.9
+        },
+        "os": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 0.8
+        },
+        "ship": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 2.4
+        }
+      }
+    },
+    {
+      "id": "152704-1-1",
+      "customer": "AAA Industries",
+      "part": "JWM-PLT-24G-0675",
+      "qty": 20,
+      "due_date": "2026-04-29",
+      "division": "Processing",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 10.7
+        },
+        "fl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 10.4
+        },
+        "pem": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 5.3
+        },
+        "qa": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 10.7
+        },
+        "ship": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 2.2
+        }
+      }
+    },
+    {
+      "id": "152705-1-1",
+      "customer": "Nissan HQ",
+      "part": "JWM-PLT-38G-0167",
+      "qty": 5,
+      "due_date": "2026-04-25",
+      "division": "Processing",
+      "status": "at_risk",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 11.5
+        },
+        "fl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 6.4
+        },
+        "tl": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 8.3
+        },
+        "pu": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 10.8
+        },
+        "shear": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 5.1
+        },
+        "os": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.7
+        },
+        "ship": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.2
+        }
+      }
+    },
+    {
+      "id": "152706-1-1",
+      "customer": "Dacoda Mfg",
+      "part": "JWM-STR-54G-0166",
+      "qty": 800,
+      "due_date": "2026-05-05",
+      "division": "Processing",
+      "status": "at_risk",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 10.6
+        },
+        "fl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 2.2
+        },
+        "shear": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 4.5
+        },
+        "fm": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 1.9
+        },
+        "pem": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 11.9
+        },
+        "qa": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 6.0
+        },
+        "os": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.5
+        },
+        "ship": {
+          "scheduled_date": "2026-05-04",
+          "actual_date": null,
+          "status": "at_risk",
+          "hours_est": 9.1
+        }
+      }
+    },
+    {
+      "id": "152707-1-1",
+      "customer": "TGS Logistics",
+      "part": "JWM-BAL-20G-0365",
+      "qty": 20,
+      "due_date": "2026-04-25",
+      "division": "Processing",
+      "status": "complete",
+      "cells": {
+        "tl": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 9.2
+        },
+        "shear": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": "2026-04-22",
+          "status": "complete",
+          "hours_est": 3.9
+        },
+        "fm": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": "2026-04-24",
+          "status": "complete",
+          "hours_est": 7.9
+        },
+        "os": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": "2026-04-26",
+          "status": "complete",
+          "hours_est": 1.5
+        },
+        "ship": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": "2026-04-28",
+          "status": "complete",
+          "hours_est": 10.2
+        }
+      }
+    },
+    {
+      "id": "152708-1-1",
+      "customer": "Colbert Industries",
+      "part": "JWM-BRK-24G-0482",
+      "qty": 20,
+      "due_date": "2026-05-12",
+      "division": "Processing",
+      "status": "behind",
+      "cells": {
+        "fl": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 6.5
+        },
+        "tl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 0.8
+        },
+        "pu": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 3.7
+        },
+        "shear": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 8.5
+        },
+        "fm": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 5.6
+        },
+        "qa": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 11.9
+        },
+        "os": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 11.5
+        },
+        "ship": {
+          "scheduled_date": "2026-05-04",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 4.7
+        }
+      }
+    },
+    {
+      "id": "152709-1-1",
+      "customer": "GLC Corp",
+      "part": "JWM-BRK-56G-0406",
+      "qty": 400,
+      "due_date": "2026-05-05",
+      "division": "Processing",
+      "status": "behind",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 10.1
+        },
+        "tl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 5.0
+        },
+        "fm": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 2.8
+        },
+        "qa": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 10.7
+        },
+        "ship": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 5.5
+        }
+      }
+    },
+    {
+      "id": "152710-1-1",
+      "customer": "AAA Industries",
+      "part": "JWM-BRK-10G-0819",
+      "qty": 5,
+      "due_date": "2026-05-07",
+      "division": "Processing",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 9.8
+        },
+        "tl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 10.0
+        },
+        "os": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 8.1
+        },
+        "ship": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 6.8
+        }
+      }
+    },
+    {
+      "id": "152711-1-1",
+      "customer": "TGS Logistics",
+      "part": "JWM-STR-42G-0134",
+      "qty": 800,
+      "due_date": "2026-05-11",
+      "division": "Processing",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 9.3
+        },
+        "tl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 6.8
+        },
+        "pu": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.2
+        },
+        "pem": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 10.8
+        },
+        "os": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 9.9
+        }
+      }
+    },
+    {
+      "id": "152712-1-1",
+      "customer": "Nissan HQ",
+      "part": "JWM-STR-30G-0628",
+      "qty": 800,
+      "due_date": "2026-04-29",
+      "division": "Processing",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 7.6
+        },
+        "fl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 1.2
+        },
+        "pu": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 6.6
+        },
+        "shear": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 9.4
+        },
+        "pem": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.2
+        },
+        "qa": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 1.0
+        },
+        "os": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 5.7
+        },
+        "ship": {
+          "scheduled_date": "2026-05-04",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 10.8
+        }
+      }
+    },
+    {
+      "id": "152713-1-1",
+      "customer": "GLC Corp",
+      "part": "JWM-PLT-26G-0905",
+      "qty": 10,
+      "due_date": "2026-05-14",
+      "division": "Processing",
+      "status": "at_risk",
+      "cells": {
+        "fl": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 11.1
+        },
+        "tl": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 2.8
+        },
+        "pu": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 5.3
+        },
+        "shear": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 4.1
+        },
+        "pem": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 5.4
+        },
+        "qa": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "at_risk",
+          "hours_est": 8.2
+        },
+        "os": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "at_risk",
+          "hours_est": 10.8
+        },
+        "ship": {
+          "scheduled_date": "2026-05-04",
+          "actual_date": null,
+          "status": "at_risk",
+          "hours_est": 11.3
+        }
+      }
+    },
+    {
+      "id": "151828-8-1",
+      "customer": "Nissan HQ",
+      "part": "JWM-ACM-33G-0020",
+      "qty": 100,
+      "due_date": "2026-05-04",
+      "division": "Architectural",
+      "status": "behind",
+      "cells": {
+        "ma": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 8.6
+        },
+        "fin": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 5.1
+        },
+        "qa": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 5.3
+        },
+        "os": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 4.6
+        }
+      }
+    },
+    {
+      "id": "151829-9-1",
+      "customer": "AAA Industries",
+      "part": "JWM-BAL-58G-0133",
+      "qty": 200,
+      "due_date": "2026-05-11",
+      "division": "Architectural",
+      "status": "complete",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 1.8
+        },
+        "we": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": "2026-04-22",
+          "status": "complete",
+          "hours_est": 11.1
+        },
+        "grinding": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": "2026-04-24",
+          "status": "complete",
+          "hours_est": 3.1
+        },
+        "asm": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": "2026-04-26",
+          "status": "complete",
+          "hours_est": 10.6
+        },
+        "fin": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": "2026-04-28",
+          "status": "complete",
+          "hours_est": 1.5
+        },
+        "qa": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": "2026-04-30",
+          "status": "complete",
+          "hours_est": 3.6
+        },
+        "os": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": "2026-05-02",
+          "status": "complete",
+          "hours_est": 10.9
+        }
+      }
+    },
+    {
+      "id": "151830-5-1",
+      "customer": "Powderworx 615",
+      "part": "JWM-BRK-31G-0567",
+      "qty": 200,
+      "due_date": "2026-05-09",
+      "division": "Architectural",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 5.4
+        },
+        "we": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 11.3
+        },
+        "fin": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 9.7
+        },
+        "os": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 10.3
+        },
+        "ship": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 10.4
+        }
+      }
+    },
+    {
+      "id": "151831-5-1",
+      "customer": "Ryman Hospitality Properties",
+      "part": "JWM-BRK-11G-0751",
+      "qty": 800,
+      "due_date": "2026-05-16",
+      "division": "Architectural",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 11.2
+        },
+        "ma": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 6.6
+        },
+        "we": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 5.6
+        },
+        "grinding": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 3.6
+        },
+        "ship": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 11.9
+        }
+      }
+    },
+    {
+      "id": "151832-9-1",
+      "customer": "Ryman Hospitality Properties",
+      "part": "JWM-PLT-10G-0073",
+      "qty": 48,
+      "due_date": "2026-05-03",
+      "division": "Architectural",
+      "status": "complete",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": "2026-04-20",
+          "status": "complete",
+          "hours_est": 4.0
+        },
+        "ma": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": "2026-04-22",
+          "status": "complete",
+          "hours_est": 3.0
+        },
+        "we": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": "2026-04-24",
+          "status": "complete",
+          "hours_est": 3.1
+        },
+        "grinding": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": "2026-04-26",
+          "status": "complete",
+          "hours_est": 2.8
+        },
+        "asm": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": "2026-04-28",
+          "status": "complete",
+          "hours_est": 10.6
+        },
+        "qa": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": "2026-04-30",
+          "status": "complete",
+          "hours_est": 8.9
+        },
+        "os": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": "2026-05-02",
+          "status": "complete",
+          "hours_est": 2.1
+        },
+        "ship": {
+          "scheduled_date": "2026-05-04",
+          "actual_date": "2026-05-04",
+          "status": "complete",
+          "hours_est": 11.9
+        }
+      }
+    },
+    {
+      "id": "151833-7-1",
+      "customer": "GLC Corp",
+      "part": "JWM-BAL-45G-0332",
+      "qty": 20,
+      "due_date": "2026-05-02",
+      "division": "Architectural",
+      "status": "at_risk",
+      "cells": {
+        "ma": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 7.4
+        },
+        "asm": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 1.0
+        },
+        "qa": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "at_risk",
+          "hours_est": 2.3
+        },
+        "os": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 0.5
+        }
+      }
+    },
+    {
+      "id": "151834-1-1",
+      "customer": "TGS Logistics",
+      "part": "JWM-PLT-52G-0915",
+      "qty": 200,
+      "due_date": "2026-05-25",
+      "division": "Architectural",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 6.3
+        },
+        "ma": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 6.3
+        },
+        "we": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 3.5
+        },
+        "grinding": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 5.1
+        },
+        "fin": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 0.8
+        },
+        "ship": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 3.2
+        }
+      }
+    },
+    {
+      "id": "151835-6-1",
+      "customer": "Colbert Industries",
+      "part": "JWM-BRK-11G-0043",
+      "qty": 10,
+      "due_date": "2026-05-20",
+      "division": "Architectural",
+      "status": "behind",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 8.9
+        },
+        "ma": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 2.1
+        },
+        "we": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 6.3
+        },
+        "asm": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 9.8
+        },
+        "fin": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 7.2
+        },
+        "os": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 10.8
+        },
+        "ship": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "behind",
+          "hours_est": 8.4
+        }
+      }
+    },
+    {
+      "id": "151836-6-1",
+      "customer": "Powderworx 615",
+      "part": "JWM-STR-34G-0079",
+      "qty": 400,
+      "due_date": "2026-04-30",
+      "division": "Architectural",
+      "status": "on_track",
+      "cells": {
+        "pgm": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 9.7
+        },
+        "ma": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 6.3
+        },
+        "grinding": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "on_track",
+          "hours_est": 8.1
+        },
+        "asm": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 9.0
+        },
+        "fin": {
+          "scheduled_date": "2026-04-28",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 1.4
+        },
+        "os": {
+          "scheduled_date": "2026-04-30",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 8.9
+        },
+        "ship": {
+          "scheduled_date": "2026-05-02",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 9.0
+        }
+      }
+    },
+    {
+      "id": "151837-5-1",
+      "customer": "Powderworx 615",
+      "part": "JWM-BAL-55G-0529",
+      "qty": 48,
+      "due_date": "2026-05-21",
+      "division": "Architectural",
+      "status": "on_track",
+      "cells": {
+        "ma": {
+          "scheduled_date": "2026-04-20",
+          "actual_date": null,
+          "status": "in_progress",
+          "hours_est": 7.6
+        },
+        "grinding": {
+          "scheduled_date": "2026-04-22",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 6.0
+        },
+        "asm": {
+          "scheduled_date": "2026-04-24",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 11.7
+        },
+        "os": {
+          "scheduled_date": "2026-04-26",
+          "actual_date": null,
+          "status": "pending",
+          "hours_est": 3.0
+        }
+      }
+    }
+  ]
+}
