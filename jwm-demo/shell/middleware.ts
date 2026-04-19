@@ -21,6 +21,7 @@ const PROTECTED_PREFIXES = [
   "/planner",
   "/qc",
   "/shop",
+  "/erf",
 ];
 
 function isProtected(pathname: string): boolean {
