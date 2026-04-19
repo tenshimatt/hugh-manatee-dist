@@ -857,9 +857,9 @@
       "planned_qty": 80,
       "actual_qty": 63,
       "planned_hours": 2.77,
-      "actual_hours": 4.33,
+      "actual_hours": 4.31,
       "scrap_qty": 0,
-      "efficiency_pct": 64.0,
+      "efficiency_pct": 64.2,
       "notes": "Setup longer than planned, first-article rework"
     },
     {
@@ -877,9 +877,9 @@
       "planned_qty": 40,
       "actual_qty": 40,
       "planned_hours": 1.88,
-      "actual_hours": 1.82,
+      "actual_hours": 2.67,
       "scrap_qty": 0,
-      "efficiency_pct": 103.1,
+      "efficiency_pct": 70.4,
       "notes": ""
     },
     {
@@ -897,9 +897,9 @@
       "planned_qty": 200,
       "actual_qty": 200,
       "planned_hours": 1.18,
-      "actual_hours": 1.26,
+      "actual_hours": 1.59,
       "scrap_qty": 0,
-      "efficiency_pct": 93.4,
+      "efficiency_pct": 74.4,
       "notes": ""
     },
     {
@@ -917,9 +917,9 @@
       "planned_qty": 200,
       "actual_qty": 200,
       "planned_hours": 6.48,
-      "actual_hours": 9.21,
+      "actual_hours": 11.25,
       "scrap_qty": 0,
-      "efficiency_pct": 70.3,
+      "efficiency_pct": 57.6,
       "notes": "Edge burn recurring \u2014 suspect optics"
     },
     {
@@ -937,9 +937,9 @@
       "planned_qty": 80,
       "actual_qty": 80,
       "planned_hours": 2.23,
-      "actual_hours": 2.99,
+      "actual_hours": 3.39,
       "scrap_qty": 0,
-      "efficiency_pct": 74.5,
+      "efficiency_pct": 65.8,
       "notes": "Edge burn recurring \u2014 suspect optics"
     },
     {
@@ -957,9 +957,9 @@
       "planned_qty": 40,
       "actual_qty": 40,
       "planned_hours": 6.25,
-      "actual_hours": 8.26,
+      "actual_hours": 9.65,
       "scrap_qty": 0,
-      "efficiency_pct": 75.7,
+      "efficiency_pct": 64.8,
       "notes": "Waiting on material cart"
     },
     {
@@ -977,9 +977,9 @@
       "planned_qty": 150,
       "actual_qty": 127,
       "planned_hours": 1.07,
-      "actual_hours": 0.97,
+      "actual_hours": 1.27,
       "scrap_qty": 0,
-      "efficiency_pct": 110.6,
+      "efficiency_pct": 84.3,
       "notes": "Clean run"
     },
     {
@@ -997,9 +997,9 @@
       "planned_qty": 50,
       "actual_qty": 50,
       "planned_hours": 5.65,
-      "actual_hours": 7.97,
+      "actual_hours": 10.99,
       "scrap_qty": 0,
-      "efficiency_pct": 70.9,
+      "efficiency_pct": 51.4,
       "notes": "Operator new to workstation"
     },
     {
@@ -1017,9 +1017,9 @@
       "planned_qty": 60,
       "actual_qty": 60,
       "planned_hours": 1.84,
-      "actual_hours": 2.46,
+      "actual_hours": 3.24,
       "scrap_qty": 0,
-      "efficiency_pct": 74.9,
+      "efficiency_pct": 56.8,
       "notes": "Kerf oversize \u2014 program adjusted mid-run"
     },
     {
@@ -1037,9 +1037,9 @@
       "planned_qty": 30,
       "actual_qty": 18,
       "planned_hours": 3.12,
-      "actual_hours": 3.95,
+      "actual_hours": 6.18,
       "scrap_qty": 1,
-      "efficiency_pct": 79.0,
+      "efficiency_pct": 50.5,
       "notes": "Setup longer than planned, first-article rework"
     },
     {
@@ -1057,9 +1057,9 @@
       "planned_qty": 60,
       "actual_qty": 60,
       "planned_hours": 2.29,
-      "actual_hours": 2.65,
+      "actual_hours": 3.29,
       "scrap_qty": 0,
-      "efficiency_pct": 86.4,
+      "efficiency_pct": 69.5,
       "notes": ""
     },
     {
@@ -1077,9 +1077,9 @@
       "planned_qty": 20,
       "actual_qty": 20,
       "planned_hours": 4.91,
-      "actual_hours": 6.82,
+      "actual_hours": 8.45,
       "scrap_qty": 0,
-      "efficiency_pct": 72.0,
+      "efficiency_pct": 58.1,
       "notes": "Edge burn recurring \u2014 suspect optics"
     },
     {
@@ -1097,9 +1097,9 @@
       "planned_qty": 200,
       "actual_qty": 200,
       "planned_hours": 7.72,
-      "actual_hours": 8.8,
+      "actual_hours": 11.63,
       "scrap_qty": 0,
-      "efficiency_pct": 87.7,
+      "efficiency_pct": 66.4,
       "notes": ""
     },
     {
@@ -1117,9 +1117,9 @@
       "planned_qty": 100,
       "actual_qty": 70,
       "planned_hours": 5.83,
-      "actual_hours": 7.96,
+      "actual_hours": 10.96,
       "scrap_qty": 0,
-      "efficiency_pct": 73.3,
+      "efficiency_pct": 53.2,
       "notes": "Waiting on material cart"
     },
     {
@@ -1137,9 +1137,9 @@
       "planned_qty": 30,
       "actual_qty": 30,
       "planned_hours": 1.5,
-      "actual_hours": 1.68,
+      "actual_hours": 2.07,
       "scrap_qty": 0,
-      "efficiency_pct": 89.5,
+      "efficiency_pct": 72.4,
       "notes": ""
     },
     {
@@ -1157,9 +1157,9 @@
       "planned_qty": 100,
       "actual_qty": 100,
       "planned_hours": 4.06,
-      "actual_hours": 4.01,
+      "actual_hours": 5.74,
       "scrap_qty": 0,
-      "efficiency_pct": 101.1,
+      "efficiency_pct": 70.7,
       "notes": ""
     },
     {
@@ -1177,9 +1177,9 @@
       "planned_qty": 200,
       "actual_qty": 200,
       "planned_hours": 1.28,
-      "actual_hours": 1.21,
+      "actual_hours": 1.95,
       "scrap_qty": 0,
-      "efficiency_pct": 105.4,
+      "efficiency_pct": 65.5,
       "notes": "Nested efficiently with prior job"
     },
     {
@@ -1197,9 +1197,9 @@
       "planned_qty": 20,
       "actual_qty": 20,
       "planned_hours": 7.0,
-      "actual_hours": 7.45,
+      "actual_hours": 9.8,
       "scrap_qty": 0,
-      "efficiency_pct": 93.9,
+      "efficiency_pct": 71.4,
       "notes": ""
     },
     {
@@ -1217,9 +1217,9 @@
       "planned_qty": 150,
       "actual_qty": 150,
       "planned_hours": 6.77,
-      "actual_hours": 10.91,
+      "actual_hours": 11.28,
       "scrap_qty": 0,
-      "efficiency_pct": 62.0,
+      "efficiency_pct": 60.0,
       "notes": "Material handling delay \u2014 loader down"
     },
     {
@@ -1237,9 +1237,9 @@
       "planned_qty": 50,
       "actual_qty": 47,
       "planned_hours": 4.07,
-      "actual_hours": 3.92,
+      "actual_hours": 6.55,
       "scrap_qty": 0,
-      "efficiency_pct": 103.9,
+      "efficiency_pct": 62.1,
       "notes": ""
     },
     {
@@ -1257,9 +1257,9 @@
       "planned_qty": 100,
       "actual_qty": 100,
       "planned_hours": 7.63,
-      "actual_hours": 9.84,
+      "actual_hours": 12.74,
       "scrap_qty": 0,
-      "efficiency_pct": 77.5,
+      "efficiency_pct": 59.9,
       "notes": "Setup longer than planned, first-article rework"
     },
     {
@@ -1277,9 +1277,9 @@
       "planned_qty": 40,
       "actual_qty": 40,
       "planned_hours": 7.45,
-      "actual_hours": 7.55,
+      "actual_hours": 10.77,
       "scrap_qty": 0,
-      "efficiency_pct": 98.7,
+      "efficiency_pct": 69.2,
       "notes": ""
     },
     {
@@ -1297,9 +1297,9 @@
       "planned_qty": 30,
       "actual_qty": 30,
       "planned_hours": 4.13,
-      "actual_hours": 4.21,
+      "actual_hours": 6.51,
       "scrap_qty": 0,
-      "efficiency_pct": 98.1,
+      "efficiency_pct": 63.4,
       "notes": ""
     },
     {
@@ -1317,9 +1317,9 @@
       "planned_qty": 60,
       "actual_qty": 60,
       "planned_hours": 6.21,
-      "actual_hours": 5.97,
+      "actual_hours": 10.26,
       "scrap_qty": 0,
-      "efficiency_pct": 104.0,
+      "efficiency_pct": 60.5,
       "notes": ""
     },
     {
@@ -1337,9 +1337,9 @@
       "planned_qty": 20,
       "actual_qty": 20,
       "planned_hours": 4.68,
-      "actual_hours": 6.41,
+      "actual_hours": 7.89,
       "scrap_qty": 2,
-      "efficiency_pct": 73.0,
+      "efficiency_pct": 59.3,
       "notes": "Operator new to workstation"
     },
     {
@@ -1357,9 +1357,9 @@
       "planned_qty": 80,
       "actual_qty": 80,
       "planned_hours": 7.68,
-      "actual_hours": 7.54,
+      "actual_hours": 12.11,
       "scrap_qty": 0,
-      "efficiency_pct": 101.9,
+      "efficiency_pct": 63.4,
       "notes": ""
     },
     {
@@ -1377,9 +1377,9 @@
       "planned_qty": 20,
       "actual_qty": 13,
       "planned_hours": 6.32,
-      "actual_hours": 6.08,
+      "actual_hours": 10.62,
       "scrap_qty": 0,
-      "efficiency_pct": 104.0,
+      "efficiency_pct": 59.5,
       "notes": ""
     },
     {
@@ -1397,9 +1397,9 @@
       "planned_qty": 200,
       "actual_qty": 200,
       "planned_hours": 5.77,
-      "actual_hours": 6.42,
+      "actual_hours": 9.7,
       "scrap_qty": 0,
-      "efficiency_pct": 89.9,
+      "efficiency_pct": 59.5,
       "notes": ""
     },
     {
@@ -1417,9 +1417,9 @@
       "planned_qty": 100,
       "actual_qty": 100,
       "planned_hours": 2.79,
-      "actual_hours": 3.27,
+      "actual_hours": 4.13,
       "scrap_qty": 0,
-      "efficiency_pct": 85.3,
+      "efficiency_pct": 67.6,
       "notes": ""
     },
     {
@@ -1437,9 +1437,9 @@
       "planned_qty": 100,
       "actual_qty": 100,
       "planned_hours": 6.92,
-      "actual_hours": 7.66,
+      "actual_hours": 10.86,
       "scrap_qty": 0,
-      "efficiency_pct": 90.4,
+      "efficiency_pct": 63.7,
       "notes": ""
     },
     {
@@ -1457,9 +1457,9 @@
       "planned_qty": 10,
       "actual_qty": 10,
       "planned_hours": 4.96,
-      "actual_hours": 4.79,
+      "actual_hours": 7.41,
       "scrap_qty": 1,
-      "efficiency_pct": 103.5,
+      "efficiency_pct": 66.9,
       "notes": ""
     },
     {
@@ -1477,9 +1477,9 @@
       "planned_qty": 50,
       "actual_qty": 50,
       "planned_hours": 5.74,
-      "actual_hours": 5.49,
+      "actual_hours": 8.74,
       "scrap_qty": 0,
-      "efficiency_pct": 104.5,
+      "efficiency_pct": 65.7,
       "notes": ""
     },
     {
@@ -1497,9 +1497,9 @@
       "planned_qty": 30,
       "actual_qty": 30,
       "planned_hours": 1.63,
-      "actual_hours": 2.36,
+      "actual_hours": 3.22,
       "scrap_qty": 1,
-      "efficiency_pct": 69.1,
+      "efficiency_pct": 50.6,
       "notes": "Kerf oversize \u2014 program adjusted mid-run"
     },
     {
@@ -1517,9 +1517,9 @@
       "planned_qty": 60,
       "actual_qty": 51,
       "planned_hours": 6.63,
-      "actual_hours": 6.79,
+      "actual_hours": 9.53,
       "scrap_qty": 0,
-      "efficiency_pct": 97.6,
+      "efficiency_pct": 69.6,
       "notes": ""
     },
     {
@@ -1537,9 +1537,9 @@
       "planned_qty": 100,
       "actual_qty": 100,
       "planned_hours": 3.58,
-      "actual_hours": 3.4,
+      "actual_hours": 5.96,
       "scrap_qty": 0,
-      "efficiency_pct": 105.2,
+      "efficiency_pct": 60.1,
       "notes": ""
     },
     {
@@ -1557,9 +1557,9 @@
       "planned_qty": 20,
       "actual_qty": 20,
       "planned_hours": 5.45,
-      "actual_hours": 7.45,
+      "actual_hours": 11.4,
       "scrap_qty": 2,
-      "efficiency_pct": 73.1,
+      "efficiency_pct": 47.8,
       "notes": "Material handling delay \u2014 loader down"
     },
     {
@@ -1577,9 +1577,9 @@
       "planned_qty": 80,
       "actual_qty": 80,
       "planned_hours": 4.18,
-      "actual_hours": 5.35,
+      "actual_hours": 7.99,
       "scrap_qty": 3,
-      "efficiency_pct": 78.1,
+      "efficiency_pct": 52.3,
       "notes": "Waiting on material cart"
     },
     {
@@ -1597,9 +1597,9 @@
       "planned_qty": 40,
       "actual_qty": 40,
       "planned_hours": 4.1,
-      "actual_hours": 3.7,
+      "actual_hours": 6.84,
       "scrap_qty": 0,
-      "efficiency_pct": 110.7,
+      "efficiency_pct": 59.9,
       "notes": ""
     },
     {
@@ -1617,9 +1617,9 @@
       "planned_qty": 20,
       "actual_qty": 20,
       "planned_hours": 5.64,
-      "actual_hours": 7.29,
+      "actual_hours": 10.68,
       "scrap_qty": 0,
-      "efficiency_pct": 77.4,
+      "efficiency_pct": 52.8,
       "notes": "Material handling delay \u2014 loader down"
     },
     {
@@ -1637,9 +1637,9 @@
       "planned_qty": 40,
       "actual_qty": 40,
       "planned_hours": 3.3,
-      "actual_hours": 5.03,
+      "actual_hours": 6.85,
       "scrap_qty": 0,
-      "efficiency_pct": 65.5,
+      "efficiency_pct": 48.2,
       "notes": "Setup longer than planned, first-article rework"
     },
     {
@@ -1657,9 +1657,9 @@
       "planned_qty": 40,
       "actual_qty": 40,
       "planned_hours": 5.12,
-      "actual_hours": 8.21,
+      "actual_hours": 10.18,
       "scrap_qty": 1,
-      "efficiency_pct": 62.4,
+      "efficiency_pct": 50.3,
       "notes": "Operator new to workstation"
     },
     {
@@ -1677,9 +1677,9 @@
       "planned_qty": 200,
       "actual_qty": 200,
       "planned_hours": 1.3,
-      "actual_hours": 1.22,
+      "actual_hours": 2.56,
       "scrap_qty": 0,
-      "efficiency_pct": 106.1,
+      "efficiency_pct": 50.7,
       "notes": "Nested efficiently with prior job"
     },
     {
@@ -1697,9 +1697,9 @@
       "planned_qty": 20,
       "actual_qty": 16,
       "planned_hours": 3.25,
-      "actual_hours": 4.96,
+      "actual_hours": 8.0,
       "scrap_qty": 3,
-      "efficiency_pct": 65.6,
+      "efficiency_pct": 40.6,
       "notes": "Edge burn recurring \u2014 suspect optics"
     },
     {
@@ -1717,9 +1717,9 @@
       "planned_qty": 20,
       "actual_qty": 20,
       "planned_hours": 6.97,
-      "actual_hours": 8.98,
+      "actual_hours": 16.75,
       "scrap_qty": 1,
-      "efficiency_pct": 77.6,
+      "efficiency_pct": 41.6,
       "notes": "Waiting on material cart"
     },
     {
@@ -1737,9 +1737,9 @@
       "planned_qty": 50,
       "actual_qty": 50,
       "planned_hours": 3.62,
-      "actual_hours": 4.06,
+      "actual_hours": 4.91,
       "scrap_qty": 1,
-      "efficiency_pct": 89.1,
+      "efficiency_pct": 73.7,
       "notes": ""
     },
     {
@@ -1757,9 +1757,9 @@
       "planned_qty": 60,
       "actual_qty": 60,
       "planned_hours": 5.69,
-      "actual_hours": 5.92,
+      "actual_hours": 7.38,
       "scrap_qty": 0,
-      "efficiency_pct": 96.1,
+      "efficiency_pct": 77.1,
       "notes": ""
     },
     {
@@ -1777,9 +1777,9 @@
       "planned_qty": 40,
       "actual_qty": 40,
       "planned_hours": 6.93,
-      "actual_hours": 7.34,
+      "actual_hours": 9.35,
       "scrap_qty": 0,
-      "efficiency_pct": 94.5,
+      "efficiency_pct": 74.1,
       "notes": ""
     },
     {
@@ -1797,9 +1797,9 @@
       "planned_qty": 10,
       "actual_qty": 10,
       "planned_hours": 5.26,
-      "actual_hours": 5.12,
+      "actual_hours": 6.73,
       "scrap_qty": 1,
-      "efficiency_pct": 102.8,
+      "efficiency_pct": 78.1,
       "notes": ""
     },
     {
@@ -1817,10 +1817,130 @@
       "planned_qty": 20,
       "actual_qty": 17,
       "planned_hours": 1.99,
-      "actual_hours": 1.95,
+      "actual_hours": 2.3,
       "scrap_qty": 0,
-      "efficiency_pct": 102.1,
+      "efficiency_pct": 86.4,
       "notes": ""
+    },
+    {
+      "id": "EFF-0092",
+      "date": "2026-04-17",
+      "shift": "Swing",
+      "workstation": "flat-laser-2",
+      "workstation_label": "Flat Laser #2",
+      "division": "Processing",
+      "operation": "Heavy Plate Cut",
+      "operator": "M. Ortiz",
+      "material": "A36 PL 1/2\"",
+      "part": "JWM-ARN-30270901-A",
+      "job": "152717-1-1",
+      "planned_qty": 50,
+      "actual_qty": 42,
+      "planned_hours": 5.81,
+      "actual_hours": 14.0,
+      "scrap_qty": 0,
+      "efficiency_pct": 41.5,
+      "notes": "Ariens job drift \u2014 FM bottleneck"
+    },
+    {
+      "id": "EFF-0093",
+      "date": "2026-04-17",
+      "shift": "Night",
+      "workstation": "flat-laser-2",
+      "workstation_label": "Flat Laser #2",
+      "division": "Processing",
+      "operation": "Nest & Cut",
+      "operator": "T. Henderson",
+      "material": "A36 PL 1/4\"",
+      "part": "JWM-PLT-43G-0371",
+      "job": "152201-8-1",
+      "planned_qty": 150,
+      "actual_qty": 120,
+      "planned_hours": 6.77,
+      "actual_hours": 18.1,
+      "scrap_qty": 0,
+      "efficiency_pct": 37.4,
+      "notes": "FL2 edge burn \u2014 optics suspect"
+    },
+    {
+      "id": "EFF-0094",
+      "date": "2026-04-17",
+      "shift": "Night",
+      "workstation": "flat-laser-2",
+      "workstation_label": "Flat Laser #2",
+      "division": "Processing",
+      "operation": "Laser Cut",
+      "operator": "Autumn K.",
+      "material": "SS 316 plate 3/8\"",
+      "part": "JWM-STR-43G-0117",
+      "job": "143041-8-1",
+      "planned_qty": 40,
+      "actual_qty": 40,
+      "planned_hours": 5.12,
+      "actual_hours": 11.88,
+      "scrap_qty": 1,
+      "efficiency_pct": 43.1,
+      "notes": "FL2 optics suspect"
+    },
+    {
+      "id": "EFF-0095",
+      "date": "2026-04-17",
+      "shift": "Night",
+      "workstation": "press-brake-1",
+      "workstation_label": "Press Brake #1",
+      "division": "Processing",
+      "operation": "Press Brake Form",
+      "operator": "C. Nguyen",
+      "material": "A36 PL 3/16\"",
+      "part": "JWM-ARN-30270901-B",
+      "job": "152717-1-2",
+      "planned_qty": 50,
+      "actual_qty": 38,
+      "planned_hours": 14.28,
+      "actual_hours": 30.38,
+      "scrap_qty": 0,
+      "efficiency_pct": 47.0,
+      "notes": "Ariens FM drift \u2014 tool wear"
+    },
+    {
+      "id": "EFF-0096",
+      "date": "2026-04-17",
+      "shift": "Night",
+      "workstation": "weld-bay-a",
+      "workstation_label": "Weld Bay A",
+      "division": "Architectural",
+      "operation": "Tack + Weld",
+      "operator": "Lisa M.",
+      "material": "HR SQ TUBE 4x4x1/4",
+      "part": "JWM-STR-38G-0931",
+      "job": "145945-8-2",
+      "planned_qty": 100,
+      "actual_qty": 80,
+      "planned_hours": 7.77,
+      "actual_hours": 17.08,
+      "scrap_qty": 0,
+      "efficiency_pct": 45.5,
+      "notes": "Learner curve \u2014 new weldor"
+    },
+    {
+      "id": "EFF-0097",
+      "date": "2026-04-17",
+      "shift": "Day",
+      "workstation": "flat-laser-2",
+      "workstation_label": "Flat Laser #2",
+      "division": "Processing",
+      "operation": "Nest & Cut",
+      "operator": "R. Li",
+      "material": "AL 6061 plate 1/4\"",
+      "part": "JWM-ACM-31G-0013",
+      "job": "148882-8-2",
+      "planned_qty": 200,
+      "actual_qty": 180,
+      "planned_hours": 6.48,
+      "actual_hours": 12.99,
+      "scrap_qty": 0,
+      "efficiency_pct": 49.9,
+      "notes": "FL2 recurring edge burn"
     }
   ]
 }
