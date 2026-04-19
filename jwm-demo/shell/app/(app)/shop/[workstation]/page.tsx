@@ -1,6 +1,7 @@
 import { ShopFloorClient } from "./ShopFloorClient";
 import { JOB_CARDS, NCRS, type JobCard } from "@/lib/canned/work-orders";
 import { isLive, listJobCards } from "@/lib/erpnext-live";
+import cannedAnomaly from "@/lib/canned/anomaly.json";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,14 @@ export default async function ShopPage({
     }
   }
 
+  // Only surface the anomaly banner to the specific workstation it names.
+  // Mirror the heuristic used by /shop and TopBar so the three surfaces agree.
+  const anomaly = cannedAnomaly as { id: string; title: string; summary: string; hypothesis: string };
+  const blob = `${anomaly.title} ${anomaly.summary}`.toLowerCase();
+  let flagged = false;
+  if (workstation === "flat-laser-2" && (blob.includes("laser #2") || blob.includes("laser 2"))) flagged = true;
+  if (workstation === "flat-laser-1" && (blob.includes("laser #1") || blob.includes("laser 1"))) flagged = true;
+
   return (
     <ShopFloorClient
       workstation={workstation}
@@ -65,6 +74,7 @@ export default async function ShopPage({
       role={meta.role}
       cards={cards}
       ncrs={meta.role === "qc" ? NCRS : []}
+      anomaly={flagged ? { id: anomaly.id, title: anomaly.title, summary: anomaly.summary, hypothesis: anomaly.hypothesis } : null}
     />
   );
 }

@@ -32,18 +32,27 @@ const WS_LABELS: Record<string, string> = {
   shipping: "Shipping",
 };
 
+interface AnomalyLite {
+  id: string;
+  title: string;
+  summary: string;
+  hypothesis: string;
+}
+
 export function ShopFloorClient({
   workstation,
   label,
   role,
   cards: initialCards,
   ncrs,
+  anomaly,
 }: {
   workstation: string;
   label: string;
   role: "floor" | "qc";
   cards: JobCard[];
   ncrs: NCR[];
+  anomaly?: AnomalyLite | null;
 }) {
   const [cards, setCards] = useState<JobCard[]>(initialCards);
   const [selected, setSelected] = useState<JobCard | null>(null);
@@ -234,6 +243,31 @@ export function ShopFloorClient({
           a card to begin.
         </p>
       </header>
+
+      {/* Anomaly banner — shown only when the parent page passes an anomaly
+          that names this workstation. Surfaces hypothesis + a clear "what the
+          operator should know" line without forcing a click. */}
+      {anomaly && (
+        <div className="rounded-2xl border-l-4 border-[#e69b40] bg-gradient-to-r from-[#fdf2e3] to-white p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-xl bg-[#e69b40]/20 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 text-[#b97418]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#b97418]">
+                  Active anomaly · {anomaly.id}
+                </span>
+              </div>
+              <div className="text-sm font-bold text-slate-900 mt-0.5">{anomaly.title}</div>
+              <div className="text-xs text-slate-600 mt-1">{anomaly.hypothesis}</div>
+              <div className="text-[11px] text-slate-500 mt-2">
+                Any job flagged HOLD on this station is waiting on this check.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {cards.length === 0 && (
         <div className="jwm-card p-10 text-center text-slate-500">

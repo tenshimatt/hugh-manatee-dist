@@ -9,10 +9,12 @@ import {
   CircleDot,
   Activity,
   Gauge,
+  AlertTriangle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { JOB_CARDS, NCRS } from "@/lib/canned/work-orders";
 import { isLive, listJobCards } from "@/lib/erpnext-live";
+import cannedAnomaly from "@/lib/canned/anomaly.json";
 
 /**
  * /shop — Shop Floor Overview
@@ -127,8 +129,26 @@ async function loadStats(): Promise<{ stats: QueueStat[]; liveCount: number }> {
   return { stats: out, liveCount };
 }
 
+// Map the canned anomaly title ("Laser #2") to a workstation slug. Mirrors
+// the heuristic in TopBar so the two surfaces agree on which card to flag.
+function anomalySlug(title: string, summary: string): string | null {
+  const blob = `${title} ${summary}`.toLowerCase();
+  if (blob.includes("laser #2") || blob.includes("laser 2")) return "flat-laser-2";
+  if (blob.includes("laser #1") || blob.includes("laser 1")) return "flat-laser-1";
+  if (blob.includes("press brake")) return "press-brake-1";
+  if (blob.includes("cnc")) return "cnc-1";
+  if (blob.includes("weld")) return "weld-bay-a";
+  if (blob.includes("assembly")) return "assembly-1";
+  return null;
+}
+
 export default async function ShopOverviewPage() {
   const { stats, liveCount } = await loadStats();
+  // The canned anomaly is always surfaced on /shop; the live GET /api/anomaly
+  // result drives the TopBar bell. Both point at the same canned fixture
+  // when offline, so the two surfaces stay coherent.
+  const anomaly = cannedAnomaly as { id: string; title: string; summary: string };
+  const flaggedSlug = anomalySlug(anomaly.title, anomaly.summary);
   const totalJobs = stats.reduce((s, x) => s + (x.role === "floor" ? x.total : 0), 0);
   const urgentJobs = stats.reduce((s, x) => s + (x.role === "floor" ? x.urgent : 0), 0);
   const holdJobs = stats.reduce((s, x) => s + (x.role === "floor" ? x.hold : 0), 0);
@@ -169,24 +189,58 @@ export default async function ShopOverviewPage() {
         </div>
       </header>
 
+      {/* Anomaly banner — mirrors the TopBar bell and gives the /shop
+          overview a persistent "something's wrong" hint until dismissed on
+          the kiosk. Deep-links to the implicated workstation. */}
+      {flaggedSlug && (
+        <Link
+          href={`/shop/${flaggedSlug}`}
+          className="block rounded-2xl border-l-4 border-[#e69b40] bg-gradient-to-r from-[#fdf2e3] to-white p-4 shadow-sm hover:shadow-md transition-shadow group"
+        >
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-xl bg-[#e69b40]/20 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 text-[#b97418]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#b97418]">
+                  Anomaly · {anomaly.id}
+                </span>
+                <Badge tone="amber" className="text-[10px]">
+                  {flaggedSlug.replace(/-/g, " ")}
+                </Badge>
+              </div>
+              <div className="text-sm font-bold text-slate-900 mt-0.5">{anomaly.title}</div>
+              <div className="text-xs text-slate-600">{anomaly.summary}</div>
+            </div>
+            <div className="text-xs text-[#064162] font-semibold self-center opacity-70 group-hover:opacity-100 transition-opacity">
+              Open workstation →
+            </div>
+          </div>
+        </Link>
+      )}
+
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {stats.map((s) => {
           const Icon = ICON[s.icon];
           const isQc = s.role === "qc";
           const hasUrgent = s.urgent > 0;
           const hasHold = s.hold > 0;
+          const isFlagged = flaggedSlug === s.slug;
           return (
             <Link
               key={s.slug}
               href={`/shop/${s.slug}`}
               className={`group jwm-card p-5 flex flex-col gap-3 border-l-4 hover:shadow-md transition-all ${
-                hasUrgent
-                  ? "border-red-400"
-                  : hasHold
-                    ? "border-amber-400"
-                    : isQc
-                      ? "border-[#064162]"
-                      : "border-slate-200"
+                isFlagged
+                  ? "border-[#e69b40] bg-gradient-to-br from-[#fdf2e3] to-white"
+                  : hasUrgent
+                    ? "border-red-400"
+                    : hasHold
+                      ? "border-amber-400"
+                      : isQc
+                        ? "border-[#064162]"
+                        : "border-slate-200"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
@@ -226,6 +280,12 @@ export default async function ShopOverviewPage() {
               </div>
 
               <div className="flex items-center gap-1.5 flex-wrap">
+                {isFlagged && (
+                  <Badge tone="gold" className="text-[10px] gap-1">
+                    <AlertTriangle className="w-2.5 h-2.5" />
+                    Anomaly
+                  </Badge>
+                )}
                 {hasUrgent && (
                   <Badge tone="red" className="text-[10px]">
                     {s.urgent} urgent
