@@ -4,6 +4,16 @@ Chronological record of what shipped, when, and why.
 
 ---
 
+## 2026-04-19 (late) — Council challenge round
+
+### Seat 5 (Dissent) + Seat 6 (Reference Architecture) filed
+- Materially revised v1 numbers. Program drops **$195K → $165K + $25K contingency**.
+- "Named senior Frappe dev 100%" line in v1 was ~$90K of unchallenged padding. Replaced with fractional SRE + 4-week cutover contractor + Matt @ 40% = ~$95K honest staffing. Matt's Phase-1-proof Claude-orchestrated pattern is the load-bearing assumption.
+- Spectrum **stays through Year 1**. ERPNext Accounting replacement → visible Phase 5 option (+$60-100K, +$150-300K/yr recurring savings). Construction accounting (AIA/retainage/SOV/certified payroll) is genuinely weaker in ERPNext; year-end audit risk during migration is real.
+- **Swap Phase 2 ↔ Phase 3**. Phase 2 = Inventory + Subcontracting + Purchasing (wins Drew day one; Archer dead-ends here). Phase 3 = Sales + Customer + Quoting + Frappe CRM + Frappe Insights + Avalara + EasyPost.
+- **Reference architecture locked**: ERPNext backbone + `jwm_manufacturing` custom app + Frappe CRM (Phase 3) + Frappe Insights (Phase 3) + Frappe Helpdesk (Phase 4) + Next.js shell (everyday UI) + LiteLLM + n8n + Paperless-ngx. On-prem migration end of Phase 2.
+- New files: `council/05-dissent.md`, `council/06-reference-architecture.md`, `council/SYNTHESIS_v2.md`. v2 supersedes v1 synthesis.
+
 ## 2026-04-19
 
 ### Claude Council convened — full Epicor replacement scope quote produced
