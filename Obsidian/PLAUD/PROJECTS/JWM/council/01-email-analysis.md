@@ -18,20 +18,20 @@
 
 ## Participants & roles (contact cues)
 
-| Person | Role | Email | Phone | Signal |
-|---|---|---|---|---|
-| **Chris Ball** | COO, executive sponsor | cball@jwmcd.com | 435.704.7353 | Drives the bus. Short, decisive emails ("BUILD IT!!!"). |
-| **Paul Roberts** | Engineering & Quality Executive | proberts@jwmcd.com | 615.804.4258 | Co-runs the project day-to-day with Matt Lynn. Scheduler of meetings. PRD names him as future system admin. |
-| **Drew Adams** ("Andrew Adams" in original Feb Cc — `aadams@` → now `dadams@`) | Master Scheduler / Inventory Control | dadams@jwmcd.com | 615-587-8492 | Most operational. Owns scheduling + inventory — the two weakest areas of Archer's plan. |
-| **Collin Phillips** | Manufacturing Engineer | cphillips@jwmcd.com | 931-209-7075 | Asks the sharpest technical questions. Metrics-driven. |
-| **Josh McPherson** | Project Executive | JMcPherson@jwmcd.com | 615.939.2359 | Active participant, light on the thread (availability replies only). |
-| **Wylie McDougall** | Family / executive | wmcdougall@jwmcd.com | — | On Cc. Silent. Name = the company. Likely ratifier, not doer. |
-| **George Holland** | Executive leadership | gholland@jwmcd.com | — | Always Cc. Silent. Probably reviews dashboards only. |
-| **Caitlin Moi** | Accounting, Spectrum owner | CMoi@jwmcd.com | — | Cc'd on Feb 23 kickoff only. Handles financial integration on her side. |
-| **Jeff Aycock** | Unknown (Cc Feb 23 kickoff) | jaycock@jwmcd.com | — | Never returns to thread. Possibly IT. Worth asking Monday. |
-| **Alec McDougall** | Family (Cc Feb 23 only) | amcdougall@jwmcd.com | — | Silent ratifier. |
-| **Matt Lynn, PMP** | Archer Consulting lead | Matt@archerct.com | 865-919-2780 | Uses Motion for booking. Writes terse confirmations. |
-| **Sam Harwart** | Archer Consulting | Sam@archerct.com | — | Silent on thread. |
+| Person                                                                         | Role                                 | Email                | Phone        | Signal                                                                                                      |
+| ------------------------------------------------------------------------------ | ------------------------------------ | -------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Chris Ball**                                                                 | COO, executive sponsor               | cball@jwmcd.com      | 435.704.7353 | Drives the bus. Short, decisive emails ("BUILD IT!!!").                                                     |
+| **Paul Roberts**                                                               | Engineering & Quality Executive      | proberts@jwmcd.com   | 615.804.4258 | Co-runs the project day-to-day with Matt Lynn. Scheduler of meetings. PRD names him as future system admin. |
+| **Drew Adams** ("Andrew Adams" in original Feb Cc — `aadams@` → now `dadams@`) | Master Scheduler / Inventory Control | dadams@jwmcd.com     | 615-587-8492 | Most operational. Owns scheduling + inventory — the two weakest areas of Archer's plan.                     |
+| **Collin Phillips**                                                            | Manufacturing Engineer               | cphillips@jwmcd.com  | 931-209-7075 | Asks the sharpest technical questions. Metrics-driven.                                                      |
+| **Josh McPherson**                                                             | Project Executive                    | JMcPherson@jwmcd.com | 615.939.2359 | Active participant, light on the thread (availability replies only).                                        |
+| **Wylie McDougall**                                                            | Family / executive                   | wmcdougall@jwmcd.com | —            | On Cc. Silent. Name = the company. Likely ratifier, not doer.                                               |
+| **George Holland**                                                             | Executive leadership                 | gholland@jwmcd.com   | —            | Always Cc. Silent. Probably reviews dashboards only.                                                        |
+| **Caitlin Moi**                                                                | Accounting, Spectrum owner           | CMoi@jwmcd.com       | —            | Cc'd on Feb 23 kickoff only. Handles financial integration on her side.                                     |
+| **Jeff Aycock**                                                                | Unknown (Cc Feb 23 kickoff)          | jaycock@jwmcd.com    | —            | Never returns to thread. Possibly IT. Worth asking Monday.                                                  |
+| **Alec McDougall**                                                             | Family (Cc Feb 23 only)              | amcdougall@jwmcd.com | —            | Silent ratifier.                                                                                            |
+| **Matt Lynn, PMP**                                                             | Archer Consulting lead               | Matt@archerct.com    | 865-919-2780 | Uses Motion for booking. Writes terse confirmations.                                                        |
+| **Sam Harwart**                                                                | Archer Consulting                    | Sam@archerct.com     | —            | Silent on thread.                                                                                           |
 
 ---
 
