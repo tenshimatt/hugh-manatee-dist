@@ -44,7 +44,7 @@ The app's primary navigation is **persona-driven**, not feature-driven. Each div
 
 Chris clarified live on the call:
 
-- **Engineering** is **shared** between Architectural (1010 / A-Sharp) and Processing (1040 / T-Sharp).
+- **Engineering** is **shared** between Architectural (1010 / A Shop) and Processing (1040 / T Shop).
 - **Shop Floor** is **shared** between both divisions.
 - **Inventory is also shared** — he corrected himself mid-call ("I need to tweak that because inventory is shared"). **Currently missing from the list above — add it as shared cross-cutter.**
 - Schedule per workstation (Flat Laser 1, Flat Laser 2, Tube Laser 1, Tube Laser 2 — combined/separate toggle) + a **master schedule** that rolls up.
