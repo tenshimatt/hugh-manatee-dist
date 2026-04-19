@@ -2,9 +2,38 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { LogOut, Search, Sparkles, User } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Bell, LogOut, Search, Sparkles, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+/**
+ * Anomaly shape returned by /api/anomaly — superset of what the bell uses.
+ * The bell only reads id/title/summary/severity and derives a deep-link
+ * from the workstation mentioned in canned evidence ("Laser #2" → /shop/flat-laser-2).
+ */
+type AnomalyPayload = {
+  id: string;
+  severity: string;
+  title: string;
+  summary: string;
+  detected_at?: string;
+  affected_jobs?: { wo: string; part: string }[];
+};
+
+// Very lightweight heuristic: map a title/summary to a workstation slug.
+// Good enough for the demo; not wired to a DB column.
+function anomalyToSlug(a: AnomalyPayload): string {
+  const blob = `${a.title} ${a.summary}`.toLowerCase();
+  if (blob.includes("laser #2") || blob.includes("laser 2") || blob.includes("flat-laser-2")) return "flat-laser-2";
+  if (blob.includes("laser #1") || blob.includes("laser 1") || blob.includes("flat-laser-1")) return "flat-laser-1";
+  if (blob.includes("press brake") || blob.includes("press-brake")) return "press-brake-1";
+  if (blob.includes("cnc")) return "cnc-1";
+  if (blob.includes("weld")) return "weld-bay-a";
+  if (blob.includes("assembly")) return "assembly-1";
+  if (blob.includes("shipping")) return "shipping";
+  if (blob.includes("qc")) return "qc";
+  return "flat-laser-2"; // fallback matches the canned anomaly
+}
 
 type SessionUser = {
   name?: string | null;
@@ -26,6 +55,34 @@ export function TopBar({ onOpenAI }: { onOpenAI: () => void }) {
   // hardcoded demo identity ("Chris Ball") so the chrome still reads right.
   const [user, setUser] = useState<SessionUser | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [anomaly, setAnomaly] = useState<AnomalyPayload | null>(null);
+  const [anomalyDismissedId, setAnomalyDismissedId] = useState<string | null>(
+    null
+  );
+  const [anomalyOpen, setAnomalyOpen] = useState(false);
+  const anomalyPollRef = useRef<number | null>(null);
+
+  // Poll /api/anomaly every 60s. SWR/polling chosen over SSE/webhooks so
+  // offline-capable fallback is trivial — service worker / queue is Phase 2.
+  useEffect(() => {
+    let cancelled = false;
+    const fetchAnomaly = () => {
+      fetch("/api/anomaly")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j: AnomalyPayload | null) => {
+          if (cancelled || !j || !j.id) return;
+          setAnomaly(j);
+        })
+        .catch(() => {});
+    };
+    fetchAnomaly();
+    anomalyPollRef.current = window.setInterval(fetchAnomaly, 60_000) as unknown as number;
+    return () => {
+      cancelled = true;
+      if (anomalyPollRef.current) window.clearInterval(anomalyPollRef.current);
+    };
+  }, []);
+
   useEffect(() => {
     fetch("/api/ai/status")
       .then((r) => r.json())
@@ -114,6 +171,59 @@ export function TopBar({ onOpenAI }: { onOpenAI: () => void }) {
           />
           {dataLive ? "Data: Live" : "Data: Canned"}
         </span>
+      )}
+
+      {/* Anomaly bell — surfaces whatever /api/anomaly last returned.
+          Click to reveal a compact pop-over with severity + deep-link to the
+          implicated workstation kiosk. Dismiss keeps it quiet until a new
+          anomaly.id appears. */}
+      {anomaly && anomaly.id !== anomalyDismissedId && (
+        <div className="relative">
+          <button
+            aria-label={`Anomaly: ${anomaly.title}`}
+            onClick={() => setAnomalyOpen((v) => !v)}
+            className={
+              "relative inline-flex items-center justify-center h-10 w-10 rounded-full transition-colors " +
+              (anomaly.severity === "warn" || anomaly.severity === "High"
+                ? "bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200")
+            }
+          >
+            <Bell className="w-4 h-4" />
+            <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#e69b40] ring-2 ring-white" />
+          </button>
+          {anomalyOpen && (
+            <div className="absolute right-0 top-12 w-80 bg-white border border-slate-200 rounded-xl shadow-lg z-40 overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-amber-50 to-white">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-amber-800">
+                  Anomaly · {anomaly.id}
+                </div>
+                <div className="text-sm font-semibold text-slate-800 mt-0.5">
+                  {anomaly.title}
+                </div>
+                <div className="text-xs text-slate-500 mt-1">{anomaly.summary}</div>
+              </div>
+              <div className="p-3 flex items-center gap-2">
+                <Link
+                  href={`/shop/${anomalyToSlug(anomaly)}`}
+                  onClick={() => setAnomalyOpen(false)}
+                  className="flex-1 text-center h-9 inline-flex items-center justify-center rounded-lg bg-[#064162] text-white text-sm font-semibold hover:bg-[#0a5480]"
+                >
+                  Open workstation
+                </Link>
+                <button
+                  onClick={() => {
+                    setAnomalyDismissedId(anomaly.id);
+                    setAnomalyOpen(false);
+                  }}
+                  className="h-9 px-3 rounded-lg border border-slate-300 text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       <Button variant="outline" size="sm" onClick={onOpenAI} className="gap-2">

@@ -13,9 +13,20 @@ import {
   ChevronDown,
   ChevronRight,
   Menu,
+  ClipboardList,
+  GanttChart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Sidebar — reorganised 2026-04-17 for the shop-overhaul demo.
+ *
+ * Ordering rationale: the demo narrative now opens on /shop (shop floor
+ * overview), so Shop Floor moves to the top. ERF (Engineering Release Form)
+ * sits directly below it because it's the gate that feeds work onto the
+ * shop floor. Everything else (Dashboard, Estimator, Planner, QC, Admin)
+ * is demoted one slot.
+ */
 const WORKSTATIONS = [
   { slug: "flat-laser-1", label: "Flat Laser #1" },
   { slug: "flat-laser-2", label: "Flat Laser #2" },
@@ -77,30 +88,13 @@ export function Sidebar({
         <Menu className="w-4 h-4" />
       </button>
       <nav className="p-2 space-y-1 overflow-y-auto h-[calc(100%-3rem)]">
-        <NavItem
-          href="/dashboard"
-          icon={LayoutDashboard}
-          label="Dashboard"
-          active={pathname === "/dashboard"}
-        />
-        <NavItem
-          href="/estimator"
-          icon={FileText}
-          label="Estimator"
-          active={pathname.startsWith("/estimator")}
-        />
-        <NavItem
-          href="/planner/WO-2026-00218"
-          icon={Hammer}
-          label="Planner"
-          active={pathname.startsWith("/planner")}
-        />
+        {/* --- Shop Floor (top-level, expandable) --- */}
         <div>
           <button
             onClick={() => setShopOpen((v) => !v)}
             className={cn(
               "w-full flex items-center gap-3 px-3 h-11 rounded-xl text-sm font-medium transition-colors",
-              pathname.startsWith("/shop")
+              pathname === "/shop" || pathname.startsWith("/shop/")
                 ? "bg-[#064162] text-white"
                 : "text-slate-700 hover:bg-slate-100"
             )}
@@ -119,6 +113,35 @@ export function Sidebar({
           </button>
           {!collapsed && shopOpen && (
             <div className="ml-4 mt-1 space-y-0.5 border-l border-slate-200 pl-3">
+              <Link
+                href="/shop"
+                className={cn(
+                  "block text-sm px-2 py-1.5 rounded-lg",
+                  pathname === "/shop"
+                    ? "text-[#064162] bg-[#eaf3f8] font-semibold"
+                    : "text-slate-600 hover:bg-slate-50"
+                )}
+              >
+                Overview
+              </Link>
+              <Link
+                href="/shop/lead"
+                className={cn(
+                  "flex items-center gap-1.5 text-sm px-2 py-1.5 rounded-lg",
+                  pathname === "/shop/lead"
+                    ? "text-[#064162] bg-[#eaf3f8] font-semibold"
+                    : "text-slate-600 hover:bg-slate-50"
+                )}
+              >
+                <GanttChart className="w-3.5 h-3.5" />
+                Lead View
+                <span className="ml-auto text-[9px] font-bold uppercase tracking-wider text-[#e69b40]">
+                  P2
+                </span>
+              </Link>
+              <div className="pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                Workstations
+              </div>
               {WORKSTATIONS.map((w) => (
                 <Link
                   key={w.slug}
@@ -136,7 +159,43 @@ export function Sidebar({
             </div>
           )}
         </div>
+
+        {/* --- ERF (Engineering Release Form) --- */}
+        <NavItem
+          href="/erf"
+          icon={ClipboardList}
+          label="ERF"
+          active={pathname === "/erf" || pathname.startsWith("/erf/")}
+        />
+
+        {/* --- Dashboard --- */}
+        <NavItem
+          href="/dashboard"
+          icon={LayoutDashboard}
+          label="Dashboard"
+          active={pathname === "/dashboard"}
+        />
+
+        {/* --- Estimator --- */}
+        <NavItem
+          href="/estimator"
+          icon={FileText}
+          label="Estimator"
+          active={pathname.startsWith("/estimator")}
+        />
+
+        {/* --- Planner --- */}
+        <NavItem
+          href="/planner/WO-2026-00218"
+          icon={Hammer}
+          label="Planner"
+          active={pathname.startsWith("/planner")}
+        />
+
+        {/* --- QC --- */}
         <NavItem href="/qc" icon={ShieldCheck} label="QC" active={pathname.startsWith("/qc")} />
+
+        {/* --- Admin --- */}
         <NavItem
           href="/admin"
           icon={Settings}
