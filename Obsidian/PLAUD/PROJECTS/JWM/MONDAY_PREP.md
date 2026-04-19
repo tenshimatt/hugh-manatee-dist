@@ -34,13 +34,16 @@ Local whisper on PCT 146 (fragile, OOM'd losing Chris's recording) replaced with
 - n8n WF-1a Whisper Transcribe node rewritten to call `http://10.90.10.23:4000/v1/audio/transcriptions`
 - **Verified: the 41-min JWM recording that failed earlier today transcribed successfully at 17:22 via the new path**
 
-### Still being built (agent running)
-The 3 specific pieces Matt committed to Chris this evening:
-1. `/shop/scheduler` — interactive grid matching 1010/1040 reference spreadsheets
-2. `/shop/efficiency` — dashboard matching Daily Efficiency Log + Drew's 6 KPIs
-3. `/shop/efficiency/new` — data entry form feeding the dashboard
+### Monday-3 deliverables (BUILT + DEPLOYED + LIVE)
+All 3 pieces Matt committed to Chris this evening are live at jwm-demo.beyondpandora.com:
 
-Agent commits will land on `feat/jwm-demo` (not pushed yet — Matt reviews first).
+1. **`/shop/scheduler`** — Excel-like grid reading JWM's actual 1010/1040 column structure. Job rows × workstation columns. Status-coloured cells (green on track / amber at risk / red behind). Division filter tabs. CSV export. Drag-to-reschedule stubbed (Phase 2 — button labelled, disabled).
+2. **`/shop/efficiency`** — 4 KPI cards (today's overall efficiency, best operator, worst workstation, variance from baseline), 14-day trend chart, **Drew's 6 KPI tabs** (By Operation / By Material / By Operator / Est vs Actual Labour / Est vs Actual Material / Part History), sortable today-entries table, filters.
+3. **`/shop/efficiency/new`** — operator data entry form with live efficiency % preview, AI-suggest-cause heuristic (stub — Phase 2 for real LLM), submits back to dashboard instantly.
+
+**Commits pushed**: `7d4740f`, `98f589b`, `94726bf`, `adbddf8` on `feat/jwm-demo`.
+**Deployment**: CT 120, systemd `jwm-demo` service restarted, all routes verified 200.
+**Screenshots**: `jwm-demo/shell/screenshots/monday-3/*.png`.
 
 ---
 
@@ -88,10 +91,8 @@ Agent commits will land on `feat/jwm-demo` (not pushed yet — Matt reviews firs
 
 ## What Matt needs to do when back
 
-1. **Review `/shop/scheduler`, `/shop/efficiency`, `/shop/efficiency/new`** once the Monday-3 agent reports in. If look-and-feel matches what you told Chris, ship it.
-2. **Push commits to GitHub** — I've held off on the Monday-3 ones so you can review first.
-3. **Deploy the Monday-3 to CT 120** — I'll handle that once you approve, or you can run: rsync + tar + `pct push` + rebuild + restart (pattern in `jwm-demo/erpnext-theme/deploy.sh` — adapt).
-4. **Send Chris the URL** — https://jwm-demo.beyondpandora.com. Creds already in his Telegram thread (login `cball`, temp password from earlier).
+1. **Pull up the demo on your laptop**: https://jwm-demo.beyondpandora.com → click Sign in with sovereign.ai (or use stub). Walk through: `/shop` → `/shop/scheduler` → `/shop/efficiency` → open a kiosk at `/shop/flat-laser-2` → `/erf`. If anything reads off, tell me and we iterate.
+2. **Send Chris the URL** — https://jwm-demo.beyondpandora.com. Creds already in his Telegram thread (login `cball`, temp password from earlier). He can poke around before the Monday AM meeting.
 5. **Add Hannah / Lisa / Autumn / Owen to Authentik** if Chris wants them to log in too — pattern is documented, same as the Chris/Mark/Asaf provisioning.
 6. **Schedule the early-AM review with Chris.**
 7. **Consider following up on Gretchen introduction** — her "workflow adaptation succeeded, heavy customization stuck at 2yrs" anecdote is a great sovereignty-talk anchor.
