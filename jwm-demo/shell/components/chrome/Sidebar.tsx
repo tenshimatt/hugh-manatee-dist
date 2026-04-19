@@ -15,6 +15,8 @@ import {
   Menu,
   ClipboardList,
   GanttChart,
+  CalendarRange,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -123,6 +125,30 @@ export function Sidebar({
                 )}
               >
                 Overview
+              </Link>
+              <Link
+                href="/shop/scheduler"
+                className={cn(
+                  "flex items-center gap-1.5 text-sm px-2 py-1.5 rounded-lg",
+                  pathname === "/shop/scheduler"
+                    ? "text-[#064162] bg-[#eaf3f8] font-semibold"
+                    : "text-slate-600 hover:bg-slate-50"
+                )}
+              >
+                <CalendarRange className="w-3.5 h-3.5" />
+                Scheduler
+              </Link>
+              <Link
+                href="/shop/efficiency"
+                className={cn(
+                  "flex items-center gap-1.5 text-sm px-2 py-1.5 rounded-lg",
+                  pathname === "/shop/efficiency" || pathname.startsWith("/shop/efficiency/")
+                    ? "text-[#064162] bg-[#eaf3f8] font-semibold"
+                    : "text-slate-600 hover:bg-slate-50"
+                )}
+              >
+                <Activity className="w-3.5 h-3.5" />
+                Efficiency
               </Link>
               <Link
                 href="/shop/lead"
