@@ -4,6 +4,41 @@ Chronological record of what shipped, when, and why.
 
 ---
 
+## 2026-04-19 (evening) — Shop-focused pivot + PLAUD infra fix
+
+### Shop overhaul Phase 1 — deployed
+- Post-login now lands on `/shop` (was `/dashboard`). Sidebar reordered Shop → ERF → Dashboard → Estimator → Planner → QC → Admin.
+- New surfaces built + live at jwm-demo.beyondpandora.com: `/shop` (workstation grid, anomaly inbox, critical path), `/shop/lead` (Phase-2 Gantt stub), `/shop/[workstation]` upgraded kiosk with handoff modal + 5s polling, `/erf` + `/erf/new` + `/erf/[id]` (ERF surfaces, canned backing store).
+- Anomaly bell added to TopBar — anomalies surface at shop-floor level, not just exec dashboard.
+- 7 commits on feat/jwm-demo, pushed. Deployed to CT 120 (systemd-managed). Runbook updated.
+- Scope cut: `/shop/lead` Gantt is a stub page (Phase 2). Service worker / IndexedDB / PPR deferred — SWR polling in their place for now.
+
+### PLAUD transcription migrated to LiteLLM → OpenAI Whisper
+- Local whisper-api on PCT 146 was OOM-crashing (Ollama 11.7GB + whisper 3.9GB on 16GB GPU). Lost a Chris Ball recording earlier in the day.
+- Replaced with LiteLLM-routed OpenAI Whisper on CT 123. Dedicated `plaud-pipeline` virtual key, $50/30d budget.
+- n8n WF-1a "Whisper Transcribe" node rewritten to call `http://10.90.10.23:4000/v1/audio/transcriptions`.
+- Local whisper kept running as deprecated backup.
+- Verified: Chris's 41-min stalled recording (fileId `bd930dc2…`) transcribed successfully through the new path at 17:22.
+- Cost observed: ~$0.006/min. Today's recording: ~$0.25.
+
+### Monday-specific deliverables (in progress — agent building)
+Per Matt's commitment to Chris in the 2026-04-19 15:08 session:
+- `/shop/scheduler` — interactive grid matching JWM's 1010 A + 1040 T shop spreadsheets
+- `/shop/efficiency` — dashboard matching Daily Efficiency Log with Drew's 6 KPIs
+- `/shop/efficiency/new` — data entry form feeding the efficiency dashboard
+
+### Transcript insights captured
+- JWM personnel: Hannah (Ops Mgr Processing, oversees Lisa/Autumn/Owen), Lisa + Autumn (Customer Support Mgrs), Owen (PM). John McDougall owner.
+- Starting point agreed with Chris: Quote/PO entry as system trigger (not estimating/CRM/accounting).
+- Processing division is acute priority; architectural can wait.
+- Data quality is the biggest current pain.
+- External contact: Gretchen (neighbor, ex-PepsiCo VP Supply Chain, now SAP consultant) — intro to be facilitated.
+- Spectrum confirmed as construction-oriented; JWM shoehorning manufacturing into it. Reinforces keep-Spectrum-for-now + Phase-5 replacement option.
+
+### Docs added
+- `MONDAY_PREP.md` — end-of-day brief for Matt's Monday morning
+- `2026-04-19 15:08 Voice Recorder Recommendations and Subscription Costs.md` — today's transcript (misclassified title)
+
 ## 2026-04-19 (late) — Council challenge round
 
 ### Seat 5 (Dissent) + Seat 6 (Reference Architecture) filed
