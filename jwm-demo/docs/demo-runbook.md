@@ -3,6 +3,15 @@
 > **Goal:** replace Archer's Smartsheet proposal in Chris's head within 15 minutes.
 > **Tone:** confident, quiet, specific. Let the product do the talking.
 
+> **2026-04-17 update — shop-overhaul Phase 1:** post-login now lands on
+> `/shop` (not `/dashboard`). Sidebar reorders to Shop Floor → ERF →
+> Dashboard → Estimator → Planner → QC → Admin. New surfaces: `/shop`
+> overview, `/shop/lead` (Phase-2 Gantt stub), `/erf`, `/erf/new`,
+> `/erf/[id]`. Anomaly bell in TopBar deep-links to the implicated
+> workstation kiosk. See the revised Minute 1-3 + Minute 7-9 sections.
+> Screenshots of the new surfaces live at
+> `shell/screenshots/shop-overhaul/`.
+
 ---
 
 ## Pre-demo checklist (5 min before)
@@ -37,17 +46,34 @@ Land on `/` (landing page).
 
 ---
 
-### Minute 1-3 — The executive dashboard (Chris sees this at 7am with coffee)
+### Minute 1-3 — The shop overview (Chris sees this at 7am with coffee)
 
-Land on `/dashboard`.
+Land on `/shop` (new default post-login).
 
 **Talking points:**
-- *"Good afternoon, Chris."* — personalized greeting (the only header field you'd swap for his actual name on day 1)
-- Four KPIs: On-Time Delivery 94.2%, Active WOs 47, Scrap Rate 3.4%, Open NCRs 8 — *"These are real numbers from the real ERPNext instance behind this UI. Not stats on a dashboard — stats from the database of record."*
-- **Anomaly card** (amber/red): *"Scrap pattern detected on Laser #2 — 3 jobs affected this week. Hypothesis: nozzle wear."* — **click it** — modal shows the 3 jobs, specific parts, kerf-drift remarks.
-  - *"This fires automatically overnight. Archer's design has scrap hit a 10% threshold before anyone knows. This one catches the pattern before it hits the threshold."*
-- Division mix donut — *"Processing vs Architectural. Volume-weighted, as you'd expect at $30M going to $100M."*
-- Recent activity feed — real WO, NCR, RMA, release events
+- *"This is what Paul, the lead, opens first thing — every workstation, every
+  queue, at a glance."*
+- **Top tile bar** — "X active job cards across 7 workstations · Y urgent · Z
+  on hold · N open NCRs." — *"Real numbers pulled live from ERPNext. The
+  green 'Live' chip on individual cards tells you which station is reading
+  from the backend right now."*
+- **Anomaly banner** (amber gradient) — *"Scrap pattern detected on Laser
+  #2 — 3 jobs affected this week. Hypothesis: nozzle wear."* — **click it**
+  to jump to the Flat Laser #2 kiosk where the same banner reappears for the
+  operator.
+  - *"This fires automatically overnight. Archer's design has scrap hit a
+    10% threshold before anyone knows. This catches the pattern before it
+    hits the threshold — and tells the operator why their HOLD card is
+    there."*
+- **Flagged workstation** — Flat Laser #2 tile renders in gold with an
+  "Anomaly" badge. Same data, three surfaces: TopBar bell, overview banner,
+  kiosk banner.
+- **Context row at the bottom** — "Upstream ERF queue · In-flight Planner ·
+  Downstream QC inbox." — *"The shop sits between engineering release and
+  quality. Click any of these to see the surrounding flow."*
+
+Then click **Dashboard** in the sidebar for the executive view (same KPIs,
+anomaly modal, division mix, activity feed as before).
 
 ---
 
@@ -68,6 +94,33 @@ Narrate while it's processing (~40s for Claude to extract):
 
 ---
 
+### Minute 5.5-6.5 — ERF (Engineering Release Form) — the gate
+
+Click **ERF** in the sidebar. Land on `/erf`.
+
+**Talking points:**
+- *"Before a WO exists, there's a release. Archer's design doesn't have a
+  release gate — everything's a Smartsheet row. Here the ERF is the
+  handshake between engineering and the shop."*
+- Queue shows **4 pending** · **1 ready to release** · **3 blocked** — each
+  card flags blockers inline (material lead-time, pending drawings, customer
+  sign-off).
+- Click **ERF-2026-0047 — Opryland Atrium Stair**. Status: Ready to Release.
+  Blockers: none.
+- Scroll to line items: 4 standard parts, stringer plates, tread pans,
+  handrail pipe. *"This is the BOM Paul would key into Epicor today."*
+- Click **Release to shop** → *"Releasing… Work Order WO-2026-002XX
+  created."* — banner flips to green.
+- Mention: *"Released ERF spawns a Work Order + populates shop-floor job
+  cards. That's how work gets to the kiosk we're about to see."*
+
+Optional detour: click **+ New ERF** → type customer "Ryman" + project
+"Opryland East Atrium Stair" → click **Help me fill this** → form
+auto-populates division, priority, target date, and 4 line items. *"That's
+an AI-drafted release. Paul tweaks, submits."*
+
+---
+
 ### Minute 6-7 — The Work Order / traveler
 
 Land on `/planner/WO-2026-00218` (or whatever was just created).
@@ -82,12 +135,20 @@ Land on `/planner/WO-2026-00218` (or whatever was just created).
 
 ### Minute 7-9 — Shop floor kiosk + voice NCR (the "oh" moment)
 
-Click **Shop Floor → Flat Laser 2** in sidebar. Land on `/shop/flat-laser-2`.
+From `/shop`, click the **Flat Laser #2** workstation card (or the anomaly
+banner — both land on `/shop/flat-laser-2`).
 
 **Talking points:**
 - *"This is what a welder or laser operator holds on an iPad. Big buttons. Your shop floor team does not log into ERPNext. They see their queue, their current job, and three buttons."*
-- Tap a Job Card → detail view, big Start / Complete / Report Issue buttons
-- **Click "Report Issue"** → NCR composer opens
+- The kiosk banner reappears at the top — *"The operator sees the same
+  anomaly the lead sees, with the hypothesis. No mystery HOLD cards."*
+- Click over to **Press Brake #1** (sidebar) to see an actual queue.
+- Tap a Job Card → detail view, big Start / Complete / Report Issue buttons.
+- Tap **Start** → tap **Complete** → handoff modal opens: *"Hand off to
+  next station"* with a short list (Weld Bay A, QC, etc.). Tap **Weld Bay
+  A** → success toast: *"Job card completed · handed off to Weld Bay A."*
+  Card is gone from the queue.
+- **Back on a job card, click "Report Issue"** → NCR composer opens
 - Type or speak: *"Saw kerf drift on laser 2, three brackets showed edge burn, we pulled them off the line, operator said the nozzle sounded off."*
 - Click submit → *"AI drafting NCR…"* → structured NCR appears with:
   - Title auto-written
