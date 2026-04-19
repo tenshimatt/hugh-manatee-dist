@@ -18,7 +18,9 @@ export default function LandingPage() {
   // Configuration error path.
   function signInWithAuthentik() {
     setLoading(true);
-    signIn("authentik", { callbackUrl: "/dashboard" });
+    // Post-login default is /shop (shop-floor overview) per the
+    // shop-overhaul demo narrative. /dashboard remains available in the nav.
+    signIn("authentik", { callbackUrl: "/shop" });
   }
 
   // Fallback: legacy stub cookie. Kept intentionally for demo resilience
@@ -26,7 +28,7 @@ export default function LandingPage() {
   async function signInWithStub() {
     setStubLoading(true);
     await fetch("/api/auth/stub", { method: "POST" });
-    router.push("/dashboard");
+    router.push("/shop");
   }
 
   return (
