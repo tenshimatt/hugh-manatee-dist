@@ -207,8 +207,35 @@ export function Sidebar({
           href="/estimator"
           icon={FileText}
           label="Estimator"
-          active={pathname.startsWith("/estimator")}
+          active={pathname === "/estimator"}
         />
+        {!collapsed && pathname.startsWith("/estimator") && (
+          <div className="ml-4 mt-1 space-y-0.5 border-l border-slate-200 pl-3">
+            <Link
+              href="/estimator"
+              className={cn(
+                "block text-sm px-2 py-1.5 rounded-lg",
+                pathname === "/estimator"
+                  ? "text-[#064162] bg-[#eaf3f8] font-semibold"
+                  : "text-slate-600 hover:bg-slate-50"
+              )}
+            >
+              PDF Extract
+            </Link>
+            <Link
+              href="/estimator/quick-quote"
+              className={cn(
+                "block text-sm px-2 py-1.5 rounded-lg",
+                pathname === "/estimator/quick-quote" ||
+                  pathname.startsWith("/estimator/quick-quote/")
+                  ? "text-[#064162] bg-[#eaf3f8] font-semibold"
+                  : "text-slate-600 hover:bg-slate-50"
+              )}
+            >
+              Quick Quote
+            </Link>
+          </div>
+        )}
 
         {/* --- Planner --- */}
         <NavItem
