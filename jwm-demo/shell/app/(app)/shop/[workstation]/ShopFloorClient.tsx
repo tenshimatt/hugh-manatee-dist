@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Play,
   CheckCircle2,
@@ -12,16 +12,31 @@ import {
   ArrowLeft,
   Sparkles,
   Loader2,
+  ArrowRightCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { JobCard, NCR } from "@/lib/canned/work-orders";
 
+// Human-friendly labels for handoff workstations. Duplicated across the
+// server route and sidebar for now; a Phase-2 refactor can hoist these to
+// a shared lib.
+const WS_LABELS: Record<string, string> = {
+  "flat-laser-1": "Flat Laser #1",
+  "flat-laser-2": "Flat Laser #2",
+  "cnc-1": "CNC Mill #1",
+  "press-brake-1": "Press Brake #1",
+  "weld-bay-a": "Weld Bay A",
+  "assembly-1": "Assembly #1",
+  qc: "QC Station",
+  shipping: "Shipping",
+};
+
 export function ShopFloorClient({
   workstation,
   label,
   role,
-  cards,
+  cards: initialCards,
   ncrs,
 }: {
   workstation: string;
@@ -30,11 +45,40 @@ export function ShopFloorClient({
   cards: JobCard[];
   ncrs: NCR[];
 }) {
+  const [cards, setCards] = useState<JobCard[]>(initialCards);
   const [selected, setSelected] = useState<JobCard | null>(null);
   const [started, setStarted] = useState(false);
   const [done, setDone] = useState(0);
   const [scrap, setScrap] = useState(0);
   const [ncrOpen, setNcrOpen] = useState(false);
+  const [handoffOpen, setHandoffOpen] = useState(false);
+  const [handoffDone, setHandoffDone] = useState<string | null>(null);
+  const pollRef = useRef<number | null>(null);
+
+  // SWR-style 5s polling of /api/shop/jobs. Only runs when no job card is
+  // selected — when an operator is inside a kiosk detail view we don't want
+  // the queue rewriting under them. Offline queue / service worker is Phase 2;
+  // this plain polling keeps the demo honest ("stale-while-revalidating").
+  useEffect(() => {
+    if (role !== "floor") return;
+    if (selected) return;
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const r = await fetch(`/api/shop/jobs?workstation=${workstation}`);
+        if (!r.ok) return;
+        const j = (await r.json()) as { cards: JobCard[] };
+        if (!cancelled && Array.isArray(j.cards)) setCards(j.cards);
+      } catch {
+        /* swallow — next tick tries again */
+      }
+    };
+    pollRef.current = window.setInterval(tick, 5000) as unknown as number;
+    return () => {
+      cancelled = true;
+      if (pollRef.current) window.clearInterval(pollRef.current);
+    };
+  }, [workstation, role, selected]);
 
   if (role === "qc") {
     return <QCInbox ncrs={ncrs} />;
@@ -109,7 +153,11 @@ export function ShopFloorClient({
                 <Play className="w-6 h-6" /> Start
               </Button>
             ) : (
-              <Button variant="success" size="kiosk">
+              <Button
+                variant="success"
+                size="kiosk"
+                onClick={() => setHandoffOpen(true)}
+              >
                 <CheckCircle2 className="w-6 h-6" /> Complete
               </Button>
             )}
@@ -133,6 +181,40 @@ export function ShopFloorClient({
             part={selected.part}
             workstation={workstation}
           />
+        )}
+
+        {handoffOpen && (
+          <HandoffModal
+            card={selected}
+            doneQty={done}
+            scrapQty={scrap}
+            fromWorkstation={workstation}
+            onCancel={() => setHandoffOpen(false)}
+            onConfirm={(next) => {
+              setHandoffOpen(false);
+              setHandoffDone(next);
+              // Return to queue after a short beat so the operator sees the toast.
+              setTimeout(() => {
+                setSelected(null);
+                setStarted(false);
+                setDone(0);
+                setScrap(0);
+                setHandoffDone(null);
+                // Optimistically remove the completed card from local state;
+                // next poll tick will reconcile with the server.
+                setCards((prev) => prev.filter((c) => c.id !== selected.id));
+              }, 1800);
+            }}
+          />
+        )}
+
+        {handoffDone && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white rounded-xl shadow-2xl px-5 py-3 flex items-center gap-2 fade-in">
+            <CheckCircle2 className="w-5 h-5" />
+            <span className="font-semibold">
+              Job card completed · handed off to {WS_LABELS[handoffDone] || handoffDone}
+            </span>
+          </div>
         )}
       </div>
     );
@@ -399,6 +481,125 @@ function DraftRow({ label, value, mono }: { label: string; value: string; mono?:
       <div className="text-slate-500 font-semibold">{label}</div>
       <div className={`text-slate-800 ${mono ? "font-mono text-[#064162]" : ""}`}>
         {value}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * HandoffModal — shown when an operator taps Complete on a job card.
+ *
+ * Presents a short roster of plausible "next" workstations based on the
+ * current station, with QC + Shipping as always-available fallbacks. The
+ * operator taps one to "hand off" (logged, then the job card is removed
+ * from the queue optimistically).
+ *
+ * Phase 2: wire this to an actual ERPNext Job Card transition + write a
+ * Shop Floor Log entry. For now the confirmation is a client-side toast.
+ */
+function HandoffModal({
+  card,
+  doneQty,
+  scrapQty,
+  fromWorkstation,
+  onCancel,
+  onConfirm,
+}: {
+  card: JobCard;
+  doneQty: number;
+  scrapQty: number;
+  fromWorkstation: string;
+  onCancel: () => void;
+  onConfirm: (next: string) => void;
+}) {
+  // Plausible downstream mapping. Not a routing engine — good enough to
+  // make the demo narrative work. Every path always offers QC + Shipping.
+  const NEXT_BY_STATION: Record<string, string[]> = {
+    "flat-laser-1": ["press-brake-1", "cnc-1", "weld-bay-a", "qc"],
+    "flat-laser-2": ["press-brake-1", "cnc-1", "weld-bay-a", "qc"],
+    "cnc-1": ["weld-bay-a", "assembly-1", "qc"],
+    "press-brake-1": ["weld-bay-a", "assembly-1", "qc"],
+    "weld-bay-a": ["assembly-1", "qc"],
+    "assembly-1": ["qc", "shipping"],
+    qc: ["shipping", "weld-bay-a"],
+    shipping: ["qc"],
+  };
+  const suggested = NEXT_BY_STATION[fromWorkstation] || ["qc", "shipping"];
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <h2 className="text-xl font-bold text-[#064162]">Hand off to next station</h2>
+          </div>
+          <button onClick={onCancel} className="text-slate-400 hover:text-slate-600">
+            Cancel
+          </button>
+        </div>
+
+        <div className="p-6 space-y-5">
+          <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              Completing
+            </div>
+            <div className="text-lg font-bold text-[#064162] mt-0.5">{card.part}</div>
+            <div className="text-sm text-slate-500">
+              {card.id} · {card.wo} · Op {card.op_seq}
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-3 text-sm">
+              <div>
+                <div className="text-[10px] uppercase text-slate-500 font-semibold">Target</div>
+                <div className="text-xl font-bold text-[#064162] tabular-nums">{card.qty}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase text-slate-500 font-semibold">Done</div>
+                <div className="text-xl font-bold text-emerald-700 tabular-nums">{doneQty}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase text-slate-500 font-semibold">Scrap</div>
+                <div className={`text-xl font-bold tabular-nums ${scrapQty > 0 ? "text-red-700" : "text-slate-400"}`}>
+                  {scrapQty}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="text-sm font-semibold text-slate-700 mb-2">Next workstation</div>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {suggested.map((slug) => (
+                <button
+                  key={slug}
+                  onClick={() => onConfirm(slug)}
+                  className="flex items-center justify-between gap-3 h-14 px-4 rounded-xl border border-slate-300 hover:border-[#064162] hover:bg-[#eaf3f8] transition-colors text-left"
+                >
+                  <div>
+                    <div className="font-semibold text-slate-800">
+                      {WS_LABELS[slug] || slug}
+                    </div>
+                    <div className="text-[11px] text-slate-500">Tap to hand off</div>
+                  </div>
+                  <ArrowRightCircle className="w-5 h-5 text-[#064162]" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+            <span>Handoff writes a Shop Floor Log entry · Phase 2 wires to ERPNext</span>
+            <button onClick={onCancel} className="text-slate-600 hover:underline">
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
