@@ -1,0 +1,20 @@
+{
+  "source": "Tshop Estimator Update R18.xlsx",
+  "extracted_at": "2026-04-17",
+  "notes": "Rates from JWM T-shop Estimator spreadsheet. Used for quote pricing in the Architectural / Processing divisions. No UI surface yet — data-only fixture.",
+  "rates": [
+    { "operation": "FM",   "label": "Forming / Press Brake",    "rate_usd": 61.62, "loaded_rate_usd": 83.80, "unit": "per_hour" },
+    { "operation": "TB",   "label": "Tube Bending",              "rate_usd": 65.00, "unit": "per_hour" },
+    { "operation": "WELD", "label": "Welding",                   "rate_usd": 57.14, "loaded_rate_usd": 77.71, "unit": "per_hour" },
+    { "operation": "MCH",  "label": "Machining",                 "rate_usd": 83.58, "unit": "per_hour" },
+    { "operation": "HWD",  "label": "Hardware Install — Labor",  "rate_usd": 45.00, "loaded_rate_usd": 61.20, "unit": "per_hour" },
+    { "operation": "FIN",  "label": "Finishing",                 "rate_usd": 100.00, "unit": "per_hour", "throughput_in_per_sec": 1.67 }
+  ],
+  "quote_processes": [
+    "Flatbed Laser", "Tube Laser", "Plasma", "Trumatic", "Trubend",
+    "Tube Bending", "Shear", "Saw Cutting", "Forming", "Welding",
+    "Machining", "Leveling", "Finishing", "Assembly", "Hardware",
+    "Hardware Install", "Powder Coating/Paint", "Special Packaging",
+    "Special Delivery"
+  ]
+}
