@@ -41,8 +41,9 @@ async function main() {
   const shot = async (route: string, file: string) => {
     const u = `${BASE}${route}`;
     console.log(`→ ${u}`);
-    await page.goto(u, { waitUntil: "networkidle", timeout: 30_000 });
-    await page.waitForTimeout(1200);
+    await page.goto(u, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.waitForLoadState("networkidle", { timeout: 60_000 }).catch(() => {});
+    await page.waitForTimeout(1500);
     const out = path.join(OUT, file);
     await page.screenshot({ path: out, fullPage: true });
     console.log(`   saved ${out}`);
@@ -51,6 +52,7 @@ async function main() {
   await shot("/shop/scheduler", "01-scheduler.png");
   await shot("/shop/efficiency", "02-efficiency-dashboard.png");
   await shot("/shop/efficiency/new", "03-efficiency-new-form.png");
+  await shot("/planner/MFG-WO-2026-00024?view=pdr", "04-pdr.png");
 
   await browser.close();
 }
