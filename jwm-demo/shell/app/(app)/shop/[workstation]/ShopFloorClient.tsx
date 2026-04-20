@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { JobCard, NCR } from "@/lib/canned/work-orders";
+import { useBarcodeScanner } from "@/lib/useBarcodeScanner";
 
 // Human-friendly labels for handoff workstations. Duplicated across the
 // server route and sidebar for now; a Phase-2 refactor can hoist these to
@@ -72,7 +73,54 @@ export function ShopFloorClient({
   const [handoffPhotoCount, setHandoffPhotoCount] = useState(0);
   const [anomalyOpen, setAnomalyOpen] = useState(false);
   const [ipadHint, setIpadHint] = useState(false);
+  const [scanToast, setScanToast] = useState<string | null>(null);
   const pollRef = useRef<number | null>(null);
+  const scanToastTimerRef = useRef<number | null>(null);
+
+  // Barcode scanner — USB keyboard-wedge scanners emit a rapid burst of
+  // keystrokes terminated by Enter. We match the scanned code against
+  // JC-id, WO number, or part name in the current queue. If we're already
+  // inside a selected card, a scan is ignored (the operator is mid-task).
+  const { active: scannerActive } = useBarcodeScanner(
+    (code) => {
+      const raw = code.trim();
+      if (!raw) return;
+      // Case-insensitive exact match against the common identifiers.
+      const needle = raw.toUpperCase();
+      const match = cards.find((c) => {
+        return (
+          c.id.toUpperCase() === needle ||
+          c.wo.toUpperCase() === needle ||
+          c.part.toUpperCase() === needle
+        );
+      });
+      if (match) {
+        setSelected(match);
+        setStarted(false);
+        setDone(0);
+        setScrap(0);
+        setScanToast(`Scanned ${match.id} — ${match.part}`);
+      } else {
+        setScanToast(`No job card matching ${raw}`);
+      }
+      if (scanToastTimerRef.current) {
+        window.clearTimeout(scanToastTimerRef.current);
+      }
+      scanToastTimerRef.current = window.setTimeout(
+        () => setScanToast(null),
+        2800,
+      ) as unknown as number;
+    },
+    { disabled: role !== "floor" || !!selected },
+  );
+
+  useEffect(() => {
+    return () => {
+      if (scanToastTimerRef.current) {
+        window.clearTimeout(scanToastTimerRef.current);
+      }
+    };
+  }, []);
 
   // iPad-range hint — shows on viewports 1024-1280px (iPad landscape
   // territory) and remembers dismissal in localStorage. Intentionally subtle:
@@ -282,6 +330,28 @@ export function ShopFloorClient({
 
   return (
     <div className="space-y-5 relative">
+      {/* Scanner-ready pill — visible for ~3s after the kiosk loads so the
+          operator knows barcode scans are live. Auto-hides to avoid clutter. */}
+      {scannerActive && (
+        <div
+          className="fixed top-3 right-3 z-40 flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm pointer-events-none fade-in"
+          aria-live="polite"
+        >
+          <span aria-hidden>{"\u{1F52B}"}</span> Scanner ready
+        </div>
+      )}
+
+      {/* Scan result toast — success (matched JC) or miss. */}
+      {scanToast && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#064162] text-white rounded-xl shadow-2xl px-5 py-3 flex items-center gap-2 fade-in max-w-[90vw]"
+          role="status"
+        >
+          <span aria-hidden>{"\u{1F52B}"}</span>
+          <span className="font-semibold">{scanToast}</span>
+        </div>
+      )}
+
       {/* iPad-range (1024-1280) one-time helper pill. Dismissal persists in
           localStorage so ops only see it once per device. */}
       {ipadHint && (
