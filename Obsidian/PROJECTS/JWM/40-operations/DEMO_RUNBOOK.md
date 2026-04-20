@@ -1,6 +1,6 @@
 # JWM Demo Runbook — Monday 2026-04-20 08:30 CT
 
-> **Attendees:** Chris Ball (COO), Mark, Asaf. Matt presenting.
+> **Attendees:** Chris Ball (COO), Matt presenting.
 > **Goal:** team relatability, not persuasion. Business is already won (Chris: *"The goal is not to get approval because we're good. We're going ahead."*).
 > **Chris's posture:** *"I'm the brakes. Don't let them lead — let the conversation go where it goes."* He will record the session so every reaction becomes the backlog.
 > **Golden rule:** real data, real workflows, the screens they already recognise. No pitching. Let the product do the talking.
@@ -18,7 +18,7 @@ Run this while driving to work / on the phone to Chris. Everything here is a har
 - [ ] Click through in narrative order (table below). If any page 500s, restart dev server on CT 120 — but Matt's laptop is the presenter, so the public URL matters.
 - [ ] Open chat drawer. Ask John: *"How is IAD181 tracking on budget?"* → expect the 61% / $1.553M / 24% margin answer.
 - [ ] Confirm **"Voice ready"** badge is green. Click speaker icon once — expect Brian (ElevenLabs). If it falls back to native male voice, that's fine; don't flag it.
-- [ ] Test Authentik login on Chris's account (already enrolled). Mark + Asaf may not have fingerprints — prepare to impersonate-as-Matt if login fails. Per prior memory note, this is acceptable.
+- [ ] Test Authentik login on Chris's account (already enrolled). If anyone else needs to log in and fingerprint enrolment hasn't landed, be ready to impersonate-as-Matt. Per prior memory note, this is acceptable.
 - [ ] Open second tab to **`https://jwm-erp.beyondpandora.com`** → confirm favicon + login page render. Admin creds `JWMdemo2026!` in back pocket. **Do not open this during the demo unless asked.**
 - [ ] Open third tab to **`https://n8n.beyondpandora.com`** → confirm public URL loads without Authentik (removed tonight). LAN backup `http://10.90.10.7:5678`.
 - [ ] Resize Chrome to ~1440px wide. Check `/engineering/pipeline` and `/shop/scheduler` render full-bleed (they're the full-width ones).
@@ -58,7 +58,7 @@ Soft open. You log in, Authentik hands off, you land on the global dashboard. **
 *Chris will notice:* navy + gold palette, JWM branding, his own team's names.
 *If they ask "is this data real?"* — *"Yes. Real production schedule, real PMs, real projects. We'll walk through it."*
 
-**Pivot trigger:** if Mark or Asaf immediately asks about ERPNext/backend, jump to T+20 (IAD181 Project Dashboard) and let the ERP reveal land there naturally.
+**Pivot trigger:** if anyone immediately asks about ERPNext/backend, jump to T+20 (IAD181 Project Dashboard) and let the ERP reveal land there naturally.
 
 ---
 
@@ -90,7 +90,7 @@ Scroll. Point at:
 
 *Chris will notice:* this is the Matt Rasmussen PMO dashboard from his screen-share, but with Cole's real 6 projects.
 
-**Pivot trigger:** Mark may ask "who else has a dashboard like this?" — answer: *"Every PM, every FM, every FX. Role-based. Phase 2 builds out the rest."*
+**Pivot trigger:** if anyone asks "who else has a dashboard like this?" — answer: *"Every PM, every FM, every FX. Role-based. Phase 2 builds out the rest."*
 
 ---
 
@@ -245,7 +245,7 @@ Four callouts, drop verbatim where the moment lands.
 
 | Symptom | Say this | Do this |
 |---|---|---|
-| Authentik login fails for Mark or Asaf | *"Fingerprint enrolment is still rolling out — jumping in as myself."* | Impersonate-as-Matt. Don't dwell. |
+| Authentik login fails for a team member | *"Fingerprint enrolment is still rolling out — jumping in as myself."* | Impersonate-as-Matt. Don't dwell. |
 | Voice cuts mid-sentence | nothing — just keep going | Click speaker-off in chat tray |
 | `/engineering/pipeline` slow (316 cards) | *"Filtering to one PM — the full board is a stress test."* | Immediately filter by division or PM |
 | ERPNext requested but slow | *"Not going to open the backend — it's a safety net today, not a stop on the tour."* | Stay in the demo shell. `jwm-erp.beyondpandora.com` is optional. |
