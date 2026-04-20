@@ -13,6 +13,7 @@ import {
   MarginIncreaseTile,
 } from "@/components/project-dashboard/MarginTile";
 import { FieldInstallTable } from "@/components/project-dashboard/FieldInstallTable";
+import { RecentFieldDailies } from "@/components/project-dashboard/RecentFieldDailies";
 import { BillingsTile } from "@/components/project-dashboard/BillingsTile";
 import { ChangeOrderSummary } from "@/components/project-dashboard/ChangeOrderSummary";
 import { ProjectScheduleStub } from "@/components/project-dashboard/ProjectScheduleStub";
@@ -142,8 +143,9 @@ export default async function ProjectDashboardPage({
           </div>
         </div>
 
-        <div className="col-span-12 xl:col-span-3">
+        <div className="col-span-12 xl:col-span-3 space-y-4">
           <FieldInstallTable rows={project.fieldInstall} />
+          <RecentFieldDailies projectId={decoded} />
         </div>
       </section>
 
