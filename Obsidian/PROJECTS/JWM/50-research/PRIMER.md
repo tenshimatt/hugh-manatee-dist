@@ -198,8 +198,8 @@ Come back from Monday with answers to as many of these as you can. They reshape 
 ## The three docs you should have ready on your other monitor Monday
 
 1. **`jwm-demo/docs/demo-runbook.md`** — minute-by-minute script. Hold it as a safety net.
-2. **`Obsidian/PLAUD/PROJECTS/JWM/council/SYNTHESIS_v2.md`** — the commercial posture, in case the room goes to commercials faster than you expect. $165K + $25K contingency. Phase 1+2 = $95K for a one-page engagement letter Monday.
-3. **`Obsidian/PLAUD/PROJECTS/JWM/MONDAY_PREP.md`** — end-of-day status so you know what changed last (shop pivot + Monday-3 + PLAUD fix).
+2. **`Obsidian/PROJECTS/JWM/50-research/council/SYNTHESIS_v2.md`** — the commercial posture, in case the room goes to commercials faster than you expect. $165K + $25K contingency. Phase 1+2 = $95K for a one-page engagement letter Monday.
+3. **`Obsidian/PROJECTS/JWM/00-meta/MONDAY_PREP.md`** — end-of-day status so you know what changed last (shop pivot + Monday-3 + PLAUD fix).
 
 That's it. If you've read this far, you can hold the room.
 

@@ -5,7 +5,7 @@ Site: https://jwm-erp.beyondpandora.com
 Start: 2026-04-19 23:58 CDT
 Live import complete: 2026-04-20 01:28 CDT (total ~90 min including troubleshooting)
 
-## Source files ingested (from `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/attachments/`)
+## Source files ingested (from `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/attachments/`)
 
 | File | Sheets consumed | Records |
 |---|---|---:|

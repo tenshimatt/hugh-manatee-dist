@@ -1,6 +1,6 @@
 # Council Seat 1 — Email Thread Analysis
 
-**Source:** `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/attachments/Email.md` (1033 lines; chain repeats three times from line 289 onward — all unique content is in lines 1–288).
+**Source:** `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/attachments/Email.md` (1033 lines; chain repeats three times from line 289 onward — all unique content is in lines 1–288).
 
 **Thread timespan:** 23 Feb 2026 (Chris's kickoff) → 17 Apr 2026 (Drew's last-call concerns). All objections and question-raising happens in the final 48 hours before "Release Matt for Stage 2! BUILD IT!!!" was scheduled to fire.
 

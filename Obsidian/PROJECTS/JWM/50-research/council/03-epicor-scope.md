@@ -273,9 +273,9 @@ Sovereign.ai's expanded scope ends Epicor and ends Archer in one program, on JWM
 
 ## File paths
 
-- **This document:** `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/council/03-epicor-scope.md`
-- **Source PRD:** `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/JWM_Production_System_PRD_v0.2.md`
-- **Built-state addendum:** `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/PRD_ADDENDUM_built_state.md`
-- **Stack inventory:** `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/STACK_INVENTORY.md`
+- **This document:** `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/council/03-epicor-scope.md`
+- **Source PRD:** `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/99-archive/JWM_Production_System_PRD_v0.2.md`
+- **Built-state addendum:** `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/99-archive/PRD_ADDENDUM_built_state.md`
+- **Stack inventory:** `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/99-archive/STACK_INVENTORY.md` (superseded by `20-architecture/stack.md`)
 - **Evidence — spreadsheet tabs:** `/tmp/jwm-council/1040_T_Shop_Production_Schedule.txt` (42 tabs), `/tmp/jwm-council/1010_A_shop_Production_Schedule.txt` (20 tabs), `/tmp/jwm-council/Daily_Efficiency_Log.txt` ("information pulled from Epicor")
 - **Archer deliverables:** `/tmp/jwm.txt`

@@ -760,4 +760,4 @@ If you take nothing else from this doc:
 
 ---
 
-**File:** `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/council/06-reference-architecture.md`
+**File:** `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/council/06-reference-architecture.md`

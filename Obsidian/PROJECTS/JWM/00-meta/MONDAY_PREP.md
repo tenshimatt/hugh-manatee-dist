@@ -49,7 +49,7 @@ All 3 pieces Matt committed to Chris this evening are live at jwm-demo.beyondpan
 
 ## Transcript takeaways (2026-04-19 15:08 recording)
 
-**Source**: `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/2026-04-19 15:08 Voice Recorder Recommendations and Subscription Costs.md` (misclassified title — actual content is a JWM/ERP planning session)
+**Source**: `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/2026-04-19-voice-recorder-costs.md` (misclassified title — actual content is a JWM/ERP planning session)
 
 ### JWM personnel surfaced in conversation
 - **Hannah** — Operations Manager, Processing Division (oversees Lisa, Autumn, Owen)

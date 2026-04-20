@@ -45,11 +45,16 @@ D depends on real data being in ERPNext; may cut to hardcoded KPIs.
 
 ## Source-of-truth docs for every agent
 
-- `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/MENU_ORDER.md`
-- `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/SMARTSHEET_REFERENCE.md`  ← screenshot-by-screenshot map
-- `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/2026-04-19 22-25 JWM Deep Dive Menu Routers and Demo Scope.md`  ← transcript + build deltas
-- `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/attachments/Production Schedule_new.xlsx`  ← real Arch data (317 rows × 177 cols)
-- `/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/screenshots/`  ← Chris's actual UI
+- `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/00-meta/MENU_ORDER.md`
+- `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/SMARTSHEET_REFERENCE.md`  ← screenshot-by-screenshot map
+- `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/2026-04-19-deep-dive.md`  ← transcript + build deltas
+- `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/attachments/Production Schedule_new.xlsx`  ← real Arch data (317 rows × 177 cols)
+- `/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/screenshots/`  ← Chris's actual UI
+
+## Do-not-remove list (already-loved surfaces)
+
+- **`/shop/scheduler`** — Drew's grid-shaped schedule (rows = jobs, columns = workstations). "The view Drew opens every morning." Chris confirmed on the call that the team loved it when he showed them. **Never refactor away, never replace.** The new Engineering Kanban at `/engineering/pipeline` is additive, not a substitute.
+- **`/shop/efficiency`** — Chris-approved verbatim ("efficiency, I think I did a great job").
 
 ## Hard rules (carry from prior CLAUDE.md + feedback)
 
