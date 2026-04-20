@@ -27,6 +27,7 @@ import { KpiTile, fmtUsd, fmtPct } from "@/components/exec/KpiTile";
 import { ProjectBudgetOverview } from "@/components/exec/ProjectBudgetOverview";
 import { PersonaCardRow } from "@/components/exec/PersonaCardRow";
 import { ActiveProjectsTable } from "@/components/exec/ActiveProjectsTable";
+import { PMO_ROWS } from "@/lib/pmo-rollup";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,22 @@ const DASHBOARD_LINKS: Array<{ label: string; href: string; icon: React.ElementT
 
 export default async function ExecArchPage() {
   const kpis = await getExecKpis("Architectural");
+
+  // Spectrum vs Smartsheet drift aggregate — Σ |spectrumDelta| over active projects.
+  const activeRows = PMO_ROWS.filter((r) => !r.archived);
+  const driftAbsTotal = activeRows.reduce(
+    (s, r) => s + Math.abs(r.spectrumDelta ?? 0),
+    0,
+  );
+  const driftOver10k = activeRows.filter(
+    (r) => Math.abs(r.spectrumDelta ?? 0) > 10_000,
+  ).length;
+  const maxAbsDrift = activeRows.reduce(
+    (m, r) => Math.max(m, Math.abs(r.spectrumDelta ?? 0)),
+    0,
+  );
+  const driftAccent: "amber" | "rose" | "slate" =
+    maxAbsDrift > 250_000 ? "rose" : maxAbsDrift > 50_000 ? "amber" : "slate";
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
@@ -142,6 +159,16 @@ export default async function ExecArchPage() {
             trend="up"
             size="lg"
           />
+          <Link href="/exec/spectrum-drift" className="col-span-4 block group">
+            <KpiTile
+              label="Spectrum drift"
+              value={fmtUsd(driftAbsTotal)}
+              subtitle={`${driftOver10k} project${driftOver10k === 1 ? "" : "s"} with >$10k drift · click to reconcile`}
+              accent={driftAccent}
+              source="canned"
+              size="lg"
+            />
+          </Link>
         </div>
 
         <div className="col-span-12 lg:col-span-4">

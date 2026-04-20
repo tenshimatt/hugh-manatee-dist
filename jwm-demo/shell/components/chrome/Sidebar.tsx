@@ -117,7 +117,7 @@ export function Sidebar({
             { href: "/arch/pm", label: "Project Managers" },
             { href: "/arch/projects", label: "Projects" },
             { href: "/arch/estimating", label: "Estimating", matchPrefix: "/estimator" },
-            { href: "/arch/sales", label: "Sales and Precon" },
+            { href: "/arch/sales", label: "Sales Pipeline" },
             { href: "/arch/erf", label: "ERF", matchPrefix: "/erf" },
             { href: "/arch/field-daily", label: "Field Daily" },
           ]}
