@@ -11,7 +11,7 @@ JWM runs a hand-rolled MES inside Excel + Smartsheet on top of Epicor. Processin
 
 ## Solution
 
-Sovereign stack: ERPNext (Frappe v15) backbone + `jwm_manufacturing` custom app + Next.js shell (the everyday UI) + LiteLLM gateway + n8n + Authentik SSO, all on JWM-owned Proxmox infra. Total $165K + $25K contingency over 11 months, Epicor retired 2027-03-31.
+Sovereign stack: ERPNext (Frappe v15) backbone + `jwm_manufacturing` custom app + Next.js shell (the everyday UI) + LiteLLM gateway + Authentik SSO, all on JWM-owned Proxmox infra. Async work (scheduled jobs, webhooks, approvals) runs on ERPNext-native facilities (Server Script, Scheduled Job, Workflow, Notification) — no external workflow orchestrator. Total $165K + $25K contingency over 11 months, Epicor retired 2027-03-31.
 
 ## Who
 

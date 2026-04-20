@@ -1,5 +1,5 @@
 ---
-title: JWM Deploy Runbook (shell + ERP + n8n)
+title: JWM Deploy Runbook (shell + ERP)
 status: Built
 updated: 2026-04-20
 owner: sovereign.ai
@@ -90,22 +90,19 @@ curl -H "Authorization: token c3132bc83582071:642ac0c571db51a" \
 
 `/home/frappe/frappe-bench/` does NOT exist on CT 171 host. Bench is inside the container. An early import agent lost time on this — do not repeat.
 
-## Tier 3 — n8n (CT 107)
+## Tier 3 — async / workflow (ERPNext-native)
 
-- Authentik intentionally bypassed (see [[../30-decisions/005-authentik-sso-plus-bypass-for-n8n]])
-- PLAUD pipeline still writes to legacy Obsidian path — migration deferred per Matt 2026-04-20
+JWM does **not** use an external workflow orchestrator. All async work runs inside ERPNext:
 
-### Workflow ops
+- **Server Script** — trigger Python on DocType events (save / submit / cancel)
+- **Scheduled Job** — cron-style recurrence (daily digests, nightly rollups)
+- **Workflow** DocType — stock Frappe approval chains + state machines
+- **Notification** DocType — email / Slack / webhook outbound on doc events
+- **Webhook** DocType — inbound for third-party pushes
 
-- CLI: `n8n export:workflow --id=X --output=/tmp/x.json` then `n8n import:workflow --input=/tmp/x.json`, then `systemctl restart n8n`
-- After import, confirm activation requires 4 DB entries (workflow_entity, shared_workflow, workflow_published_version, workflow_history). If scoped to personal project, CLI may silently fail — patch SQLite directly and restart.
+This stays inside the one system JWM admins log into. One audit log, one auth boundary, no cross-system token drift.
 
-### Verification
-
-```bash
-ssh root@10.90.10.10 'pct exec 107 -- systemctl status n8n'
-curl -s https://n8n.beyondpandora.com/healthz
-```
+If a future need genuinely requires visual flow orchestration beyond Frappe's facilities, revisit. The bar for adding a second orchestrator is a concrete requirement we can't model in ERPNext natively — not a preference for a diagramming UX.
 
 ## Rollback
 

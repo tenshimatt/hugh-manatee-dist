@@ -146,7 +146,7 @@ export default function LandingPage() {
       </div>
       <ProjectMarquee />
       <footer className="bg-[#062f44] text-white/50 text-xs py-3 text-center">
-        ERPNext · LiteLLM · n8n · Authentik · Traefik · Beyond Pandora
+        ERPNext · LiteLLM · Authentik · Traefik · Beyond Pandora
       </footer>
     </div>
   );

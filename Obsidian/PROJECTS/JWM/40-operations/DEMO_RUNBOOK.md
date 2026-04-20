@@ -20,7 +20,8 @@ Run this while driving to work / on the phone to Chris. Everything here is a har
 - [ ] Confirm **"Voice ready"** badge is green. Click speaker icon once — expect Brian (ElevenLabs). If it falls back to native male voice, that's fine; don't flag it.
 - [ ] Test Authentik login on Chris's account (already enrolled). If anyone else needs to log in and fingerprint enrolment hasn't landed, be ready to impersonate-as-Matt. Per prior memory note, this is acceptable.
 - [ ] Open second tab to **`https://jwm-erp.beyondpandora.com`** → confirm favicon + login page render. Admin creds `JWMdemo2026!` in back pocket. **Do not open this during the demo unless asked.**
-- [ ] Open third tab to **`https://n8n.beyondpandora.com`** → confirm public URL loads without Authentik (removed tonight). LAN backup `http://10.90.10.7:5678`.
+<!-- n8n tab removed 2026-04-20 — not part of JWM stack -->
+
 - [ ] Resize Chrome to ~1440px wide. Check `/engineering/pipeline` and `/shop/scheduler` render full-bleed (they're the full-width ones).
 - [ ] Quick mobile sanity check — Chris may screenshare from iPad. Open `/dashboard` + `/arch/projects/25071-IAD181` in responsive mode.
 - [ ] Watch for Chris's SMS with the final menu nesting. If it arrives, adjust the sidebar in-flight — not a blocker for the demo itself.
@@ -277,8 +278,6 @@ Fill this in live. Chris is recording audio; this is the written shadow.
 
 - **Demo shell:** `https://jwm-demo.beyondpandora.com` — Authentik SSO
 - **ERPNext:** `https://jwm-erp.beyondpandora.com` — Administrator / `JWMdemo2026!`
-- **n8n (public, no Authentik as of tonight):** `https://n8n.beyondpandora.com` — `matt@beyondpandora.com` / `JWMdemo2026!`
-- **n8n LAN backup:** `http://10.90.10.7:5678`
 - **Localhost fallback (Matt's laptop):** `http://localhost:3100`
 
 ---

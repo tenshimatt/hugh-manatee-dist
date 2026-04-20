@@ -12,7 +12,6 @@ owner: sovereign.ai
 | UX | Next.js shell (jwm-demo) | CT 120 | https://jwm-demo.beyondpandora.com | `:3200`, `systemctl status jwm-demo`, Bun local / npm+node in prod |
 | ERP | ERPNext v15.94.3 (Frappe Docker) | CT 171 | https://jwm-erp.beyondpandora.com | Compose stack at `/root/frappe_docker/`, site `frontend` |
 | AI | LiteLLM gateway | CT 123 | https://jwm-ai.beyondpandora.com | JWM virtual key `sk-vwrcwMBaJjdNI_Lbv9ZPbA` |
-| Auto | n8n | CT 107 | https://n8n.beyondpandora.com | Authentik bypassed — API clients need it |
 | SSO | Authentik | CT 105 | https://auth.beyondpandora.com | App slug `jwm` (OIDC issuer) |
 | Edge | Traefik + Cloudflared | CT 103 + 113 | — | Wildcard TLS |
 

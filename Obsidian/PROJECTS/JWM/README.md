@@ -13,7 +13,6 @@ JWM (John W. McDougall Co., Nashville) is a $30M metal fabricator replacing Epic
 |---|---|
 | Demo | https://jwm-demo.beyondpandora.com |
 | ERPNext | https://jwm-erp.beyondpandora.com |
-| n8n | https://n8n.beyondpandora.com |
 | GitHub (shell) | `/Users/mattwright/pandora/jwm-demo/` |
 
 ## By role

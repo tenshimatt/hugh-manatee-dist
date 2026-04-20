@@ -14,6 +14,7 @@ const FULL_BLEED_ROUTES = [
   "/shop/scheduler",
   "/engineering/pipeline",
   "/engineering/routes",
+  "/exec/pmo",
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -38,7 +39,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       >
         <div className={cn("p-6", fullBleed ? "max-w-none" : "max-w-[1600px] mx-auto")}>{children}</div>
         <footer className="px-6 py-6 text-center text-xs text-slate-400 border-t border-slate-200 mt-12">
-          Powered by sovereign.ai · ERPNext + LiteLLM + n8n · © John W. McDougall Co.
+          Powered by sovereign.ai · ERPNext + LiteLLM · © John W. McDougall Co.
         </footer>
       </main>
       <AIChat open={aiOpen} onClose={() => setAiOpen(false)} />

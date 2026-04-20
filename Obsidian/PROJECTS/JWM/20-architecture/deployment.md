@@ -25,11 +25,6 @@ owner: sovereign.ai
 - Co-tenant on CT 171: `komodo-core-1` (weekly restart cron mitigates zombie leak)
 - Two sites aware: `jwm-erp.beyondpandora.com` alongside original `frontend` — nginx `FRAPPE_SITE_NAME_HEADER=$host` fix critical
 
-### CT 107 — n8n
-
-- Authentik **removed** for n8n — it has webhook receivers + API clients
-- PLAUD pipeline writes to legacy Obsidian path for now; migration deferred
-
 ## Verification
 
 ```
@@ -44,4 +39,4 @@ See [[../40-operations/deploy-runbook]].
 
 ## Related
 
-- [[../30-decisions/005-authentik-sso-plus-bypass-for-n8n]]
+- [[../30-decisions/001-headless-erpnext]]
