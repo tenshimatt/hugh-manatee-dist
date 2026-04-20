@@ -193,12 +193,20 @@ export function Sidebar({
         />
 
         {/* 9. Fleet */}
-        <NavLeaf
-          href="/fleet"
-          icon={Truck}
+        <NavGroup
           label="Fleet"
-          active={isActive("/fleet")}
+          icon={Truck}
           collapsed={collapsed}
+          prefixes={["/fleet"]}
+          currentPath={pathname}
+          defaultOpen={groupActive(["/fleet"])}
+          items={[
+            { href: "/fleet", label: "Overview", matchPrefix: "/fleet/__exact__" },
+            { href: "/fleet/pool", label: "Pool Vehicles" },
+            { href: "/fleet/drivers", label: "Approved Drivers" },
+            { href: "/fleet/bookings", label: "Bookings" },
+          ]}
+          isActive={isActive}
         />
 
         {/* 10. Inventory (shared) */}
