@@ -26,6 +26,7 @@ import {
   Boxes,
   Building2,
   Workflow,
+  Calculator,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -155,6 +156,7 @@ export function Sidebar({
             { href: "/engineering", label: "Overview", matchPrefix: "/engineering/__exact__" },
             { href: "/engineering/pipeline", label: "Pipeline" },
             { href: "/engineering/routes", label: "Routes" },
+            { href: "/engineering/cost-calc", label: "Cost Calculator" },
             { href: "/engineering/schedule", label: "Resource Planning" },
             { href: "/engineering/acm-flow", label: "ACM Flow" },
             { href: "/engineering/pt-flow", label: "P&T Flow" },
@@ -451,3 +453,4 @@ void ClipboardList;
 void Users;
 void Handshake;
 void Send;
+void Calculator;
