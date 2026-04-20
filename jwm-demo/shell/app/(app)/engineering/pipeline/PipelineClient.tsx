@@ -94,9 +94,10 @@ export default function PipelineClient({ cards }: { cards?: JobCardData[] }) {
 
   // Apply the drop. Optimistic local update first; fire-and-forget PATCH to
   // persist to ERPNext (Schedule Line.jwm_stage). Rollback on failure.
-  async function handleDrop(targetStage: StageKey) {
-    if (!dragId) return;
-    const card = CARDS.find((c) => c.id === dragId);
+  async function handleDrop(targetStage: StageKey, explicitCardId?: string) {
+    const id = explicitCardId ?? dragId;
+    if (!id) return;
+    const card = CARDS.find((c) => c.id === id);
     if (!card || card.stage === targetStage) {
       setDragId(null);
       setOverStage(null);
@@ -105,7 +106,7 @@ export default function PipelineClient({ cards }: { cards?: JobCardData[] }) {
     const fromStage = card.stage;
     const stageLabel = STAGES.find((s) => s.key === targetStage)?.label ?? targetStage;
     setCards((prev) =>
-      prev.map((c) => (c.id === dragId ? { ...c, stage: targetStage } : c)),
+      prev.map((c) => (c.id === id ? { ...c, stage: targetStage } : c)),
     );
     setDragId(null);
     setOverStage(null);
@@ -348,7 +349,11 @@ export default function PipelineClient({ cards }: { cards?: JobCardData[] }) {
           </div>
         </div>
       ) : (
-        <GridView cards={filtered} onOpen={setOpenCard} />
+        <GridView
+          cards={filtered}
+          onOpen={setOpenCard}
+          onMoveStage={(cardId, stage) => void handleDrop(stage, cardId)}
+        />
       )}
 
       <JobDrawer card={openCard} onClose={() => setOpenCard(null)} />
@@ -362,12 +367,68 @@ export default function PipelineClient({ cards }: { cards?: JobCardData[] }) {
   );
 }
 
-function GridView({ cards, onOpen }: { cards: JobCardData[]; onOpen: (c: JobCardData) => void }) {
+function GridView({
+  cards,
+  onOpen,
+  onMoveStage,
+}: {
+  cards: JobCardData[];
+  onOpen: (c: JobCardData) => void;
+  onMoveStage: (cardId: string, stage: StageKey) => void;
+}) {
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overStage, setOverStage] = useState<StageKey | null>(null);
+
   return (
-    <div className="flex-1 overflow-auto bg-white rounded-xl border border-slate-200" style={{ height: "calc(100vh - 16rem)" }}>
+    <div
+      className="flex-1 overflow-auto bg-white rounded-xl border border-slate-200 relative"
+      style={{ height: "calc(100vh - 16rem)" }}
+    >
+      {/* Floating stage-drop bar — appears while dragging. 13 stage chips as drop targets. */}
+      {dragId && (
+        <div className="sticky top-0 z-20 bg-[#fdf2e3]/95 backdrop-blur border-b-2 border-[#e69b40] px-3 py-2 flex items-center gap-1.5 flex-wrap">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#b97418] mr-2">
+            Drop on a stage →
+          </span>
+          {STAGES.map((s) => {
+            const isOver = overStage === s.key;
+            return (
+              <button
+                key={s.key}
+                type="button"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (overStage !== s.key) setOverStage(s.key);
+                }}
+                onDragLeave={() => {
+                  if (overStage === s.key) setOverStage(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (dragId) onMoveStage(dragId, s.key);
+                  setDragId(null);
+                  setOverStage(null);
+                }}
+                className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full border transition-all ${
+                  isOver
+                    ? "bg-[#e69b40] text-white border-[#b97418] ring-2 ring-[#e69b40]/40 scale-105"
+                    : s.accent === "gold"
+                      ? "bg-[#e69b40]/15 text-[#b97418] border-[#e69b40]/40 hover:bg-[#e69b40]/25"
+                      : "bg-[#064162]/10 text-[#064162] border-[#064162]/30 hover:bg-[#064162]/20"
+                }`}
+                title={`Move to ${s.label}`}
+              >
+                {s.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <table className="min-w-full text-sm">
         <thead className="sticky top-0 bg-[#064162] text-white text-xs uppercase tracking-wider">
           <tr>
+            <Th>&nbsp;</Th>
             <Th>Job ID</Th>
             <Th>Job Name</Th>
             <Th>PM</Th>
@@ -382,12 +443,33 @@ function GridView({ cards, onOpen }: { cards: JobCardData[]; onOpen: (c: JobCard
         <tbody>
           {cards.map((c, i) => {
             const stage = STAGES.find((s) => s.key === c.stage)?.label ?? c.stage;
+            const isDragging = dragId === c.id;
             return (
               <tr
                 key={c.id}
+                draggable
+                onDragStart={(e) => {
+                  setDragId(c.id);
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", c.id);
+                }}
+                onDragEnd={() => {
+                  setDragId(null);
+                  setOverStage(null);
+                }}
                 onClick={() => onOpen(c)}
-                className={`cursor-pointer hover:bg-[#eaf3f8] ${i % 2 ? "bg-slate-50" : ""}`}
+                className={`cursor-pointer hover:bg-[#eaf3f8] ${
+                  i % 2 ? "bg-slate-50" : ""
+                } ${isDragging ? "opacity-40" : ""}`}
+                title="Drag to change stage · click to open"
               >
+                <td className="px-2 py-2 text-slate-300 hover:text-slate-600 cursor-grab active:cursor-grabbing border-b border-slate-100">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <circle cx="8" cy="6" r="1.5" /><circle cx="16" cy="6" r="1.5" />
+                    <circle cx="8" cy="12" r="1.5" /><circle cx="16" cy="12" r="1.5" />
+                    <circle cx="8" cy="18" r="1.5" /><circle cx="16" cy="18" r="1.5" />
+                  </svg>
+                </td>
                 <Td mono bold>{c.id}</Td>
                 <Td>{c.jobName}</Td>
                 <Td>{c.pm}</Td>

@@ -16,7 +16,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Filter, X, AlertTriangle, CheckCircle2, Clock, PauseCircle, GripVertical } from "lucide-react";
+import { Download, Filter, X, AlertTriangle, CheckCircle2, Clock, PauseCircle, GripVertical, Sliders, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type CellStatus =
@@ -85,6 +85,88 @@ const JOB_STATUS_TONE: Record<Job["status"], "green" | "amber" | "red" | "slate"
   complete: "slate",
 };
 
+/**
+ * Priority scoring — five signals Chris surfaced on 2026-04-19:
+ *  - Time to completion (how soon the ship date is)
+ *  - Liquidated damages on the contract (LD penalty risk)
+ *  - Material availability
+ *  - Profitability (margin on the job)
+ *  - Customer lateness history (have we been late on this customer before?)
+ *
+ * Each weight is 0..10 in the UI (stored 0..1 internally). Each signal
+ * produces a 0..100 score, multiplied by its weight, summed. Higher total
+ * = higher priority = appears earlier in the grid.
+ *
+ * Auto-sort replaces Drew's manual drag order when ON. Drag order is
+ * preserved underneath so he can flip back anytime.
+ */
+interface PriorityWeights {
+  time: number;       // 0..10, default 6
+  ld: number;         // 0..10, default 8
+  material: number;   // 0..10, default 5
+  margin: number;     // 0..10, default 3
+  lateness: number;   // 0..10, default 4
+}
+const DEFAULT_WEIGHTS: PriorityWeights = { time: 6, ld: 8, material: 5, margin: 3, lateness: 4 };
+const WEIGHT_LABELS: Record<keyof PriorityWeights, { label: string; help: string }> = {
+  time:     { label: "Time to completion",   help: "How soon the ship date is" },
+  ld:       { label: "Liquidated damages",   help: "Contract LD penalty risk" },
+  material: { label: "Material availability", help: "Material in stock / ready" },
+  margin:   { label: "Profitability",        help: "Margin on the job" },
+  lateness: { label: "Customer lateness",    help: "Have we been late on this customer before?" },
+};
+
+// Hash a job id to a deterministic 0..1 number — used as a demo-time proxy
+// for signal data that's not yet in the live schema (LD flag, customer
+// lateness history). Phase 2 replaces each proxy with a real Schedule Line
+// field.
+function hashSignal(jobId: string, salt: string): number {
+  let h = 0;
+  const s = jobId + "|" + salt;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h % 1000) / 1000;
+}
+
+function computePriorityScore(job: Job, w: PriorityWeights): number {
+  // Time: closer due date → higher score. Use days-until-due.
+  const now = Date.now();
+  const due = new Date(job.due_date).getTime();
+  const daysUntil = Math.max(0, (due - now) / 86400000);
+  // 0 days = 100, 60+ days = 0. Linear clamp.
+  const timeScore = Math.max(0, Math.min(100, 100 - (daysUntil / 60) * 100));
+
+  // Liquidated damages proxy (0/1) — Phase-2: real LD flag field.
+  const ldScore = hashSignal(job.id, "ld") > 0.65 ? 100 : 0;
+
+  // Material availability proxy — fewer pending cells = more ready = lower score
+  // (we care most about jobs where material IS ready so they can actually run).
+  const totalCells = Object.values(job.cells).length || 1;
+  const readyCells = Object.values(job.cells).filter(
+    (c) => c.status === "on_track" || c.status === "in_progress" || c.status === "complete",
+  ).length;
+  const materialScore = (readyCells / totalCells) * 100;
+
+  // Margin proxy — hashed 0..100. Phase-2: real margin_pct field.
+  const marginScore = Math.round(hashSignal(job.id, "margin") * 100);
+
+  // Customer lateness proxy — hashed 0..100. Phase-2: customer history query.
+  const latenessScore = Math.round(hashSignal(job.customer, "lateness") * 100);
+
+  // Status boost — behind/at-risk always climbs.
+  const statusBoost =
+    job.status === "behind" ? 50 : job.status === "at_risk" ? 25 : 0;
+
+  const total =
+    timeScore * (w.time / 10) +
+    ldScore * (w.ld / 10) +
+    materialScore * (w.material / 10) +
+    marginScore * (w.margin / 10) +
+    latenessScore * (w.lateness / 10) +
+    statusBoost;
+
+  return Math.round(total);
+}
+
 export default function SchedulerPage() {
   const [data, setData] = useState<Payload | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -97,6 +179,33 @@ export default function SchedulerPage() {
   const [orderedIds, setOrderedIds] = useState<string[]>([]);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+
+  // Priority scoring — Auto-sort toggle + adjustable weights.
+  // When Auto-sort is on, we replace Drew's manual drag order with
+  // computed scores. Off = keep drag order.
+  const [autoSort, setAutoSort] = useState(false);
+  const [weights, setWeights] = useState<PriorityWeights>(DEFAULT_WEIGHTS);
+  const [showWeights, setShowWeights] = useState(false);
+
+  // Persist weights + autoSort across reloads.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem("jwm.scheduler.priority");
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (p.weights) setWeights({ ...DEFAULT_WEIGHTS, ...p.weights });
+        if (typeof p.autoSort === "boolean") setAutoSort(p.autoSort);
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        "jwm.scheduler.priority",
+        JSON.stringify({ autoSort, weights }),
+      );
+    } catch {}
+  }, [autoSort, weights]);
 
   useEffect(() => {
     fetch("/api/scheduler")
@@ -149,6 +258,12 @@ export default function SchedulerPage() {
     setOverId(null);
   }
 
+  // Score every visible job once, memoised on weights.
+  const scoreMap = useMemo(() => {
+    if (!data) return new Map<string, number>();
+    return new Map(data.jobs.map((j) => [j.id, computePriorityScore(j, weights)]));
+  }, [data, weights]);
+
   const filtered = useMemo(() => {
     if (!data) return [];
     const visible = data.jobs.filter((j) => {
@@ -156,10 +271,14 @@ export default function SchedulerPage() {
       if (statusFilter !== "all" && j.status !== statusFilter) return false;
       return true;
     });
+    if (autoSort) {
+      // Highest score first.
+      return visible.slice().sort((a, b) => (scoreMap.get(b.id) ?? 0) - (scoreMap.get(a.id) ?? 0));
+    }
     if (orderedIds.length === 0) return visible;
     const rank = new Map(orderedIds.map((id, i) => [id, i]));
     return visible.slice().sort((a, b) => (rank.get(a.id) ?? 9999) - (rank.get(b.id) ?? 9999));
-  }, [data, division, statusFilter, orderedIds]);
+  }, [data, division, statusFilter, orderedIds, autoSort, scoreMap]);
 
   function downloadCsv() {
     if (!data) return;
@@ -294,10 +413,88 @@ export default function SchedulerPage() {
             <option value="complete">Complete</option>
           </select>
         </div>
+        {/* Auto-sort toggle */}
+        <div className="flex items-center gap-2 border-l border-slate-300 pl-3 ml-1">
+          <button
+            type="button"
+            onClick={() => setAutoSort((v) => !v)}
+            className={cn(
+              "inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold border transition-all",
+              autoSort
+                ? "bg-[#e69b40] text-white border-[#b97418] ring-2 ring-[#e69b40]/40"
+                : "bg-white text-slate-600 border-slate-300 hover:border-[#e69b40]/60"
+            )}
+            title={autoSort ? "Click to return to Drew's manual drag order" : "Click to auto-sort by priority score"}
+          >
+            <Zap className="w-3.5 h-3.5" />
+            {autoSort ? "Auto-priority ON" : "Auto-priority OFF"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowWeights((v) => !v)}
+            className={cn(
+              "inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold border transition-all",
+              showWeights ? "bg-[#064162] text-white border-[#064162]" : "bg-white text-slate-500 border-slate-300 hover:border-[#064162]/50"
+            )}
+            title="Adjust priority signal weights"
+          >
+            <Sliders className="w-3.5 h-3.5" />
+            Weights
+          </button>
+        </div>
         <div className="ml-auto text-xs text-slate-500">
           Showing {filtered.length} of {data.jobs.length} jobs
+          {autoSort && " · sorted by priority score"}
         </div>
       </div>
+
+      {/* --- Priority weights panel --- */}
+      {showWeights && (
+        <div className="bg-gradient-to-r from-[#fdf2e3] to-white border-2 border-[#e69b40]/40 rounded-xl p-4 shadow-sm">
+          <div className="flex items-start justify-between mb-3 gap-3">
+            <div>
+              <div className="text-sm font-bold text-[#b97418] flex items-center gap-1.5">
+                <Sliders className="w-4 h-4" /> Priority signals — Drew's ordering logic
+              </div>
+              <div className="text-[11px] text-slate-600 mt-1 max-w-2xl">
+                Higher weight = bigger impact on sort order. Score combines all five signals plus
+                a boost for behind/at-risk jobs. Auto-priority must be ON for this to reorder the grid.
+              </div>
+            </div>
+            <button
+              onClick={() => setWeights(DEFAULT_WEIGHTS)}
+              className="text-[11px] text-slate-500 hover:text-slate-800 font-semibold"
+              title="Reset to defaults"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {(Object.keys(WEIGHT_LABELS) as (keyof PriorityWeights)[]).map((k) => (
+              <div key={k} className="bg-white rounded-lg border border-slate-200 p-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-[11px] font-bold text-[#064162] uppercase tracking-wide">
+                    {WEIGHT_LABELS[k].label}
+                  </div>
+                  <span className="text-xs font-bold tabular-nums text-[#b97418]">
+                    {weights[k]}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={10}
+                  step={1}
+                  value={weights[k]}
+                  onChange={(e) => setWeights((w) => ({ ...w, [k]: parseInt(e.target.value, 10) }))}
+                  className="w-full mt-1 accent-[#e69b40]"
+                />
+                <div className="text-[10px] text-slate-500 mt-0.5">{WEIGHT_LABELS[k].help}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* --- Grid --- */}
       <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm">
@@ -314,6 +511,15 @@ export default function SchedulerPage() {
               <th className="px-2 py-2 text-right font-semibold">Qty</th>
               <th className="px-2 py-2 text-left font-semibold">Due</th>
               <th className="px-2 py-2 text-left font-semibold">St.</th>
+              <th
+                className={cn(
+                  "px-2 py-2 text-right font-semibold whitespace-nowrap",
+                  autoSort ? "bg-[#e69b40] text-white" : ""
+                )}
+                title="Priority score from weighted signals"
+              >
+                Score
+              </th>
               {data.columns.map((c) => (
                 <th key={c.slug} className="px-1 py-2 font-semibold whitespace-nowrap">
                   {c.label}
@@ -383,6 +589,15 @@ export default function SchedulerPage() {
                   <Badge tone={JOB_STATUS_TONE[j.status]} className="text-[10px]">
                     {j.status.replace("_", " ")}
                   </Badge>
+                </td>
+                <td
+                  className={cn(
+                    "px-2 py-1.5 text-right tabular-nums font-semibold",
+                    autoSort ? "bg-[#fdf2e3] text-[#b97418]" : "text-slate-400"
+                  )}
+                  title="Priority score — open Weights panel to tune"
+                >
+                  {scoreMap.get(j.id) ?? 0}
                 </td>
                 {data.columns.map((c) => {
                   const cell = j.cells[c.slug];

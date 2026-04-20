@@ -746,6 +746,75 @@ export async function listEngineers(): Promise<{ data: Engineer[]; source: "live
   }
 }
 
+// ---------- Inventory (JWM1451-115) ---------------------------------------
+
+export interface InventoryBin {
+  item_code: string;
+  warehouse: string;
+  actual_qty: number;
+  reserved_qty: number;
+  ordered_qty: number;
+  projected_qty: number;
+  valuation_rate?: number;
+  stock_uom?: string;
+  item_name?: string;
+}
+
+export interface InventoryRollup {
+  bins: InventoryBin[];
+  warehouses: Array<{ name: string; binCount: number; actual: number; reserved: number; projected: number; value: number }>;
+  totalItems: number;
+  lowStock: InventoryBin[];   // reserved > actual
+  source: "live" | "canned";
+}
+
+export async function getInventory(limit = 500): Promise<InventoryRollup> {
+  if (!isLive()) {
+    return { bins: [], warehouses: [], totalItems: 0, lowStock: [], source: "canned" };
+  }
+  try {
+    const fields = JSON.stringify(["item_code","warehouse","actual_qty","reserved_qty","ordered_qty","projected_qty","valuation_rate","stock_uom"]);
+    const url = `${ERPNEXT_URL}/api/resource/Bin?fields=${encodeURIComponent(fields)}&limit_page_length=${limit}`;
+    const j = await cachedFetchJson<{ data: InventoryBin[] }>(url);
+    const bins = j.data ?? [];
+
+    // Rollup per warehouse.
+    const whMap = new Map<string, { binCount: number; actual: number; reserved: number; projected: number; value: number }>();
+    for (const b of bins) {
+      const w = b.warehouse;
+      const row = whMap.get(w) ?? { binCount: 0, actual: 0, reserved: 0, projected: 0, value: 0 };
+      row.binCount += 1;
+      row.actual += b.actual_qty || 0;
+      row.reserved += b.reserved_qty || 0;
+      row.projected += b.projected_qty || 0;
+      row.value += (b.actual_qty || 0) * (b.valuation_rate || 0);
+      whMap.set(w, row);
+    }
+    const warehouses = Array.from(whMap.entries())
+      .map(([name, v]) => ({ name, ...v }))
+      .sort((a, b) => b.actual - a.actual);
+
+    const uniqueItems = new Set(bins.map((b) => b.item_code));
+    const lowStock = bins
+      .filter((b) => (b.reserved_qty || 0) > (b.actual_qty || 0))
+      .sort((a, b) => (b.reserved_qty - b.actual_qty) - (a.reserved_qty - a.actual_qty))
+      .slice(0, 25);
+
+    return {
+      bins,
+      warehouses,
+      totalItems: uniqueItems.size,
+      lowStock,
+      source: "live",
+    };
+  } catch (e) {
+    console.warn("[inventory] live fetch failed, using canned:", e);
+    return { bins: [], warehouses: [], totalItems: 0, lowStock: [], source: "canned" };
+  }
+}
+
+// ----------------------------------------------------------------------------
+
 export function withinDays(iso: string | undefined, days: number): boolean {
   if (!iso) return false;
   // Frappe timestamps come back as "YYYY-MM-DD HH:MM:SS.micro" (no TZ).
