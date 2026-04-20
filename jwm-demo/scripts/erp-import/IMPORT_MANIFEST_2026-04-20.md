@@ -55,6 +55,30 @@ UI links:
 - Logs: `./logs/*_live*.log` (plus `HEARTBEAT.md`)
 - Env: `./.env` (contains API key/secret — DO NOT commit)
 
+## Phase 2 — status derivation (2026-04-20)
+
+Script: `09_status_derivation.py`
+
+Adds four custom fields to `JWM Production Schedule Line`:
+- `jwm_stage` (Select, 13 canonical engineering stages: uncategorized / evaluating / float / layout / layout_check / sketch / sketch_check / correction / cnc_prog / laser_prog / punch_prog / prog_complete / release_shop)
+- `jwm_status_emoji` (Data: 🟢 / 🟡 / 🔴 / ❌ / ⚪)
+- `jwm_current_station` (Data)
+- `jwm_priority` (Select: High / Medium / Low)
+
+Derivation sources — `1010 A shop Production Schedule.xlsx`:
+- Stage: scan "By" columns (Evaluation By, LO By, LO Check By, Sketch By, Sketch Check By, Correction By, AXYZ Prog By, Laser Prog By, Punch Prog By, Prog Complete, Release By) LATEST → EARLIEST; first populated wins. `release_shop` wins if a job has made it to the shop.
+- Station: main-sheet `Station` column + override from per-station sub-sheet `Current Station` column (downstream-first precedence; Ship Schedule treated as summary, lowest priority).
+- Emoji: per-row explicit emoji in sub-sheet; fallback inferred from ship-target delta vs today (past = 🔴, ≤7d = 🟡, else 🟢).
+- Priority: `Ranked Priority` (≤10 High, ≤30 Medium, else Low); fallback from ship-target distance if rank missing.
+
+Run (2026-04-20 live):
+- 548 rows patched, 3400 unchanged, 0 failed, 58.6s elapsed
+- Stage dist (A-shop rows): `release_shop: 270, cnc_prog: 30, prog_complete: 10, uncategorized: 4, evaluating: 3, laser_prog: 2, correction: 2`
+- Top stations: RTS Titans 102, Ready to Ship 51, LO 31, Shipped To Painter 14, Evaluation 13, LO Check 11, Float 11, Shear 9, TruLaser 3040 8, AXYZ 34 7
+- Multi-station claims: 108 jobs appeared in ≥2 sub-sheets — resolved by most-downstream-station-wins (Ship Schedule is a summary, so it's evaluated last)
+
+Idempotent: compares existing doc values to derived payload; PATCHes only on change. Safe to re-run.
+
 ## Phase 2 backlog (NOT in scope for Monday demo)
 
 - Auto-generate stub BOM per Item so Work Orders can be created
