@@ -32,7 +32,7 @@ from __future__ import annotations
 from _frappe import FrappeClient, setup_logging
 
 LOG = setup_logging("./logs", "10_bootstrap_field_daily")
-MODULE = "JWM"
+MODULE = "JWM Manufacturing"
 
 INSTALL_TYPES = [
     "ACM", "Plate Panels", "Perforated Garage Panels", "Single Skin", "IMP",
@@ -99,8 +99,7 @@ PHOTO_CHILD = {
     "custom": 1,
     "istable": 1,
     "fields": [
-        {"fieldname": "photo", "label": "Photo", "fieldtype": "Attach Image",
-         "in_list_view": 1},
+        {"fieldname": "photo", "label": "Photo", "fieldtype": "Attach Image"},
         {"fieldname": "caption", "label": "Caption", "fieldtype": "Data",
          "in_list_view": 1},
     ],
@@ -218,13 +217,13 @@ def main():
     fc = FrappeClient.from_env()
 
     # Child table first (parent references it).
-    if not fc.exists("DocType", PHOTO_CHILD["name"]):
+    if fc.get("DocType", PHOTO_CHILD["name"]) is None:
         LOG.info("creating DocType Field Daily Photo")
         fc.create("DocType", PHOTO_CHILD)
     else:
         LOG.info("Field Daily Photo already exists, skipping")
 
-    if not fc.exists("DocType", FIELD_DAILY_REPORT["name"]):
+    if fc.get("DocType", FIELD_DAILY_REPORT["name"]) is None:
         LOG.info("creating DocType Field Daily Report")
         fc.create("DocType", FIELD_DAILY_REPORT)
     else:
