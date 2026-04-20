@@ -1,17 +1,31 @@
-// Stub — Phase-2 engineering resource schedule.
-// Full implementation tracked as JWM1451-83.
-// Foundation work (seed employees + nav tile) is JWM1451-86 / JWM1451-94.
-import { Users } from "lucide-react";
-import { SectionStub } from "@/components/chrome/SectionStub";
+/**
+ * Engineering Resource Planning (JWM1451-83).
+ *
+ * Server component — fetches the engineer roster from ERPNext (5s timeout,
+ * canned fallback on any failure) and seeds an initial assignment set so the
+ * demo doesn't start empty. Hands off to EngineerRosterClient for the
+ * interactive roster / heatmap / drag-to-assign UX.
+ */
+import { listEngineers } from "@/lib/erpnext-live";
+import { CARDS } from "@/lib/engineering-pipeline";
+import { seedAssignments } from "@/lib/engineering-schedule";
+import EngineerRosterClient from "@/components/engineering/EngineerRosterClient";
 
-export default function EngineeringSchedulePage() {
+export const dynamic = "force-dynamic";
+
+export default async function EngineeringSchedulePage() {
+  const { data: engineers, source } = await listEngineers();
+  const seeds = seedAssignments(
+    engineers,
+    CARDS.slice(0, 20).map((c) => c.id),
+  );
+
   return (
-    <SectionStub
-      eyebrow="Engineering / Resource Planning"
-      title="Resource Planning"
-      description="14 engineers across ACM and Plate & Tube disciplines. Manager + IC capacity; drag work onto a person to book them."
-      icon={Users}
-      note="Roster seeded in ERPNext (Employee DocType, department=Engineering). UI drag-book flow arrives in Phase 2 — tracked as JWM1451-83."
+    <EngineerRosterClient
+      engineers={engineers}
+      cards={CARDS}
+      initialAssignments={seeds}
+      source={source}
     />
   );
 }

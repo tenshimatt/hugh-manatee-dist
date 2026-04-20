@@ -674,6 +674,78 @@ export async function getShipSchedule(horizonDays = 56): Promise<ShipScheduleRes
   }
 }
 
+// ---------- Engineering Employees (JWM1451-83) ----------
+
+import type { Engineer, Discipline } from "./engineering-schedule";
+import { CANNED_ENGINEERS } from "./engineering-schedule";
+
+interface LiveEmployee {
+  name: string;
+  employee_name?: string;
+  first_name?: string;
+  last_name?: string;
+  designation?: string;
+  reports_to?: string;
+  custom_engineering_discipline?: string;
+}
+
+function disciplineFromDesignation(designation: string | undefined): Discipline {
+  const d = (designation || "").toLowerCase();
+  if (d.includes("executive")) return "Executive";
+  if (d.includes("acm")) return "ACM";
+  if (d.includes("plate") || d.includes("tube") || d.includes("p&t")) return "P&T";
+  return "ACM";
+}
+
+/**
+ * Fetch the 15 Engineering employees from ERPNext (department=Engineering - JWM).
+ * 5s timeout; returns CANNED_ENGINEERS on any failure or when !isLive().
+ */
+export async function listEngineers(): Promise<{ data: Engineer[]; source: "live" | "canned" }> {
+  if (!erpnextConfigured()) return { data: CANNED_ENGINEERS, source: "canned" };
+  try {
+    const fields = JSON.stringify([
+      "name", "employee_name", "first_name", "last_name",
+      "designation", "reports_to", "custom_engineering_discipline",
+    ]);
+    const filters = JSON.stringify([["department", "=", "Engineering - JWM"]]);
+    const url = `${ERPNEXT_URL}/api/resource/Employee?fields=${encodeURIComponent(
+      fields
+    )}&filters=${encodeURIComponent(filters)}&limit_page_length=50`;
+
+    const livePromise = cachedFetchJson<{ data: LiveEmployee[] }>(url, 5000);
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("TIMEOUT")), 5000)
+    );
+    const body = await Promise.race([livePromise, timeout]);
+    const rows = body.data || [];
+    if (!rows.length) return { data: CANNED_ENGINEERS, source: "canned" };
+
+    const engineers: Engineer[] = rows.map((r) => {
+      const discipline = (r.custom_engineering_discipline as Discipline)
+        || disciplineFromDesignation(r.designation);
+      const displayName = r.first_name && r.last_name
+        ? `${r.first_name} ${r.last_name}`
+        : r.employee_name || r.name;
+      const designation = r.designation || "Engineer";
+      const isManager = /manager|executive/i.test(designation);
+      return {
+        id: r.name,
+        fullName: r.employee_name || displayName,
+        displayName,
+        designation,
+        discipline,
+        reportsTo: r.reports_to,
+        isManager,
+        capacityHrsPerWeek: 40,
+      };
+    });
+    return { data: engineers, source: "live" };
+  } catch {
+    return { data: CANNED_ENGINEERS, source: "canned" };
+  }
+}
+
 export function withinDays(iso: string | undefined, days: number): boolean {
   if (!iso) return false;
   // Frappe timestamps come back as "YYYY-MM-DD HH:MM:SS.micro" (no TZ).

@@ -44,7 +44,6 @@ const WORKSTATIONS = [
   { slug: "weld-bay-a", label: "Weld Bay A" },
   { slug: "assembly-1", label: "Assembly #1" },
   { slug: "qc", label: "QC Station" },
-  { slug: "shipping", label: "Shipping" },
 ];
 
 type Child = { href: string; label: string; matchPrefix?: string };
@@ -118,6 +117,7 @@ export function Sidebar({
             { href: "/arch/estimating", label: "Estimating", matchPrefix: "/estimator" },
             { href: "/arch/sales", label: "Sales and Precon" },
             { href: "/arch/erf", label: "ERF", matchPrefix: "/erf" },
+            { href: "/arch/field-daily", label: "Field Daily" },
           ]}
           isActive={isActive}
         />
@@ -155,6 +155,9 @@ export function Sidebar({
             { href: "/engineering", label: "Overview", matchPrefix: "/engineering/__exact__" },
             { href: "/engineering/pipeline", label: "Pipeline" },
             { href: "/engineering/routes", label: "Routes" },
+            { href: "/engineering/schedule", label: "Resource Planning" },
+            { href: "/engineering/acm-flow", label: "ACM Flow" },
+            { href: "/engineering/pt-flow", label: "P&T Flow" },
           ]}
           isActive={isActive}
         />
@@ -369,6 +372,12 @@ function ShopFloorGroup({
             href="/shop/ship-schedule"
             label="Ship Schedule"
             icon={Calendar}
+            pathname={pathname}
+          />
+          <ShopChild
+            href="/shop/shipping"
+            label="Shipping"
+            icon={Send}
             pathname={pathname}
           />
           <div className="pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">

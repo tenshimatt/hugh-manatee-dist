@@ -50,25 +50,28 @@ export default function EngineeringLandingPage() {
           ready
         />
         <SubView
-          href="/engineering"
+          href="/engineering/pt-flow"
           icon={Code2}
-          title="Programming Queue"
-          description="CNC, Laser, and Punch programming stations with per-machine queues, G-code library, and run-time estimates."
+          title="P&T Flow"
+          description="Plate & Tube discipline — parts drawn, programmed, released. Serves both A and T Shop."
           badge={`${programming} queued`}
+          ready
         />
         <SubView
-          href="/engineering"
+          href="/engineering/acm-flow"
           icon={PencilRuler}
-          title="Drafting Queue"
-          description="Layout / Sketch / Check workflow. Drafter workbench with drawing reviews and correction tracking."
+          title="ACM Flow"
+          description="Architectural ACM discipline — field dims → layout → sketch → programming → release."
           badge={`${drafting} active`}
+          ready
         />
         <SubView
           href="/engineering/schedule"
           icon={Users}
           title="Resource Planning"
-          description="14 engineers across ACM and Plate & Tube disciplines. Manager + IC capacity; drag work onto a person to book them. Phase-2."
-          badge="14 engineers"
+          description="15 engineers across ACM and Plate & Tube disciplines. Manager + IC capacity bars; drag cards onto a person or heatmap cell to book them."
+          badge="15 engineers"
+          ready
         />
       </div>
     </div>
