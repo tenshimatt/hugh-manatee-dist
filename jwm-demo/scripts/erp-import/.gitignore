@@ -1,0 +1,7 @@
+.env
+.env.*
+.venv/
+.live*_done
+logs/
+__pycache__/
+*.pyc
