@@ -49,6 +49,9 @@ export type ActiveProject = {
     voided: number;
   };
   milestones: { name: string; date: string; status: "done" | "active" | "upcoming" }[];
+  /** Mirrors `Archive Project` column in PMO Summary Rollup.xlsx. Archived jobs are hidden from the
+   *  /arch/projects list by default but remain queryable. Sourced from JWM1451-123. */
+  archived: boolean;
 };
 
 const STD_FIELD_INSTALL: FieldInstallRow[] = [
@@ -115,6 +118,7 @@ const PROJECTS: ActiveProject[] = [
       { name: "Field Install Kickoff", date: "2026-05-19", status: "upcoming" },
       { name: "Substantial Completion", date: "2026-07-31", status: "upcoming" },
     ],
+    archived: false,
   },
   {
     id: "24060-BM01",
@@ -156,6 +160,7 @@ const PROJECTS: ActiveProject[] = [
       { name: "Field Install Kickoff", date: "2026-03-10", status: "active" },
       { name: "Substantial Completion", date: "2026-06-14", status: "upcoming" },
     ],
+    archived: false,
   },
   {
     id: "24071-FS10.R",
@@ -197,6 +202,89 @@ const PROJECTS: ActiveProject[] = [
       { name: "Field Install Kickoff", date: "2026-05-01", status: "upcoming" },
       { name: "Substantial Completion", date: "2026-09-20", status: "upcoming" },
     ],
+    archived: false,
+  },
+  // ---- Archived demo rows (JWM1451-123) ----
+  // Mirrors the `Archive Project` column in PMO Summary Rollup.xlsx. These are hidden from the
+  // default /arch/projects view; the "Show archived" toggle surfaces them.
+  {
+    id: "23028-CHURCH",
+    jobNumber: "23028",
+    jobName: "1000 Church YMCA",
+    pm: { name: "Dillon Bowman", email: "dbowman@jwmcd.com" },
+    health: { status: "green", label: "Closed" },
+    budgetHealth: { status: "green", percentSpent: 96 },
+    percentComplete: 98,
+    taskStatus: [
+      { status: "Not Started", count: 0 },
+      { status: "In Progress", count: 2 },
+      { status: "Complete", count: 104 },
+    ],
+    budget: {
+      contract: 184830,
+      current: 146475,
+      totalCost: 139897,
+      projectedSpend: 139897,
+      committed: 0,
+      remaining: 6578,
+    },
+    margin: { initial: 37, current: 27, budgetAtCompletion: 27 },
+    marginIncrease: { changeOrdersPct: 0, direction: "decrease" },
+    fieldInstall: STD_FIELD_INSTALL.map((r) => ({ ...r, complete: true })),
+    billings: {
+      billed: 197337,
+      received: 191927,
+      recognisedRevenue: 197337,
+      retainage: 0,
+      billPlusAC: 197337,
+      actual: 139897,
+    },
+    changeOrders: { submitted: 11775, approved: 11775, rejected: 0, voided: 0 },
+    milestones: [
+      { name: "Project Charter Signed", date: "2023-07-27", status: "done" },
+      { name: "Substantial Completion", date: "2026-05-29", status: "done" },
+      { name: "Archived", date: "2026-06-10", status: "done" },
+    ],
+    archived: true,
+  },
+  {
+    id: "22015-LEGACY",
+    jobNumber: "22015",
+    jobName: "Legacy VA-12 Build-Out",
+    pm: { name: "Matt Rasmussen", email: "mrasmussen@jwmcd.com" },
+    health: { status: "green", label: "Closed" },
+    budgetHealth: { status: "green", percentSpent: 99 },
+    percentComplete: 100,
+    taskStatus: [
+      { status: "Not Started", count: 0 },
+      { status: "In Progress", count: 0 },
+      { status: "Complete", count: 72 },
+    ],
+    budget: {
+      contract: 412000,
+      current: 412000,
+      totalCost: 408100,
+      projectedSpend: 408100,
+      committed: 0,
+      remaining: 3900,
+    },
+    margin: { initial: 18, current: 17, budgetAtCompletion: 17 },
+    marginIncrease: { changeOrdersPct: 0, direction: "decrease" },
+    fieldInstall: STD_FIELD_INSTALL.map((r) => ({ ...r, complete: true })),
+    billings: {
+      billed: 412000,
+      received: 412000,
+      recognisedRevenue: 412000,
+      retainage: 0,
+      billPlusAC: 412000,
+      actual: 408100,
+    },
+    changeOrders: { submitted: 0, approved: 0, rejected: 0, voided: 0 },
+    milestones: [
+      { name: "Substantial Completion", date: "2024-11-10", status: "done" },
+      { name: "Archived", date: "2025-02-01", status: "done" },
+    ],
+    archived: true,
   },
 ];
 
