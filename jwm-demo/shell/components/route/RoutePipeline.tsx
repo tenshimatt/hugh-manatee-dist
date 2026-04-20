@@ -75,10 +75,14 @@ function StepNode({
   );
 }
 
-function Connector({ color = "#cbd5e1", width = "w-10" }: { color?: string; width?: string }) {
+function Connector({
+  color = "#cbd5e1",
+  width = "w-10",
+  stretch = false,
+}: { color?: string; width?: string; stretch?: boolean }) {
   return (
     <div
-      className={`${width} h-[3px] shrink-0 rounded self-center`}
+      className={`${stretch ? "flex-1 min-w-[2rem]" : `${width} shrink-0`} h-[3px] rounded self-center`}
       style={{ backgroundColor: color }}
       aria-hidden
     />
@@ -87,15 +91,23 @@ function Connector({ color = "#cbd5e1", width = "w-10" }: { color?: string; widt
 
 export function RoutePipeline({ steps, variant = "full", onStepClick, className = "" }: RoutePipelineProps) {
   const { main, branches } = partitionSteps(steps);
+  // Full variant stretches connectors to fill the window width; compact stays
+  // tight so the embedded Project-Dashboard widget keeps its shape.
+  const stretch = variant === "full";
 
   return (
     <div className={`w-full overflow-x-auto ${className}`}>
-      <div className="flex items-start gap-0 px-2 py-4 min-w-max">
+      <div
+        className={`flex items-start gap-0 px-4 py-4 ${stretch ? "w-full" : "min-w-max"}`}
+      >
         {main.map((s, i) => {
           const stepBranch = branches.find((b) => b.branch_from_step === s.step_no);
           return (
-            <div key={s.name || `${s.step_no}-${s.operation}`} className="flex items-start">
-              <div className="flex flex-col items-center">
+            <div
+              key={s.name || `${s.step_no}-${s.operation}`}
+              className={`flex items-start ${i < main.length - 1 && stretch ? "flex-1" : ""}`}
+            >
+              <div className="flex flex-col items-center shrink-0">
                 <StepNode step={s} variant={variant} onClick={onStepClick ? () => onStepClick(s) : undefined} />
                 {stepBranch && (
                   <div className="flex flex-col items-center mt-2">
@@ -111,6 +123,7 @@ export function RoutePipeline({ steps, variant = "full", onStepClick, className 
                 <Connector
                   color={main[i].status === "Complete" ? "#10b981" : "#cbd5e1"}
                   width={variant === "compact" ? "w-6" : "w-10"}
+                  stretch={stretch}
                 />
               )}
             </div>

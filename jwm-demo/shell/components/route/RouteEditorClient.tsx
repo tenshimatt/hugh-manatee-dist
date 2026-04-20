@@ -2,17 +2,17 @@
  * RouteEditorClient — interactive editor for a Route.
  *
  * - Pipeline viz on top (full variant), clickable to scroll to step row.
- * - Step table below with inline status dropdown, step reorder (up/down),
- *   NCR branch toggle (marks step is_optional + branch_from_step).
+ * - Step table below with inline status dropdown, NCR branch toggle.
+ * - Drag the grip handle to reorder steps (top = do first). Up/down arrows
+ *   remain as an accessibility fallback. HTML5 native drag-and-drop; no libs.
+ * - Branch (optional) steps anchor to their main step; they're not drag-reorderable
+ *   themselves — move the anchor step and the branch follows.
  * - Save persists via POST /api/routes/[id]/step per edited step.
- *
- * No external drag libraries — up/down arrow buttons are the reorder UX (per
- * "no new deps" constraint). `@dnd-kit` can be swapped in later.
  */
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, AlertTriangle, Save, GitBranch } from "lucide-react";
+import { ChevronDown, ChevronUp, AlertTriangle, Save, GitBranch, GripVertical } from "lucide-react";
 import { RoutePipeline } from "./RoutePipeline";
 import type { RouteFull, RouteStep, RouteStepStatus } from "@/lib/routes";
 
@@ -29,6 +29,10 @@ export function RouteEditorClient({
   const [steps, setSteps] = useState<RouteStep[]>(initialRoute.steps);
   const [savingIdx, setSavingIdx] = useState<number | null>(null);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  // HTML5 drag state (no external lib). dragIdx = the row currently being dragged.
+  // overIdx = the row being hovered as a drop target. top-of-list is step_no=1.
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
   const dirty = useMemo(
     () => JSON.stringify(steps) !== JSON.stringify(initialRoute.steps),
     [steps, initialRoute.steps],
@@ -38,19 +42,35 @@ export function RouteEditorClient({
     setSteps((prev) => prev.map((s, j) => (j === i ? { ...s, ...patch } : s)));
   }
 
+  function renumberMainSequence(arr: RouteStep[]) {
+    let n = 1;
+    for (const s of arr) {
+      if (!(s.is_optional || (s.branch_from_step ?? 0) > 0)) {
+        s.step_no = n++;
+      }
+    }
+  }
+
   function moveStep(i: number, dir: -1 | 1) {
     setSteps((prev) => {
       const next = [...prev];
       const j = i + dir;
       if (j < 0 || j >= next.length) return prev;
       [next[i], next[j]] = [next[j], next[i]];
-      // renumber main-sequence step_no
-      let n = 1;
-      for (const s of next) {
-        if (!(s.is_optional || (s.branch_from_step ?? 0) > 0)) {
-          s.step_no = n++;
-        }
-      }
+      renumberMainSequence(next);
+      return next;
+    });
+  }
+
+  // Drag-to-reorder: top of list = do first (step_no=1).
+  function moveStepTo(from: number, to: number) {
+    if (from === to || from < 0 || to < 0) return;
+    setSteps((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      const insertAt = from < to ? to : to;
+      next.splice(insertAt, 0, moved);
+      renumberMainSequence(next);
       return next;
     });
   }
@@ -179,6 +199,7 @@ export function RouteEditorClient({
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
               <tr>
+                <th className="text-left px-2 py-2 w-8" aria-label="Drag"></th>
                 <th className="text-left px-3 py-2 w-12">#</th>
                 <th className="text-left px-3 py-2">Operation</th>
                 <th className="text-left px-3 py-2">Workstation</th>
@@ -191,11 +212,56 @@ export function RouteEditorClient({
             <tbody>
               {steps.map((s, i) => {
                 const isBranch = Boolean(s.is_optional) || (s.branch_from_step ?? 0) > 0;
+                const isDragging = dragIdx === i;
+                const isOver = overIdx === i && dragIdx !== null && dragIdx !== i;
                 return (
                   <tr
                     key={s.name || `${s.step_no}-${s.operation}-${i}`}
-                    className={`border-t border-slate-100 ${isBranch ? "bg-red-50/40" : ""}`}
+                    onDragOver={(e) => {
+                      if (dragIdx === null || isBranch) return;
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = "move";
+                      if (overIdx !== i) setOverIdx(i);
+                    }}
+                    onDragLeave={() => {
+                      if (overIdx === i) setOverIdx(null);
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (dragIdx === null || dragIdx === i) return;
+                      moveStepTo(dragIdx, i);
+                      setDragIdx(null);
+                      setOverIdx(null);
+                    }}
+                    className={`border-t border-slate-100 ${isBranch ? "bg-red-50/40" : ""} ${
+                      isDragging ? "opacity-40" : ""
+                    } ${isOver ? "bg-sky-100 ring-2 ring-sky-400" : ""}`}
                   >
+                    <td className="px-2 py-2 text-center">
+                      {isBranch ? (
+                        <span className="text-slate-300" title="Branch steps reorder via the anchor step">
+                          <GripVertical className="w-4 h-4 inline" />
+                        </span>
+                      ) : (
+                        <span
+                          draggable
+                          onDragStart={(e) => {
+                            setDragIdx(i);
+                            e.dataTransfer.effectAllowed = "move";
+                            e.dataTransfer.setData("text/plain", String(i));
+                          }}
+                          onDragEnd={() => {
+                            setDragIdx(null);
+                            setOverIdx(null);
+                          }}
+                          className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 inline-flex"
+                          title="Drag to reorder — top = do first"
+                          aria-label="Drag handle"
+                        >
+                          <GripVertical className="w-4 h-4" />
+                        </span>
+                      )}
+                    </td>
                     <td className="px-3 py-2 font-mono text-slate-700">
                       {isBranch ? <span className="text-red-600 font-bold">↳</span> : s.step_no}
                     </td>

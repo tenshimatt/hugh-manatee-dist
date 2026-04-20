@@ -35,16 +35,37 @@ interface Msg {
   followups?: string[];
 }
 
+// Pool of quick-start prompts. Rotates per tab-load so the welcome doesn't
+// feel stale. Covers the full surface John now knows: projects, PMs, pipeline,
+// routes, anomaly, schedule, budget, scrap, headcount, division mix.
+const QUICK_STARTS = [
+  "How is IAD181 tracking on budget?",
+  "Show me the engineering pipeline",
+  "Why is scrap up on Laser #2?",
+  "Who's carrying the biggest project book right now?",
+  "Which Architectural jobs are at risk this week?",
+  "What routes have NCR branches active?",
+  "How many jobs are stuck in Correction?",
+  "What does Marc Ribar have shipping this month?",
+  "What's the on-time delivery rate?",
+  "Break down A Shop vs T Shop work in progress",
+  "Which workstation is the bottleneck right now?",
+  "Open Cole Norona's project book",
+  "Show today's efficiency by operator",
+  "What's the route for 24060-BM01?",
+];
+
+function pickStarters(n = 4): string[] {
+  const shuffled = [...QUICK_STARTS].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
 const WELCOME: Msg = {
   id: "w0",
   role: "assistant",
   text:
-    "Hi Chris — I have today's shop floor snapshot. Ask me about jobs at risk, scrap trends, or NCR status.",
-  followups: [
-    "Which architectural jobs are at risk this week?",
-    "Why is scrap up on Laser #2?",
-    "What's our on-time delivery?",
-  ],
+    "Hi Chris — I have today's shop floor snapshot + live ERPNext. Ask about jobs, budgets, routes, scrap, PMs, the pipeline, or the anomaly on Laser #2. Try one of these:",
+  followups: pickStarters(),
 };
 
 export function AIChat({

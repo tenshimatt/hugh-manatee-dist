@@ -1,15 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { AIChat, AIChatFAB } from "./AIChat";
 import { ResetShortcut } from "./ResetShortcut";
 import { cn } from "@/lib/utils";
 
+// Routes that need the full window width. Dense, grid-shaped pages where the
+// 1600px cap would waste screen space on a wide monitor.
+const FULL_BLEED_ROUTES = [
+  "/shop/scheduler",
+  "/engineering/pipeline",
+  "/engineering/routes",
+];
+
 export function Shell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+  const pathname = usePathname() || "";
+  const fullBleed = FULL_BLEED_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"));
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -25,7 +36,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           aiOpen ? "sm:pr-[420px]" : ""
         )}
       >
-        <div className="p-6 max-w-[1600px] mx-auto">{children}</div>
+        <div className={cn("p-6", fullBleed ? "max-w-none" : "max-w-[1600px] mx-auto")}>{children}</div>
         <footer className="px-6 py-6 text-center text-xs text-slate-400 border-t border-slate-200 mt-12">
           Powered by sovereign.ai · ERPNext + LiteLLM + n8n · © John W. McDougall Co.
         </footer>

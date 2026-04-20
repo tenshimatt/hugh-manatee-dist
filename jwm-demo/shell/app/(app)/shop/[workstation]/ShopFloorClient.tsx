@@ -34,9 +34,14 @@ const WS_LABELS: Record<string, string> = {
 
 interface AnomalyLite {
   id: string;
+  severity?: string;
   title: string;
   summary: string;
   hypothesis: string;
+  detected_at?: string;
+  evidence?: string[];
+  affected_jobs?: { wo: string; customer: string; part: string; scrap_qty: number; scrap_cost: number }[];
+  recommendations?: string[];
 }
 
 export function ShopFloorClient({
@@ -62,6 +67,7 @@ export function ShopFloorClient({
   const [ncrOpen, setNcrOpen] = useState(false);
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffDone, setHandoffDone] = useState<string | null>(null);
+  const [anomalyOpen, setAnomalyOpen] = useState(false);
   const pollRef = useRef<number | null>(null);
 
   // SWR-style 5s polling of /api/shop/jobs. Only runs when no job card is
@@ -248,7 +254,11 @@ export function ShopFloorClient({
           that names this workstation. Surfaces hypothesis + a clear "what the
           operator should know" line without forcing a click. */}
       {anomaly && (
-        <div className="rounded-2xl border-l-4 border-[#e69b40] bg-gradient-to-r from-[#fdf2e3] to-white p-4 shadow-sm">
+        <button
+          type="button"
+          onClick={() => setAnomalyOpen(true)}
+          className="w-full text-left rounded-2xl border-l-4 border-[#e69b40] bg-gradient-to-r from-[#fdf2e3] to-white p-4 shadow-sm hover:from-[#fbe6c8] hover:shadow-md transition-all"
+        >
           <div className="flex items-start gap-3">
             <div className="h-10 w-10 rounded-xl bg-[#e69b40]/20 flex items-center justify-center flex-shrink-0">
               <AlertTriangle className="w-5 h-5 text-[#b97418]" />
@@ -258,11 +268,127 @@ export function ShopFloorClient({
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#b97418]">
                   Active anomaly · {anomaly.id}
                 </span>
+                <span className="text-[10px] text-slate-500">Click for details</span>
               </div>
               <div className="text-sm font-bold text-slate-900 mt-0.5">{anomaly.title}</div>
               <div className="text-xs text-slate-600 mt-1">{anomaly.hypothesis}</div>
               <div className="text-[11px] text-slate-500 mt-2">
                 Any job flagged HOLD on this station is waiting on this check.
+              </div>
+            </div>
+          </div>
+        </button>
+      )}
+
+      {anomaly && anomalyOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setAnomalyOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-gradient-to-r from-[#fdf2e3] to-white border-b border-[#e69b40]/30 p-5 flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="h-11 w-11 rounded-xl bg-[#e69b40]/20 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-[#b97418]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#b97418]">
+                      {anomaly.severity ? anomaly.severity.toUpperCase() : "ACTIVE"} · {anomaly.id}
+                    </span>
+                    {anomaly.detected_at && (
+                      <span className="text-[10px] text-slate-500">
+                        Detected {new Date(anomaly.detected_at).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="text-lg font-bold text-slate-900 mt-1">{anomaly.title}</h2>
+                  <p className="text-sm text-slate-600 mt-1">{anomaly.summary}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAnomalyOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none px-2"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="p-5 space-y-5">
+              <section>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Hypothesis</h3>
+                <p className="text-sm text-slate-700 leading-relaxed">{anomaly.hypothesis}</p>
+              </section>
+
+              {anomaly.evidence && anomaly.evidence.length > 0 && (
+                <section>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Evidence</h3>
+                  <ul className="space-y-1.5">
+                    {anomaly.evidence.map((e, i) => (
+                      <li key={i} className="text-sm text-slate-700 flex gap-2">
+                        <span className="text-[#b97418] flex-shrink-0">•</span>
+                        <span>{e}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {anomaly.affected_jobs && anomaly.affected_jobs.length > 0 && (
+                <section>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    Affected Jobs · {anomaly.affected_jobs.length} · Scrap cost ${anomaly.affected_jobs.reduce((s, j) => s + j.scrap_cost, 0).toLocaleString()}
+                  </h3>
+                  <div className="rounded-xl border border-slate-200 overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-slate-50 text-slate-600 text-xs">
+                        <tr>
+                          <th className="text-left px-3 py-2 font-semibold">WO</th>
+                          <th className="text-left px-3 py-2 font-semibold">Customer</th>
+                          <th className="text-left px-3 py-2 font-semibold">Part</th>
+                          <th className="text-right px-3 py-2 font-semibold">Scrap Qty</th>
+                          <th className="text-right px-3 py-2 font-semibold">Scrap $</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {anomaly.affected_jobs.map((j) => (
+                          <tr key={j.wo} className="border-t border-slate-100">
+                            <td className="px-3 py-2 font-mono text-xs text-[#064162] font-bold">{j.wo}</td>
+                            <td className="px-3 py-2">{j.customer}</td>
+                            <td className="px-3 py-2 text-slate-600">{j.part}</td>
+                            <td className="px-3 py-2 text-right">{j.scrap_qty}</td>
+                            <td className="px-3 py-2 text-right font-mono">${j.scrap_cost.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
+
+              {anomaly.recommendations && anomaly.recommendations.length > 0 && (
+                <section className="rounded-xl bg-emerald-50 border border-emerald-200 p-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">Recommended Actions</h3>
+                  <ol className="space-y-1.5 list-decimal list-inside">
+                    {anomaly.recommendations.map((r, i) => (
+                      <li key={i} className="text-sm text-emerald-900">{r}</li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+
+              <div className="flex gap-2 pt-2">
+                <Button className="flex-1 bg-[#064162] hover:bg-[#0a5a85]" onClick={() => setAnomalyOpen(false)}>
+                  Acknowledge &amp; close
+                </Button>
+                <Button variant="outline" onClick={() => setAnomalyOpen(false)}>
+                  Dismiss
+                </Button>
               </div>
             </div>
           </div>
@@ -341,6 +467,7 @@ function Counter({
   tone: "green" | "red";
 }) {
   const color = tone === "green" ? "text-emerald-700" : "text-red-700";
+  const ringColor = tone === "green" ? "focus-within:ring-emerald-400" : "focus-within:ring-red-400";
   return (
     <div className="jwm-card p-4">
       <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
@@ -354,7 +481,27 @@ function Counter({
         >
           <Minus className="w-6 h-6" />
         </button>
-        <div className={`text-5xl font-bold tabular-nums ${color}`}>{value}</div>
+        <div className={`flex-1 flex justify-center ${ringColor} rounded-xl focus-within:ring-2`}>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={1}
+            value={value}
+            onChange={(e) => {
+              const raw = e.target.value;
+              if (raw === "") {
+                setValue(0);
+                return;
+              }
+              const n = parseInt(raw, 10);
+              if (!Number.isNaN(n) && n >= 0) setValue(n);
+            }}
+            onFocus={(e) => e.currentTarget.select()}
+            aria-label={`${label} — type a number`}
+            className={`w-32 text-5xl font-bold tabular-nums text-center bg-transparent outline-none ${color} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          />
+        </div>
         <button
           onClick={() => setValue(value + 1)}
           className="h-14 w-14 rounded-xl border border-slate-300 flex items-center justify-center hover:bg-slate-50"

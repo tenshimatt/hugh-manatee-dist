@@ -27,6 +27,10 @@ export type ChatRole = "system" | "user" | "assistant";
 export interface ChatContentPartText {
   type: "text";
   text: string;
+  // Anthropic prompt-caching hint (LiteLLM passes it through to the provider).
+  // `{"type":"ephemeral"}` caches the block for ~5 min, cutting input tokens
+  // ~50% on repeated queries that share the same system prompt.
+  cache_control?: { type: "ephemeral" };
 }
 export interface ChatContentPartImage {
   type: "image_url";

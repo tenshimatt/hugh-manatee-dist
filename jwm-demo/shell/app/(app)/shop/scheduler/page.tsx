@@ -16,7 +16,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Filter, X, AlertTriangle, CheckCircle2, Clock, PauseCircle } from "lucide-react";
+import { Download, Filter, X, AlertTriangle, CheckCircle2, Clock, PauseCircle, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type CellStatus =
@@ -92,6 +92,12 @@ export default function SchedulerPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [detail, setDetail] = useState<Job | null>(null);
 
+  // Drew's manual prioritisation: job IDs in custom order (top = do first).
+  // Defaults to data-load order; persists in localStorage across reloads.
+  const [orderedIds, setOrderedIds] = useState<string[]>([]);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+
   useEffect(() => {
     fetch("/api/scheduler")
       .then((r) => r.json())
@@ -99,14 +105,61 @@ export default function SchedulerPage() {
       .catch((e) => setErr(String(e)));
   }, []);
 
+  // Seed orderedIds from data, merging any persisted localStorage order so
+  // Drew's manual priority survives a reload. New jobs (not in persisted
+  // order) land at the bottom.
+  useEffect(() => {
+    if (!data) return;
+    let persisted: string[] = [];
+    try {
+      const raw = typeof window !== "undefined" ? window.localStorage.getItem("jwm.scheduler.order") : null;
+      if (raw) persisted = JSON.parse(raw);
+    } catch {}
+    const known = new Set(data.jobs.map((j) => j.id));
+    const kept = persisted.filter((id) => known.has(id));
+    const fresh = data.jobs.map((j) => j.id).filter((id) => !kept.includes(id));
+    setOrderedIds([...kept, ...fresh]);
+  }, [data]);
+
+  function persistOrder(ids: string[]) {
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("jwm.scheduler.order", JSON.stringify(ids));
+      }
+    } catch {}
+  }
+
+  function handleRowDrop(targetId: string) {
+    if (!dragId || dragId === targetId) {
+      setDragId(null);
+      setOverId(null);
+      return;
+    }
+    setOrderedIds((prev) => {
+      const next = prev.slice();
+      const from = next.indexOf(dragId);
+      const to = next.indexOf(targetId);
+      if (from < 0 || to < 0) return prev;
+      next.splice(from, 1);
+      next.splice(to, 0, dragId);
+      persistOrder(next);
+      return next;
+    });
+    setDragId(null);
+    setOverId(null);
+  }
+
   const filtered = useMemo(() => {
     if (!data) return [];
-    return data.jobs.filter((j) => {
+    const visible = data.jobs.filter((j) => {
       if (division !== "all" && j.division !== division) return false;
       if (statusFilter !== "all" && j.status !== statusFilter) return false;
       return true;
     });
-  }, [data, division, statusFilter]);
+    if (orderedIds.length === 0) return visible;
+    const rank = new Map(orderedIds.map((id, i) => [id, i]));
+    return visible.slice().sort((a, b) => (rank.get(a.id) ?? 9999) - (rank.get(b.id) ?? 9999));
+  }, [data, division, statusFilter, orderedIds]);
 
   function downloadCsv() {
     if (!data) return;
@@ -166,32 +219,50 @@ export default function SchedulerPage() {
         </div>
       </div>
 
-      {/* --- Status tally pills --- */}
+      {/* --- Status tally pills (click to filter; click active pill to clear) --- */}
       <div className="flex flex-wrap items-center gap-2">
         <StatusPill
           label="On Track"
           count={counts.on_track}
           tone="green"
           icon={<CheckCircle2 className="w-3.5 h-3.5" />}
+          active={statusFilter === "on_track"}
+          onClick={() => setStatusFilter((prev) => (prev === "on_track" ? "all" : "on_track"))}
         />
         <StatusPill
           label="At Risk"
           count={counts.at_risk}
           tone="amber"
           icon={<Clock className="w-3.5 h-3.5" />}
+          active={statusFilter === "at_risk"}
+          onClick={() => setStatusFilter((prev) => (prev === "at_risk" ? "all" : "at_risk"))}
         />
         <StatusPill
           label="Behind"
           count={counts.behind}
           tone="red"
           icon={<AlertTriangle className="w-3.5 h-3.5" />}
+          active={statusFilter === "behind"}
+          onClick={() => setStatusFilter((prev) => (prev === "behind" ? "all" : "behind"))}
         />
         <StatusPill
           label="Complete"
           count={counts.complete}
           tone="slate"
           icon={<PauseCircle className="w-3.5 h-3.5" />}
+          active={statusFilter === "complete"}
+          onClick={() => setStatusFilter((prev) => (prev === "complete" ? "all" : "complete"))}
         />
+        {statusFilter !== "all" && (
+          <button
+            type="button"
+            onClick={() => setStatusFilter("all")}
+            className="inline-flex items-center gap-1 px-2 h-8 text-[11px] font-semibold text-slate-500 hover:text-slate-800 rounded-full hover:bg-slate-100"
+            title="Clear status filter"
+          >
+            <X className="w-3 h-3" /> Clear
+          </button>
+        )}
       </div>
 
       {/* --- Filters --- */}
@@ -251,14 +322,56 @@ export default function SchedulerPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((j) => (
+            {filtered.map((j) => {
+              const isDragging = dragId === j.id;
+              const isOver = overId === j.id && dragId !== null && dragId !== j.id;
+              return (
               <tr
                 key={j.id}
-                className="hover:bg-slate-50 border-t border-slate-100 cursor-pointer"
+                onDragOver={(e) => {
+                  if (dragId === null) return;
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (overId !== j.id) setOverId(j.id);
+                }}
+                onDragLeave={(e) => {
+                  if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+                  if (overId === j.id) setOverId(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  handleRowDrop(j.id);
+                }}
+                className={cn(
+                  "border-t border-slate-100 cursor-pointer transition-colors",
+                  isDragging ? "opacity-40" : "hover:bg-slate-50",
+                  isOver && "bg-amber-50 ring-2 ring-[#e69b40]/40"
+                )}
                 onClick={() => setDetail(j)}
               >
                 <td className="px-2 py-1.5 font-mono text-[#064162] font-semibold sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-100">
-                  {j.id}
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      draggable
+                      onClick={(e) => e.stopPropagation()}
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        setDragId(j.id);
+                        e.dataTransfer.effectAllowed = "move";
+                        e.dataTransfer.setData("text/plain", j.id);
+                      }}
+                      onDragEnd={() => {
+                        setDragId(null);
+                        setOverId(null);
+                      }}
+                      className="cursor-grab active:cursor-grabbing text-slate-300 hover:text-slate-600 transition-colors"
+                      title="Drag to reorder — top = do first"
+                      aria-label="Drag handle"
+                    >
+                      <GripVertical className="w-3.5 h-3.5" />
+                    </span>
+                    {j.id}
+                  </span>
                 </td>
                 <td className="px-2 py-1.5 text-slate-700 truncate max-w-[160px]">
                   {j.customer}
@@ -303,7 +416,8 @@ export default function SchedulerPage() {
                   );
                 })}
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -436,13 +550,17 @@ function StatusPill({
   count,
   tone,
   icon,
+  active,
+  onClick,
 }: {
   label: string;
   count: number;
   tone: "green" | "amber" | "red" | "slate";
   icon: React.ReactNode;
+  active?: boolean;
+  onClick?: () => void;
 }) {
-  const toneClass =
+  const baseTone =
     tone === "green"
       ? "bg-emerald-50 text-emerald-800 border-emerald-200"
       : tone === "amber"
@@ -450,16 +568,29 @@ function StatusPill({
       : tone === "red"
       ? "bg-red-50 text-red-800 border-red-200"
       : "bg-slate-100 text-slate-700 border-slate-200";
+  const activeTone =
+    tone === "green"
+      ? "bg-emerald-600 text-white border-emerald-700 ring-2 ring-emerald-300"
+      : tone === "amber"
+      ? "bg-amber-500 text-white border-amber-600 ring-2 ring-amber-300"
+      : tone === "red"
+      ? "bg-red-600 text-white border-red-700 ring-2 ring-red-300"
+      : "bg-slate-700 text-white border-slate-800 ring-2 ring-slate-300";
   return (
-    <div
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={!!active}
+      title={active ? `Clear ${label} filter` : `Filter to ${label} only`}
       className={cn(
-        "inline-flex items-center gap-1.5 px-3 h-8 rounded-full border text-xs font-semibold",
-        toneClass
+        "inline-flex items-center gap-1.5 px-3 h-8 rounded-full border text-xs font-semibold transition-all cursor-pointer hover:shadow-sm",
+        active ? activeTone : baseTone,
+        !active && "hover:brightness-95"
       )}
     >
       {icon}
       {label}
       <span className="tabular-nums ml-1">{count}</span>
-    </div>
+    </button>
   );
 }

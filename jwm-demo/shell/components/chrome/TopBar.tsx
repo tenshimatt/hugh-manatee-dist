@@ -239,9 +239,18 @@ export function TopBar({ onOpenAI }: { onOpenAI: () => void }) {
         >
           <span
             title={user?.email ?? "Local demo session"}
-            className="h-8 w-8 rounded-full bg-[#064162] text-white flex items-center justify-center text-xs font-bold"
+            className="h-8 w-8 rounded-full bg-[#064162] text-white flex items-center justify-center text-xs font-bold overflow-hidden ring-2 ring-white"
           >
-            {avatarInitials}
+            {displayName === "Chris Ball" ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src="/team/chris-ball.jpg"
+                alt="Chris Ball"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              avatarInitials
+            )}
           </span>
           <span className="hidden md:inline text-sm font-medium text-slate-700">
             {displayName}

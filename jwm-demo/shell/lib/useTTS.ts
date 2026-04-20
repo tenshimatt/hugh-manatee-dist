@@ -67,8 +67,35 @@ export function useTTS(): UseTTSReturn {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 1.0;
-    u.pitch = 0.95;
+    u.pitch = 0.9;
     u.lang = "en-US";
+
+    // macOS default voice is "Samantha" (female). John is a male shop-foreman
+    // persona — match that when we fall back. Walk the voice list for the
+    // first US-English male voice by name, with a few well-known fallbacks.
+    const voices = window.speechSynthesis.getVoices();
+    const malePrefs = [
+      "Daniel",
+      "Alex",
+      "Aaron",
+      "Fred",
+      "Tom",
+      "Albert",
+      "Rishi",
+      "Google US English",
+      "Microsoft Guy Online (Natural) - English (United States)",
+      "Microsoft David - English (United States)",
+    ];
+    const pick =
+      voices.find((v) => malePrefs.includes(v.name)) ||
+      voices.find((v) => /^en[-_]US/i.test(v.lang) && /male|david|guy|daniel|alex/i.test(v.name)) ||
+      voices.find((v) => /^en[-_]US/i.test(v.lang) && !/female|samantha|victoria|karen|susan/i.test(v.name)) ||
+      voices.find((v) => v.lang.startsWith("en"));
+    if (pick) {
+      u.voice = pick;
+      console.warn("[tts] native fallback voice:", pick.name, pick.lang);
+    }
+
     u.onstart = () => setPlaying(true);
     u.onend = () => setPlaying(false);
     u.onerror = () => setPlaying(false);
@@ -85,6 +112,9 @@ export function useTTS(): UseTTSReturn {
       abortRef.current = ctrl;
       setReady(false);
 
+      // Phase 1: fetch MP3 from ElevenLabs. Network / upstream failure here
+      // IS the right moment to fall back to native TTS.
+      let blob: Blob;
       try {
         const res = await fetch("/api/ai/speak", {
           method: "POST",
@@ -95,8 +125,19 @@ export function useTTS(): UseTTSReturn {
         if (!res.ok || !res.body) {
           throw new Error(`speak_upstream_${res.status}`);
         }
-        const blob = await res.blob();
+        blob = await res.blob();
         if (ctrl.signal.aborted) return;
+      } catch (err) {
+        if ((err as Error).name === "AbortError") return;
+        console.warn("[tts] upstream failed, falling back to speechSynthesis:", err);
+        speakNativeFallback(text);
+        return;
+      }
+
+      // Phase 2: playback. If this fails (autoplay policy, audio context
+      // not resumed, etc.) DO NOT fall back to native — that would replace
+      // John's male voice with the OS default female one. Log and stay silent.
+      try {
         const url = URL.createObjectURL(blob);
         if (urlRef.current) URL.revokeObjectURL(urlRef.current);
         urlRef.current = url;
@@ -107,8 +148,8 @@ export function useTTS(): UseTTSReturn {
         await a.play();
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
-        console.warn("[tts] falling back to speechSynthesis:", err);
-        speakNativeFallback(text);
+        console.warn("[tts] playback blocked (likely autoplay policy):", err);
+        setPlaying(false);
       }
     },
     [stop, speakNativeFallback]

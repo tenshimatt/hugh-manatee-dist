@@ -10,14 +10,16 @@ export const runtime = "nodejs";
  * Proxies to ElevenLabs streaming TTS. The API key stays server-side.
  *
  * Voice selection notes (for "John the shop foreman"):
- *   - 21m00Tcm4TlvDq8ikWAM = Rachel  (default free-tier sample, female, too light)
- *   - pNInz6obpgDQGcFmaJgB = Adam    (deep American male — good foreman energy)
- *   - TX3LPaxmHKxFdv7VOQHJ = Liam    (gravelly American male — also a good fit)
- * We default to ADAM because it tested best for "veteran Nashville shop
- * foreman" in the demo script. Override per-request via `voice_id`, or
- * globally via the ELEVENLABS_VOICE_ID env var.
+ *   - nPczCjzI2devNBz1zQrb = Brian   (deep, warm, podcast-host — DEFAULT)
+ *   - N2lVS1w4EtoT3dr4eOWO = Callum  (gruff/edgy — try if Brian is too smooth)
+ *   - iP95p4xoKVk53GoZ742B = Chris   (casual conversational — younger)
+ *   - 5Q0t7uMcjvnagumLfvZi = Paul    (warm newsman)
+ *   - pNInz6obpgDQGcFmaJgB = Adam    (deep but a bit robotic — previous default)
+ *   - TX3LPaxmHKxFdv7VOQHJ = Liam    (gravelly American male)
+ * Default is BRIAN — less "alien", more podcast / Joe Rogan-ish. Override per
+ * request via `voice_id`, or globally via ELEVENLABS_VOICE_ID.
  */
-const DEFAULT_JOHN_VOICE = "pNInz6obpgDQGcFmaJgB"; // Adam
+const DEFAULT_JOHN_VOICE = "nPczCjzI2devNBz1zQrb"; // Brian
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ELEVENLABS_API_KEY;
@@ -68,9 +70,12 @@ export async function POST(req: NextRequest) {
       text: cleaned,
       model_id: "eleven_turbo_v2_5",
       voice_settings: {
-        stability: 0.5,
-        similarity_boost: 0.75,
-        style: 0.2,
+        // Lower stability = more natural prosody variation (less robotic).
+        // Higher style = more personality/emotion (keeps it conversational).
+        // Tuned for "podcast-host" feel rather than "announcement".
+        stability: 0.35,
+        similarity_boost: 0.8,
+        style: 0.45,
         use_speaker_boost: true,
       },
     }),

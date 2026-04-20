@@ -39,19 +39,30 @@ const kpiIconBadge = (kind: string) => {
 
 export default async function DashboardPage() {
   const data = await loadKpis();
+
+  // Greeting + "as of" compute at request time so the dashboard always looks
+  // fresh on the day of the demo. If kpis.json has a recent as_of (< 1 hour
+  // old) we trust it; otherwise we render "now" (the canned snapshot was
+  // captured last week but the page is otherwise live-ish).
+  const now = new Date();
+  const cannedAsOf = new Date(data.as_of);
+  const asOf = now.getTime() - cannedAsOf.getTime() < 60 * 60 * 1000 ? cannedAsOf : now;
+  const hour = now.getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
   return (
     <div className="space-y-6">
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
         <div>
           <h1 className="text-3xl font-bold text-[#064162] tracking-tight">
-            Good afternoon, Chris.
+            {greeting}, Chris.
           </h1>
           <p className="text-slate-500 mt-1">
             Here&apos;s what&apos;s moving on the shop floor today.
           </p>
         </div>
         <div className="text-xs text-slate-400">
-          As of {new Date(data.as_of).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
+          As of {asOf.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Chicago" })} CDT
         </div>
       </header>
 
