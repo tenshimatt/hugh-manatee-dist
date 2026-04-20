@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   title: "JWM • Shop Floor ERP",
   description:
     "John W. McDougall Co. — A Better Way to Build Since 1938. Powered by sovereign.ai.",
+};
+
+// Viewport meta — ensures iPad / iOS Safari renders the shop-floor kiosk at
+// device width (no zoom-out) and respects the safe-area notch on iPad Pro.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

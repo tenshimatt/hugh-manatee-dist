@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import {
   Play,
   CheckCircle2,
@@ -13,6 +13,7 @@ import {
   Sparkles,
   Loader2,
   ArrowRightCircle,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -67,8 +68,34 @@ export function ShopFloorClient({
   const [ncrOpen, setNcrOpen] = useState(false);
   const [handoffOpen, setHandoffOpen] = useState(false);
   const [handoffDone, setHandoffDone] = useState<string | null>(null);
+  const [handoffDeviation, setHandoffDeviation] = useState<{ type: string; reason: string } | null>(null);
+  const [handoffPhotoCount, setHandoffPhotoCount] = useState(0);
   const [anomalyOpen, setAnomalyOpen] = useState(false);
+  const [ipadHint, setIpadHint] = useState(false);
   const pollRef = useRef<number | null>(null);
+
+  // iPad-range hint — shows on viewports 1024-1280px (iPad landscape
+  // territory) and remembers dismissal in localStorage. Intentionally subtle:
+  // a small pill, not a modal, so the operator can ignore it.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const check = () => {
+      const w = window.innerWidth;
+      const dismissed =
+        window.localStorage.getItem("jwm.kiosk.ipad_hint_dismissed") === "1";
+      setIpadHint(!dismissed && w >= 1024 && w < 1280);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  function dismissIpadHint() {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("jwm.kiosk.ipad_hint_dismissed", "1");
+    }
+    setIpadHint(false);
+  }
 
   // SWR-style 5s polling of /api/shop/jobs. Only runs when no job card is
   // selected — when an operator is inside a kiosk detail view we don't want
@@ -205,9 +232,11 @@ export function ShopFloorClient({
             scrapQty={scrap}
             fromWorkstation={workstation}
             onCancel={() => setHandoffOpen(false)}
-            onConfirm={(next) => {
+            onConfirm={(next, deviation, photos) => {
               setHandoffOpen(false);
               setHandoffDone(next);
+              setHandoffDeviation(deviation ?? null);
+              setHandoffPhotoCount(photos?.length ?? 0);
               // Return to queue after a short beat so the operator sees the toast.
               setTimeout(() => {
                 setSelected(null);
@@ -215,19 +244,35 @@ export function ShopFloorClient({
                 setDone(0);
                 setScrap(0);
                 setHandoffDone(null);
+                setHandoffDeviation(null);
+                setHandoffPhotoCount(0);
                 // Optimistically remove the completed card from local state;
                 // next poll tick will reconcile with the server.
                 setCards((prev) => prev.filter((c) => c.id !== selected.id));
-              }, 1800);
+              }, deviation ? 2600 : 1800);
             }}
           />
         )}
 
         {handoffDone && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white rounded-xl shadow-2xl px-5 py-3 flex items-center gap-2 fade-in">
-            <CheckCircle2 className="w-5 h-5" />
+          <div
+            className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 ${
+              handoffDeviation ? "bg-amber-600" : "bg-emerald-600"
+            } text-white rounded-xl shadow-2xl px-5 py-3 flex items-center gap-2 fade-in max-w-[90vw]`}
+          >
+            {handoffDeviation ? (
+              <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+            )}
             <span className="font-semibold">
-              Job card completed · handed off to {WS_LABELS[handoffDone] || handoffDone}
+              {handoffDeviation
+                ? `Deviated · ${handoffDeviation.reason} → ${WS_LABELS[handoffDone] || handoffDone}${
+                    handoffPhotoCount > 0 ? ` · ${handoffPhotoCount} photo${handoffPhotoCount === 1 ? "" : "s"}` : ""
+                  }`
+                : `Job card completed${
+                    handoffPhotoCount > 0 ? ` + ${handoffPhotoCount} photo${handoffPhotoCount === 1 ? "" : "s"}` : ""
+                  } · handed off to ${WS_LABELS[handoffDone] || handoffDone}`}
             </span>
           </div>
         )}
@@ -236,8 +281,21 @@ export function ShopFloorClient({
   }
 
   return (
-    <div className="space-y-5">
-      <header>
+    <div className="space-y-5 relative">
+      {/* iPad-range (1024-1280) one-time helper pill. Dismissal persists in
+          localStorage so ops only see it once per device. */}
+      {ipadHint && (
+        <button
+          type="button"
+          onClick={dismissIpadHint}
+          className="hidden lg:flex xl:hidden absolute top-0 right-0 z-10 items-center gap-2 rounded-full border border-[#064162]/20 bg-white/95 px-3 py-1.5 text-xs font-semibold text-[#064162] shadow-sm hover:bg-[#eaf3f8]"
+          aria-label="Dismiss iPad hint"
+        >
+          Optimized for iPad. Tap to dismiss.
+        </button>
+      )}
+
+      <header className="mb-2">
         <div className="text-xs font-bold text-[#e69b40] uppercase tracking-widest">
           Shop Floor · Kiosk
         </div>
@@ -402,12 +460,16 @@ export function ShopFloorClient({
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-4">
+      {/* Queue grid — iPad-landscape (lg, 1024+) gets 3 columns; 1280+ gets
+          4; 1536+ gets 5. Denser layout per 2026-04-20 demo ask ("flat laser
+          needs a lot more represented on the screen"). Card padding dropped
+          from p-5 → p-4 to fit more cards without visual crowding. */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
         {cards.map((c) => (
           <button
             key={c.id}
             onClick={() => setSelected(c)}
-            className="text-left jwm-card p-5 hover:border-[#064162] transition-colors fade-in"
+            className="text-left jwm-card p-4 hover:border-[#064162] transition-colors fade-in"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -476,7 +538,7 @@ function Counter({
       <div className="flex items-center justify-between gap-2">
         <button
           onClick={() => setValue(Math.max(0, value - 1))}
-          className="h-14 w-14 rounded-xl border border-slate-300 flex items-center justify-center hover:bg-slate-50"
+          className="h-16 w-16 rounded-xl border border-slate-300 flex items-center justify-center hover:bg-slate-50 active:bg-slate-100"
           aria-label={`Decrease ${label}`}
         >
           <Minus className="w-6 h-6" />
@@ -504,7 +566,7 @@ function Counter({
         </div>
         <button
           onClick={() => setValue(value + 1)}
-          className="h-14 w-14 rounded-xl border border-slate-300 flex items-center justify-center hover:bg-slate-50"
+          className="h-16 w-16 rounded-xl border border-slate-300 flex items-center justify-center hover:bg-slate-50 active:bg-slate-100"
           aria-label={`Increase ${label}`}
         >
           <Plus className="w-6 h-6" />
@@ -691,10 +753,43 @@ function HandoffModal({
   scrapQty: number;
   fromWorkstation: string;
   onCancel: () => void;
-  onConfirm: (next: string) => void;
+  onConfirm: (
+    next: string,
+    deviation?: { type: string; reason: string },
+    photos?: string[],
+  ) => void;
 }) {
-  // Plausible downstream mapping. Not a routing engine — good enough to
-  // make the demo narrative work. Every path always offers QC + Shipping.
+  // Optional photo capture — up to MAX_PHOTOS images stored as data URLs in
+  // local component state. On iPad Safari + Android Chrome the `capture`
+  // attribute opens the rear camera directly; on desktop it falls back to a
+  // standard file picker. Phase-2 ticket will attach these to the ERPNext
+  // Job Card via the File DocType + generate CV tags server-side.
+  const MAX_PHOTOS = 4;
+  const [photos, setPhotos] = useState<string[]>([]);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
+
+  function handlePhotoFiles(e: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    const remaining = MAX_PHOTOS - photos.length;
+    const toRead = files.slice(0, remaining);
+    toRead.forEach((f) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, reader.result as string]));
+        }
+      };
+      reader.readAsDataURL(f);
+    });
+    // Reset the input so the same file can be chosen again if removed.
+    e.target.value = "";
+  }
+
+  function removePhoto(idx: number) {
+    setPhotos((prev) => prev.filter((_, i) => i !== idx));
+  }
+  // Default next-station per route. Always offers QC + Shipping as fallback.
   const NEXT_BY_STATION: Record<string, string[]> = {
     "flat-laser-1": ["press-brake-1", "cnc-1", "weld-bay-a", "qc"],
     "flat-laser-2": ["press-brake-1", "cnc-1", "weld-bay-a", "qc"],
@@ -706,6 +801,31 @@ function HandoffModal({
     shipping: ["qc"],
   };
   const suggested = NEXT_BY_STATION[fromWorkstation] || ["qc", "shipping"];
+  const defaultNext = suggested[0];
+  const alternatives = suggested.slice(1);
+
+  // Deviation options — JWM team's 2026-04-20 demo ask: "when he clicks
+  // complete deviate it somewhere else... we never have to lie to the system."
+  // Operator picks a deviation type + reason; the job doesn't just advance
+  // down the default route, it branches per the captured reason.
+  const [deviateMode, setDeviateMode] = useState(false);
+  const [deviateType, setDeviateType] = useState<string>("finishing");
+  const [deviateReason, setDeviateReason] = useState<string>("Burrs on cut edge");
+
+  const DEVIATE_TYPES: { key: string; label: string; sendsTo: string; tone: string }[] = [
+    { key: "finishing", label: "Finishing (fix + rejoin route)", sendsTo: "weld-bay-a", tone: "amber" },
+    { key: "qc-hold", label: "QC Hold (escalate inspection)", sendsTo: "qc", tone: "red" },
+    { key: "rework", label: "Rework (send back upstream)", sendsTo: fromWorkstation, tone: "slate" },
+  ];
+  const REASONS = [
+    "Burrs on cut edge",
+    "Dimension out of tolerance",
+    "Material defect",
+    "Surface finish NCR",
+    "Missed op upstream",
+    "Wrong part pulled",
+    "Other — see comment",
+  ];
 
   return (
     <div
@@ -753,29 +873,201 @@ function HandoffModal({
             </div>
           </div>
 
+          {/* Optional photo capture — rear camera on tablet/phone, file picker
+              on desktop. Up to MAX_PHOTOS. Stored as data URLs; Phase-2 uploads
+              to ERPNext File DocType attached to the Job Card + auto-tags via
+              CV on the backend. */}
           <div>
-            <div className="text-sm font-semibold text-slate-700 mb-2">Next workstation</div>
-            <div className="grid sm:grid-cols-2 gap-2">
-              {suggested.map((slug) => (
-                <button
-                  key={slug}
-                  onClick={() => onConfirm(slug)}
-                  className="flex items-center justify-between gap-3 h-14 px-4 rounded-xl border border-slate-300 hover:border-[#064162] hover:bg-[#eaf3f8] transition-colors text-left"
-                >
-                  <div>
-                    <div className="font-semibold text-slate-800">
-                      {WS_LABELS[slug] || slug}
-                    </div>
-                    <div className="text-[11px] text-slate-500">Tap to hand off</div>
-                  </div>
-                  <ArrowRightCircle className="w-5 h-5 text-[#064162]" />
-                </button>
-              ))}
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-sm font-semibold text-slate-700">
+                Attach photos <span className="text-slate-400 font-normal">(optional)</span>
+              </div>
+              <div className="text-[11px] text-slate-500">
+                {photos.length}/{MAX_PHOTOS}
+              </div>
             </div>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              multiple
+              onChange={handlePhotoFiles}
+              className="hidden"
+              aria-label="Capture or attach photos"
+            />
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              disabled={photos.length >= MAX_PHOTOS}
+              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border-2 border-dashed border-slate-300 text-slate-600 hover:border-[#064162] hover:bg-[#eaf3f8] hover:text-[#064162] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold"
+            >
+              <Camera className="w-5 h-5" />
+              {photos.length === 0
+                ? "Take photo / attach image"
+                : photos.length >= MAX_PHOTOS
+                  ? "Max photos attached"
+                  : "Add another photo"}
+            </button>
+            {photos.length > 0 && (
+              <div className="mt-3 grid grid-cols-4 gap-2">
+                {photos.map((src, i) => (
+                  <div
+                    key={i}
+                    className="relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt={`Attached photo ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(i)}
+                      aria-label={`Remove photo ${i + 1}`}
+                      className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white text-sm leading-none flex items-center justify-center hover:bg-black/80"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {photos.length > 0 && (
+              <div className="mt-2 text-[11px] text-slate-500 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-[#e69b40]" />
+                Photos auto-tagged and attached to job card on handoff.
+              </div>
+            )}
           </div>
 
+          {!deviateMode && (
+            <>
+              {/* Default next-station — big primary button */}
+              <div>
+                <div className="text-sm font-semibold text-slate-700 mb-2">Next station (per route)</div>
+                <button
+                  onClick={() => onConfirm(defaultNext, undefined, photos.length > 0 ? photos : undefined)}
+                  className="w-full flex items-center justify-between gap-3 h-20 px-5 rounded-xl border-2 border-[#064162] bg-[#064162] text-white hover:bg-[#0a5480] transition-colors text-left"
+                >
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider opacity-70">Hand off to</div>
+                    <div className="text-2xl font-bold">{WS_LABELS[defaultNext] || defaultNext}</div>
+                  </div>
+                  <ArrowRightCircle className="w-10 h-10" />
+                </button>
+              </div>
+
+              {/* Alternative route-valid stations */}
+              {alternatives.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold text-slate-500 mb-2">Or another station on the route</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {alternatives.map((slug) => (
+                      <button
+                        key={slug}
+                        onClick={() => onConfirm(slug, undefined, photos.length > 0 ? photos : undefined)}
+                        className="h-11 px-3 rounded-lg border border-slate-300 hover:border-[#064162] hover:bg-[#eaf3f8] text-sm font-semibold text-slate-700 transition-colors"
+                      >
+                        {WS_LABELS[slug] || slug}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Deviate button — surfaces the alt flow */}
+              <div className="border-t border-slate-200 pt-4">
+                <button
+                  onClick={() => setDeviateMode(true)}
+                  className="w-full flex items-center justify-between gap-3 h-14 px-4 rounded-xl border-2 border-dashed border-amber-400 bg-amber-50 hover:bg-amber-100 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-700" />
+                    <div>
+                      <div className="text-sm font-bold text-amber-900">Something's not right — deviate</div>
+                      <div className="text-[11px] text-amber-700">Burrs, dimension off, wrong part, missed op upstream…</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-amber-700" />
+                </button>
+              </div>
+            </>
+          )}
+
+          {deviateMode && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-amber-900">
+                <AlertTriangle className="w-5 h-5" />
+                <span className="font-bold">Deviate from route</span>
+                <span className="text-[11px] text-slate-500 ml-auto">
+                  Captures the actual flow — no need to lie to the system
+                </span>
+              </div>
+
+              <div>
+                <div className="text-xs font-semibold text-slate-700 mb-1.5">How do we handle it?</div>
+                <div className="grid gap-2">
+                  {DEVIATE_TYPES.map((d) => (
+                    <button
+                      key={d.key}
+                      onClick={() => setDeviateType(d.key)}
+                      className={`flex items-center justify-between gap-3 h-12 px-4 rounded-lg border-2 text-left text-sm font-semibold transition-all ${
+                        deviateType === d.key
+                          ? "border-amber-500 bg-amber-50 text-amber-900"
+                          : "border-slate-200 hover:border-slate-400 text-slate-700"
+                      }`}
+                    >
+                      <span>{d.label}</span>
+                      <span className="text-[11px] font-normal text-slate-500">
+                        → {WS_LABELS[d.sendsTo] || d.sendsTo}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs font-semibold text-slate-700 mb-1.5">Reason</div>
+                <select
+                  value={deviateReason}
+                  onChange={(e) => setDeviateReason(e.target.value)}
+                  className="w-full h-11 px-3 rounded-lg border border-slate-300 bg-white text-sm focus:border-[#064162] focus:outline-none"
+                >
+                  {REASONS.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => setDeviateMode(false)}
+                  className="h-12 px-4 rounded-xl border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  ← Back
+                </button>
+                <button
+                  onClick={() => {
+                    const type = DEVIATE_TYPES.find((d) => d.key === deviateType);
+                    if (!type) return;
+                    onConfirm(
+                      type.sendsTo,
+                      { type: deviateType, reason: deviateReason },
+                      photos.length > 0 ? photos : undefined,
+                    );
+                  }}
+                  className="flex-1 h-12 rounded-xl bg-amber-600 text-white font-bold hover:bg-amber-700"
+                >
+                  Confirm deviation
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
-            <span>Handoff writes a Shop Floor Log entry · Phase 2 wires to ERPNext</span>
+            <span>Handoff writes a Shop Floor Log entry · deviation logs to route history</span>
             <button onClick={onCancel} className="text-slate-600 hover:underline">
               Cancel
             </button>
