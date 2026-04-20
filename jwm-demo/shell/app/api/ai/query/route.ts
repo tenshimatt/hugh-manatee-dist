@@ -3,10 +3,33 @@ import { matchCannedResponse } from "@/lib/canned/ai-responses";
 import { chatStream, liteLLMConfigured, type ChatMessage } from "@/lib/litellm";
 import kpis from "@/lib/canned/kpis.json";
 import { listWorkOrders, NCRS } from "@/lib/canned/work-orders";
+import { listProjects } from "@/lib/canned/active-projects";
+import { listPMs } from "@/lib/canned/pms";
+import productionSchedule from "@/lib/canned/production-schedule.json";
+import anomalyData from "@/lib/canned/anomaly.json";
 
 export const runtime = "nodejs";
 
-const SYSTEM_PROMPT = `You are John, the JWM shop copilot — a plainspoken, knowledgeable Nashville-made operations assistant for John W. McDougall Co. You answer questions about on-time delivery, scrap rates, NCRs, work orders, and schedule risk, using the data provided as context. Be concise, lead with the answer, include specific numbers and job references. Speak with the quiet confidence of a veteran shop foreman — no corporate fluff. If data would be needed that you don't have, say so plainly.
+const SYSTEM_PROMPT = `You are John, the JWM shop copilot — a plainspoken, knowledgeable Nashville-made operations assistant for John W. McDougall Co. You answer questions about on-time delivery, scrap rates, NCRs, work orders, the engineering pipeline, project health, budget, and schedule risk, using the data provided as context. Be concise, lead with the answer, include specific numbers and job references. Speak with the quiet confidence of a veteran shop foreman — no corporate fluff. If data would be needed that you don't have, say so plainly.
+
+JWM has two divisions. Always use these names exactly:
+- **A Shop** (code 1010) — Architectural division. Panels, facades, ACM, corrugated.
+- **T Shop** (code 1040) — Processing division. Started with a Tube laser, hence T Shop.
+Engineering, Shop Floor, Inventory, QC, Safety, Maintenance, and Fleet are **shared** between both divisions.
+
+When the user's question maps to a live page in the app, you can recommend a link. Known routes:
+- /exec/arch — Architectural Current Contracts dashboard (Sales, Pipeline, Backlog)
+- /arch/pm and /arch/pm/{slug} — PMO "My Projects" home per PM (cole-norona, marc-ribar, dillon-bowman, matt-rasmussen)
+- /arch/projects and /arch/projects/{id} — per-project dashboard (health, budget, margin, Field Install, COR)
+- /engineering/pipeline — the engineering kanban (12 stages × 316 real job cards)
+- /engineering/routes — per-job station sequences (Route DocType). 3 seeded: ROUTE-25071-IAD181 (active, 6 steps), ROUTE-24060-BM01 (active, NCR finishing side-branch), ROUTE-25067-FS02 (draft, 7 steps)
+- /shop — shop floor overview
+- /shop/scheduler — Drew's grid-shaped production schedule (THE view the team loved)
+- /shop/ship-schedule — Drew's ship schedule with auto bottleneck detection (red 5+, amber 3-4, normal 1-2 jobs per ship date)
+- /shop/efficiency — per-operator efficiency dashboard
+- /shop/flat-laser-2 — workstation kiosk (currently flagged with an active anomaly)
+- /qc — quality control
+- /erf — engineering request form
 
 If returning tabular data, embed it inline using the markers:
 |TABLE|
@@ -40,11 +63,81 @@ function buildContext(): string {
     defect_type: n.defect_type,
     qty: n.qty_affected,
   }));
+
+  // Active projects (Dashboard-grade summaries)
+  const projects = listProjects().map((p) => ({
+    id: p.id,
+    jobName: p.jobName,
+    pm: p.pm.name,
+    percentComplete: p.percentComplete,
+    health: p.health.status,
+    budgetHealth: p.budgetHealth.status,
+    budgetPctSpent: p.budgetHealth.percentSpent,
+    contract: p.budget.contract,
+    remaining: p.budget.remaining,
+    marginCurrent: p.margin?.current,
+  }));
+
+  // PMs with project counts
+  const pms = listPMs().map((pm) => ({
+    name: pm.name,
+    slug: pm.slug,
+    email: pm.email,
+    title: pm.title,
+    activeProjects: pm.projects.length,
+    topProjects: pm.projects.slice(0, 3).map((pr) => `${pr.id} ${pr.jobName}`),
+  }));
+
+  // Engineering pipeline — stage counts and division mix from the 316 real cards
+  const sched = productionSchedule as Array<Record<string, unknown>>;
+  const stageCounts: Record<string, number> = {};
+  const pmCounts: Record<string, number> = {};
+  let aShop = 0;
+  let tShop = 0;
+  for (const row of sched) {
+    const stage = String(row.stage || "unknown");
+    stageCounts[stage] = (stageCounts[stage] || 0) + 1;
+    const division = String(row.division || "");
+    if (division === "A Shop" || division === "1010") aShop++;
+    if (division === "T Shop" || division === "1040") tShop++;
+    const pm = String(row.pm || "").trim();
+    if (pm) pmCounts[pm] = (pmCounts[pm] || 0) + 1;
+  }
+  const topPMs = Object.entries(pmCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 6)
+    .map(([name, count]) => `${name}: ${count}`);
+
+  // Active anomaly
+  const anom = anomalyData as {
+    id: string;
+    severity: string;
+    title: string;
+    summary: string;
+    hypothesis: string;
+    affected_jobs: { wo: string; scrap_cost: number }[];
+  };
+  const scrapCost = anom.affected_jobs.reduce((s, j) => s + j.scrap_cost, 0);
+
   return [
     `CURRENT KPIs (as of ${kpis.as_of}):`,
     JSON.stringify(kpis.kpis, null, 0),
-    `DIVISION MIX: ${JSON.stringify(kpis.division_mix)}`,
+    `DIVISION MIX (KPI): ${JSON.stringify(kpis.division_mix)}`,
     `WEEKLY SCHEDULE VS COMPLETED: ${JSON.stringify(kpis.weekly)}`,
+
+    `ACTIVE PROJECTS (per-project dashboard data):`,
+    JSON.stringify(projects, null, 0),
+
+    `PROJECT MANAGERS (PMO):`,
+    JSON.stringify(pms, null, 0),
+
+    `ENGINEERING PIPELINE (316 real jobs from Production Schedule):`,
+    `Stage counts: ${JSON.stringify(stageCounts)}`,
+    `Division split: A Shop ${aShop} · T Shop ${tShop}`,
+    `Top PMs by card count: ${topPMs.join(", ")}`,
+
+    `ACTIVE ANOMALY ${anom.id} (${anom.severity}): ${anom.title}. ${anom.summary} Hypothesis: ${anom.hypothesis} Affected jobs: ${anom.affected_jobs.length}. Total scrap cost: $${scrapCost.toLocaleString()}. Surfaced at /shop/flat-laser-2.`,
+
     `TOP 10 ACTIVE WORK ORDERS:`,
     JSON.stringify(wos, null, 0),
     `RECENT NCRs:`,
