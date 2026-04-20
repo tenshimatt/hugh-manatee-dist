@@ -1,242 +1,260 @@
-# JWM Demo Runbook — Chris Ball meeting, Monday 2026-04-20
+# JWM Demo Runbook — Monday 2026-04-20 08:30 CT
 
-> **Goal:** replace Archer's Smartsheet proposal in Chris's head within 15 minutes.
-> **Tone:** confident, quiet, specific. Let the product do the talking.
+> **Attendees:** Chris Ball (COO), Mark, Asaf. Matt presenting.
+> **Goal:** team relatability, not persuasion. Business is already won (Chris: *"The goal is not to get approval because we're good. We're going ahead."*).
+> **Chris's posture:** *"I'm the brakes. Don't let them lead — let the conversation go where it goes."* He will record the session so every reaction becomes the backlog.
+> **Golden rule:** real data, real workflows, the screens they already recognise. No pitching. Let the product do the talking.
 
-> **2026-04-17 update — shop-overhaul Phase 1:** post-login now lands on
-> `/shop` (not `/dashboard`). Sidebar reorders to Shop Floor → ERF →
-> Dashboard → Estimator → Planner → QC → Admin. New surfaces: `/shop`
-> overview, `/shop/lead` (Phase-2 Gantt stub), `/erf`, `/erf/new`,
-> `/erf/[id]`. Anomaly bell in TopBar deep-links to the implicated
-> workstation kiosk. See the revised Minute 1-3 + Minute 7-9 sections.
-> Screenshots of the new surfaces live at
-> `shell/screenshots/shop-overhaul/`.
+Linked: [[MENU_ORDER]] · [[SMARTSHEET_REFERENCE]] · [[BUILD_PLAN_2026-04-20]] · [[2026-04-19 22-25 JWM Deep Dive Menu Routers and Demo Scope]]
 
 ---
 
-## Pre-demo checklist (5 min before)
+## 1. Pre-call checklist — 06:00 CT, coffee in hand
 
-- [ ] Open **`https://jwm-demo.beyondpandora.com`** (or `http://localhost:3100` if public URL wobbles)
-- [ ] Sign in → land on Dashboard
-- [ ] Confirm **top-bar pill reads "AI: Live"** (green dot). If "Canned" — env var issue, still works, mention offline-capable as a positive
-- [ ] Open chat drawer once, confirm **"Voice ready"** badge is green
-- [ ] Click speaker icon once to test TTS fires cleanly (close + reopen)
-- [ ] Laptop volume at 60-70%, airpods out if possible (speaker = more theatrical)
-- [ ] Have `estimate-001-architectural-stair.pdf` in Downloads, easy to drag
-- [ ] Second tab: **`https://jwm-erp.beyondpandora.com`** (already logged in) — for the "this is a real ERP" reveal
-- [ ] Third tab: this runbook, scrolled to the right section
+Run this while driving to work / on the phone to Chris. Everything here is a hard-reload Chrome tab.
 
-**Emergency fallback:** if any step hangs, keep talking, say *"this is where we normally see X, here's what it renders"* and move on. The rest is still live.
+- [ ] Open Chrome. Navigate to **`https://jwm-demo.beyondpandora.com`** → sign in with Authentik (fingerprint). Land on `/dashboard`.
+- [ ] Hard-reload (Cmd+Shift+R) each of the live pages below. This picks up the new favicon and the anomaly modal JS bundle.
+- [ ] Click through in narrative order (table below). If any page 500s, restart dev server on CT 120 — but Matt's laptop is the presenter, so the public URL matters.
+- [ ] Open chat drawer. Ask John: *"How is IAD181 tracking on budget?"* → expect the 61% / $1.553M / 24% margin answer.
+- [ ] Confirm **"Voice ready"** badge is green. Click speaker icon once — expect Brian (ElevenLabs). If it falls back to native male voice, that's fine; don't flag it.
+- [ ] Test Authentik login on Chris's account (already enrolled). Mark + Asaf may not have fingerprints — prepare to impersonate-as-Matt if login fails. Per prior memory note, this is acceptable.
+- [ ] Open second tab to **`https://jwm-erp.beyondpandora.com`** → confirm favicon + login page render. Admin creds `JWMdemo2026!` in back pocket. **Do not open this during the demo unless asked.**
+- [ ] Open third tab to **`https://n8n.beyondpandora.com`** → confirm public URL loads without Authentik (removed tonight). LAN backup `http://10.90.10.7:5678`.
+- [ ] Resize Chrome to ~1440px wide. Check `/engineering/pipeline` and `/shop/scheduler` render full-bleed (they're the full-width ones).
+- [ ] Quick mobile sanity check — Chris may screenshare from iPad. Open `/dashboard` + `/arch/projects/25071-IAD181` in responsive mode.
+- [ ] Watch for Chris's SMS with the final menu nesting. If it arrives, adjust the sidebar in-flight — not a blocker for the demo itself.
 
----
+### Live URL map (narrative order)
 
-## The 12-minute walk-through
-
-### Minute 0-1 — The setup (no clicks yet)
-
-> *"Before we dig in — Archer's proposing 20 pages of Smartsheet architecture with a custom UI wrapped around a replicated database. I built what that UI actually needs to look like, on a real ERP, over the weekend. It's running right now. Here's what Paul, Chris, and the shop floor would actually use."*
-
-Land on `/` (landing page).
-
-**Talking points:**
-- JWM logo, branding, navy + gold — *"your palette, your logo, your tagline. One hour scraped from jwmcd.com"*
-- Scroll down — **Selected Work marquee** — *"20 real JWM projects loaded. Convexity, Google DC, BNA, Music City Center, Fifth + Broadway. The system knows who you are."*
-- **"Powered by sovereign.ai"** + SSO — *"This is where Authentik would plug in. Chris, on Monday this is a passwordless rollout to Paul and your leads."*
-- Click **Sign in with sovereign.ai** → Dashboard.
-
----
-
-### Minute 1-3 — The shop overview (Chris sees this at 7am with coffee)
-
-Land on `/shop` (new default post-login).
-
-**Talking points:**
-- *"This is what Paul, the lead, opens first thing — every workstation, every
-  queue, at a glance."*
-- **Top tile bar** — "X active job cards across 7 workstations · Y urgent · Z
-  on hold · N open NCRs." — *"Real numbers pulled live from ERPNext. The
-  green 'Live' chip on individual cards tells you which station is reading
-  from the backend right now."*
-- **Anomaly banner** (amber gradient) — *"Scrap pattern detected on Laser
-  #2 — 3 jobs affected this week. Hypothesis: nozzle wear."* — **click it**
-  to jump to the Flat Laser #2 kiosk where the same banner reappears for the
-  operator.
-  - *"This fires automatically overnight. Archer's design has scrap hit a
-    10% threshold before anyone knows. This catches the pattern before it
-    hits the threshold — and tells the operator why their HOLD card is
-    there."*
-- **Flagged workstation** — Flat Laser #2 tile renders in gold with an
-  "Anomaly" badge. Same data, three surfaces: TopBar bell, overview banner,
-  kiosk banner.
-- **Context row at the bottom** — "Upstream ERF queue · In-flight Planner ·
-  Downstream QC inbox." — *"The shop sits between engineering release and
-  quality. Click any of these to see the surrounding flow."*
-
-Then click **Dashboard** in the sidebar for the executive view (same KPIs,
-anomaly modal, division mix, activity feed as before).
+| # | URL | What it shows |
+|---|---|---|
+| 1 | `/dashboard` | Global home (Chris-approved) |
+| 2 | `/exec/arch` | Executive Current Contracts (Sales / Pipeline / Backlog / Margin tiles) |
+| 3 | `/arch/pm` | PMO index — 4 real PMs from Production Schedule |
+| 4 | `/arch/pm/cole-norona` | Cole's "My Projects" — 6 real projects, Quick Links, Forms buttons, tasks, budget |
+| 5 | `/arch/projects/25071-IAD181` | IAD181 Fitout replica — 61%, $1.553M, 24% margin, Field Install progression |
+| 6 | `/engineering/pipeline` | Engineering Kanban — 316 real jobs × 13 stages, click → drawer |
+| 7 | `/shop/scheduler` | Drew's grid schedule — rows × workstations, colour-coded |
+| 8 | `/shop/efficiency` | Per-operator efficiency (Chris-approved verbatim) |
+| 9 | `/shop/flat-laser-2` | Kiosk with **clickable** active anomaly (ANOM-2026-0042) |
+| 10 | `/erf` (alias `/arch/erf`) | ERF form — field-parity with the Smartsheet form |
+| 11 | `/qc` | Quality Control |
+| 12 | `/estimator/quick-quote` | Tshop Estimator Excel replacement |
 
 ---
 
-### Minute 3-6 — The hero moment: Estimate → BOM in 30 seconds
+## 2. Demo narrative — minute-by-minute
 
-Click **Estimator** in sidebar. Land on `/estimator`.
+Timing is a suggestion. Let the conversation drift; the runbook's job is to keep you oriented when it does. Chris will moderate — follow his lead.
 
-**Drag `estimate-001-architectural-stair.pdf` onto the drop zone.**
+### T+0 → T+3 — Land (`/dashboard`)
 
-Narrate while it's processing (~40s for Claude to extract):
-- *"This is Music City Center, a real $260K estimate — three assemblies, 27 line items, ACM panels, column covers, sunshades. Today at JWM this is Paul or an estimator re-keying every line into Epicor. Three hours of typing. Look at this."*
-- Show streaming status — "Reading PDF… Extracting line items… Matching part numbers… Done"
-- Split view appears: PDF on left, **extracted BOM tree on right**
-- Point at the total — *"$115,264.43. That's the exact grand total from page 3 of the PDF. Claude pulled it to the penny. Every line item's part number, description, gauge, finish, unit price, extended — all extracted."*
-- Click **Create Work Order** → redirects to `/planner/WO-2026-00XXX`
+Soft open. You log in, Authentik hands off, you land on the global dashboard. **Do not narrate.** Let Chris frame the demo for his team. If silence stretches: *"This is your global home — everything rolls up here."* Then stop.
 
-> **Archer's line in the PRD** was "UI facilitates BOM-to-traveler import." No how. This is the how.
+*Chris will notice:* navy + gold palette, JWM branding, his own team's names.
+*If they ask "is this data real?"* — *"Yes. Real production schedule, real PMs, real projects. We'll walk through it."*
+
+**Pivot trigger:** if Mark or Asaf immediately asks about ERPNext/backend, jump to T+20 (IAD181 Project Dashboard) and let the ERP reveal land there naturally.
 
 ---
 
-### Minute 5.5-6.5 — ERF (Engineering Release Form) — the gate
+### T+3 → T+7 — Executive view (`/exec/arch`)
 
-Click **ERF** in the sidebar. Land on `/erf`.
+Click **Executive → Architectural** in sidebar.
 
-**Talking points:**
-- *"Before a WO exists, there's a release. Archer's design doesn't have a
-  release gate — everything's a Smartsheet row. Here the ERF is the
-  handshake between engineering and the shop."*
-- Queue shows **4 pending** · **1 ready to release** · **3 blocked** — each
-  card flags blockers inline (material lead-time, pending drawings, customer
-  sign-off).
-- Click **ERF-2026-0047 — Opryland Atrium Stair**. Status: Ready to Release.
-  Blockers: none.
-- Scroll to line items: 4 standard parts, stringer plates, tread pans,
-  handrail pipe. *"This is the BOM Paul would key into Epicor today."*
-- Click **Release to shop** → *"Releasing… Work Order WO-2026-002XX
-  created."* — banner flips to green.
-- Mention: *"Released ERF spawns a Work Order + populates shop-floor job
-  cards. That's how work gets to the kiosk we're about to see."*
+*"This is Architectural Current Contracts — Sales, Pipeline, Backlog, combined margin. Same tiles as the Smartsheet exec board Chris built, just faster."*
 
-Optional detour: click **+ New ERF** → type customer "Ryman" + project
-"Opryland East Atrium Stair" → click **Help me fill this** → form
-auto-populates division, priority, target date, and 4 line items. *"That's
-an AI-drafted release. Paul tweaks, submits."*
+Point (don't click) at the four KPI tiles. Don't make the "single pane of glass" pitch — let them feel it. If KPI numbers look like placeholder, don't flinch — Chris knows the real data is rolling in.
+
+*Chris will notice:* the rail on the left — Dashboard Links, per-role sub-dashboards. He built these in Smartsheet over years.
+
+**Pivot trigger:** if someone asks "where does this data come from?" — this is the moment for the soft headless-ERP line (see cheat-sheet §3). Otherwise, keep moving.
 
 ---
 
-### Minute 6-7 — The Work Order / traveler
+### T+7 → T+12 — PMO home (`/arch/pm/cole-norona`)
 
-Land on `/planner/WO-2026-00218` (or whatever was just created).
+Click **Architectural → Project Managers → Cole Norona**.
 
-**Talking points:**
-- WO header: customer, project, baseline date, revised date, status, BOM
-- Routing operations timeline across workstations — *"Each row here is a Job Card. A Job Card is an ERPNext standard entity. Paul does not need to configure this from scratch; it's been running at thousands of manufacturers."*
-- BOM tree with assemblies / sub-assemblies / parts
-- Click **Print Traveler** → PDF with JWM logo, QR placeholder, op routing, signature blocks
+*"This is what a PM sees on Monday morning — their live project book, not a spreadsheet. Six active projects, progress bars, quick-links to the forms they fire every day."*
 
----
+Scroll. Point at:
+- The 6-row Projects table with progress bars
+- The **Dashboard Quick Links** rail (Panel Dashboard, Production Schedule, 3D Production Schedule, Procurement Log…)
+- The **Forms** row — Job Info, 3D Request, Schedule It. *"Each of these is an ERF-style form. One click, structured data in, no more emailed spreadsheets."*
+- Upcoming Tasks table, Budget Overview strip
 
-### Minute 7-9 — Shop floor kiosk + voice NCR (the "oh" moment)
+*Chris will notice:* this is the Matt Rasmussen PMO dashboard from his screen-share, but with Cole's real 6 projects.
 
-From `/shop`, click the **Flat Laser #2** workstation card (or the anomaly
-banner — both land on `/shop/flat-laser-2`).
-
-**Talking points:**
-- *"This is what a welder or laser operator holds on an iPad. Big buttons. Your shop floor team does not log into ERPNext. They see their queue, their current job, and three buttons."*
-- The kiosk banner reappears at the top — *"The operator sees the same
-  anomaly the lead sees, with the hypothesis. No mystery HOLD cards."*
-- Click over to **Press Brake #1** (sidebar) to see an actual queue.
-- Tap a Job Card → detail view, big Start / Complete / Report Issue buttons.
-- Tap **Start** → tap **Complete** → handoff modal opens: *"Hand off to
-  next station"* with a short list (Weld Bay A, QC, etc.). Tap **Weld Bay
-  A** → success toast: *"Job card completed · handed off to Weld Bay A."*
-  Card is gone from the queue.
-- **Back on a job card, click "Report Issue"** → NCR composer opens
-- Type or speak: *"Saw kerf drift on laser 2, three brackets showed edge burn, we pulled them off the line, operator said the nozzle sounded off."*
-- Click submit → *"AI drafting NCR…"* → structured NCR appears with:
-  - Title auto-written
-  - Severity: **Major**
-  - Category: **Process**
-  - Disposition: **Rework**
-  - Suspected cause: **partial-nozzle fault**
-  - Quarantine qty: **3**
-- *"An operator typing that NCR in Epicor today is an 11-field form that takes 15 minutes. Nobody does it. They scribble in a notebook. Here, it's 8 seconds — and now QC has it in their inbox."*
-- Click **Submit to QC** → navigate to `/qc`
+**Pivot trigger:** Mark may ask "who else has a dashboard like this?" — answer: *"Every PM, every FM, every FX. Role-based. Phase 2 builds out the rest."*
 
 ---
 
-### Minute 9-10 — Chat with John (voice)
+### T+12 → T+20 — THE key moment (`/arch/projects/25071-IAD181`)
 
-Click **Ask John** top-right (or floating chat button).
+Click any row in Cole's projects table → lands on the IAD181 Fitout dashboard.
 
-**In the chat:**
-- **Click the mic icon** → ask aloud: *"Which architectural jobs are at risk this week?"*
-- Let the transcript appear, hit Send.
-- John streams back a real answer (Claude reads the canned context which includes real WO-2026-00218 data) + **speaks it aloud via ElevenLabs** in a deep American male voice.
-- Table inline showing the at-risk jobs with dates and deltas.
+> **This is the single most important page of the demo.** It's their IAD181 Smartsheet dashboard in a better UI. If they recognise it instantly, the room shifts.
 
-Ask a follow-up: *"Why is scrap up on Laser #2?"* — John connects the anomaly to the specific parts.
+Narrate slowly:
+- *"Job 25071, IAD181 Fitout. 61% complete. $1.553M contract, 24% margin, $1,852 budget remaining."* Point at the green health dots.
+- *"Field Install progression — every install stage tracked: Layout, Single Skin, Panel Install, QC Shipping, Crating, Shipped, QC Final, Rolled Up, Sealed."* That column set is the one from their real Smartsheet.
+- *"Change Order Budget summary is zero today — structure's in place for when orders come in."*
+- *"Project Links rail — Budget, Change Order Request Log, Forecast, Production, Project Charter, ROM, Field Daily Report."*
 
-**Talking point:**
-- *"That was real Claude Sonnet via a LiteLLM gateway on your infrastructure. Audit-logged. Cost-capped. No training on JWM data. Ollama fallback for the most sensitive stuff."*
+Let Chris react. He spent the call Sunday night walking Matt through this exact screen.
 
----
-
-### Minute 10-11 — The "this is real" moment
-
-Switch to the second tab: **`https://jwm-erp.beyondpandora.com`**.
-
-- *"Everything you just saw is writing to this. Real ERPNext. Real DocTypes. Real database."*
-- Click Work Order list → 20 WOs with divisions, dates, status
-- Click into MFG-WO-2026-00001 → full ERPNext detail with JWM custom fields
-- Click the workspace → JWM Manufacturing module with shortcuts to NCR, CAR, RMA, Overrun
-- *"Paul gets admin here. Shop floor never sees this. They only see the kiosk."*
+**Pivot trigger:** if they ask about the Gantt, scroll to bottom (if visible) or say *"Gantt comes from ERPNext's native Project view — wired up, not expanded on tonight."* Don't open the ERP to prove it unless pushed.
 
 ---
 
-### Minute 11-12 — Close
+### T+20 → T+28 — Engineering pipeline (`/engineering/pipeline`)
 
-Back to dashboard.
+Click **Engineering → Pipeline** in sidebar.
 
-> *"Archer's proposal: Jan 2027. Smartsheet license stack indefinite. Data in their US cloud. 20 pages of 'TBD during detailed design.'*
->
-> *Mine: live before your Australia trip. Open source, JWM-owned. $55K. One SKU. Includes the first year of maintenance, the AI gateway, and every integration on the roadmap. I'll be in Franklin through June, then remote with a named on-ground developer. I can start Monday."*
+*"316 real Architectural jobs across 13 stages. This is the card view Drew opens when he's triaging."*
 
-Hand over. Stop talking.
+Walk left to right across stages: Uncategorized → Evaluation → Float → LO → LO Check → Sketch → Sketch Check → Correction → CNC Programming → Laser Programming → Punch Programming → Program Complete → Release to Shop.
 
----
+Click a card → side drawer opens with the full 177-column record.
 
-## Common questions + crisp answers
+Filter by **Cole Norona** or **Marc Ribar** — show that the board respects PM ownership. (Drew will recognise this filter; he filters by PM every morning.)
 
-- **"Can we see Smartsheet work too?"** — *"It can. ERPNext has a Webform + API that reads into any external sheet. What Archer built around Smartsheet, we built with Smartsheet optional."*
-- **"What about Epicor migration?"** — *"Three scenarios in the PRD. Default is parallel run for 8 weeks, clean cut mid-August. I'll scope data migration in week one."*
-- **"Can Chris customize without us?"** — *"Every DocType is editable in the Customize Form UI. Every Report is a saved view. He can add columns, dashboards, workflow states himself. Paul's training is the handoff."*
-- **"Who owns the AI?"** — *"You. The gateway runs in your AWS or on-prem. LLM providers are contracted by us on your behalf with no-training agreements. Audit log per call. Kill switch is an env var."*
-- **"What if Claude's wrong?"** — *"Every AI action is a draft. Planner reviews estimate extractions. QC reviews NCR drafts. Nothing posts to production without a human in the loop in Phase 1."*
+*"Priority bars on the left edge are soft-prioritisation — material availability, machine availability, LD risk, profitability. Human-in-the-loop; Drew keeps the override."*
+
+**Pivot trigger:** if the board feels slow with 316 cards, apologise, filter to one PM immediately. Do not re-render without a filter.
 
 ---
 
-## Failure modes + recovery
+### T+28 → T+34 — Shop scheduler (`/shop/scheduler`)
+
+Click **Shop Floor → Scheduler**.
+
+*"This is the view Drew opens every morning. Rows × workstations. Colour-coded cells for status."* Full-bleed grid.
+
+Point at a few cells. Show a cluster on Flat Laser 2 (setup for T+34 beat). Don't over-narrate — Drew built the current version in Excel, and this IS the current version, just live-wired.
+
+*Chris will notice:* bottom-tabs style layout, per-workstation columns. The Missed Outsource Receipts, MX, PXL, PBM, FAB, GRINDING, QC, SLAB, SHIP tabs from Drew's Excel are recognisable as column groups.
+
+**Pivot trigger:** if Drew-proxy pushback arrives ("that's not how I do it") — don't defend. *"This is draft. Chris said you'd want the final word on layout. What would you move?"* Note it in the backlog table.
+
+---
+
+### T+34 → T+38 — The anomaly payoff (`/shop/flat-laser-2`)
+
+Click any cell on Flat Laser 2, or navigate directly.
+
+Workstation kiosk loads. **Clickable active anomaly banner** at top: **ANOM-2026-0042** — scrap pattern, nozzle-wear hypothesis.
+
+**Click the banner.** Modal opens:
+- Evidence: 3 affected jobs, $3,940 scrap
+- Hypothesis: partial-nozzle fault
+- Recommended actions: pull nozzle, verify kerf on test plate, re-queue affected jobs
+
+*"This fires automatically. Operator, lead, and exec all see the same anomaly — with the reasoning. No mystery HOLD cards."*
+
+This is the "AI in the shop" moment. Don't oversell. Let them process.
+
+**Pivot trigger:** if they say "how did it know?" — one sentence: *"Claude reads the scrap pattern via the efficiency pipeline overnight. Audit-logged, cost-capped, no training on JWM data."* Move on.
+
+---
+
+### T+38 → T+42 — Floor open
+
+Stop leading. Hand the floor:
+
+*"That's the walk-through. Where would you go next?"*
+
+Prepare chat prompts for John in case conversation lulls:
+- *"Show me the engineering pipeline."*
+- *"Why is scrap up on Laser #2?"*
+- *"Who's carrying the biggest project book right now?"*
+- *"How is IAD181 tracking on budget?"*
+
+If Drew asks about scheduling → back to `/shop/scheduler`.
+If a PM asks about their view → `/arch/pm/cole-norona`.
+If anyone asks about QC → `/qc`.
+If ERP / real database comes up → see cheat-sheet §3 item 2.
+
+---
+
+### T+42 → T+45 — Wrap
+
+*"Chris has been recording — every reaction becomes the backlog. What's the one thing you'd want to see next?"*
+
+Close laptop. Stop talking.
+
+---
+
+## 3. Cheat-sheet — exact things to say
+
+Four callouts, drop verbatim where the moment lands.
+
+### The router line (if asked about workflow)
+
+> *"That path through the stations — laser, press brake, weld, and the side-branches when NCR hits — that's what Chris called a 'router' on Sunday night. ERPNext plus this UI can now show you the router live, per job, cradle to grave."*
+
+### The real-ERP line (only if asked)
+
+> *"3,948 real schedule lines, 92 customers, 2,197 items, 52 workstations — all in a live ERP behind this UI. Phase 1 migration is already in. You're not looking at mockups."*
+
+### The headless-ERP framing
+
+> *"The sexy front-end is what your team sees. ERPNext sits behind it, headless. Paul or Chris can log into the admin if they want to, but your shop floor, your PMs, your execs never need to. This is the surface."*
+
+### The soft close — backlog capture
+
+> *"Chris is recording this. Everything you flag today — 'I like this / I don't / we're missing X' — goes straight into the backlog for this week. So don't hold back."*
+
+---
+
+## 4. Failure modes + fallbacks
 
 | Symptom | Say this | Do this |
 |---|---|---|
-| Estimate extraction slow | *"Free-tier gateway; your production deployment runs with provisioned throughput."* | Skip the click, show pre-extracted BOM |
-| Voice doesn't play | *"Mic permission required; safer in demo to show text first."* | Mute speaker, continue |
-| Public URL 502 | *"Network quirk — pulling local."* | Switch laptop to localhost:3100 |
-| ERPNext tab times out | *"The second instance on CT 171 is being rebuilt — I'll show you the writes on the local mirror."* | Stay on the demo shell, don't switch tabs |
-| Claude returns garbage | *"The prompt on this one is still being tuned; here's what it looks like on a fresh pass."* | Click again; if still bad, move on |
+| Authentik login fails for Mark or Asaf | *"Fingerprint enrolment is still rolling out — jumping in as myself."* | Impersonate-as-Matt. Don't dwell. |
+| Voice cuts mid-sentence | nothing — just keep going | Click speaker-off in chat tray |
+| `/engineering/pipeline` slow (316 cards) | *"Filtering to one PM — the full board is a stress test."* | Immediately filter by division or PM |
+| ERPNext requested but slow | *"Not going to open the backend — it's a safety net today, not a stop on the tour."* | Stay in the demo shell. `jwm-erp.beyondpandora.com` is optional. |
+| John gives a weird answer | *"Prompt's still being tuned on that one."* | Click again or move on |
+| Public URL 502 | *"Network hiccup — pulling local."* | `http://localhost:3100` fallback (Matt's laptop only) |
+| Anomaly modal doesn't open | *"Hard-refresh picks it up."* | Cmd+Shift+R, re-click |
+| Chris's menu SMS arrives mid-demo | nothing | Note the change, adjust sidebar after the call |
 
 ---
 
-## After the demo
+## 5. Backlog catcher
 
-- Email Chris the PRD (v0.2) + this runbook as a PDF
-- Send him the credentials + demo URL so he can click around on his own
-- Schedule follow-up within 72 hours while the feeling is fresh
-- Draft the one-page proposal (Option 1 self-hosted, $55K, first-year included) ready to sign
+Fill this in live. Chris is recording audio; this is the written shadow.
+
+| When | Who | Feedback / reaction | What they want |
+|---|---|---|---|
+| T+ | | | |
+| T+ | | | |
+| T+ | | | |
+| T+ | | | |
+| T+ | | | |
+| T+ | | | |
+| T+ | | | |
+| T+ | | | |
 
 ---
 
 ## Credentials quick-ref
 
-- Shell: https://jwm-demo.beyondpandora.com (or http://localhost:3100)
-- ERPNext: https://jwm-erp.beyondpandora.com · creds in `docs/credentials.md` (gitignored)
-- AI Gateway: https://jwm-ai.beyondpandora.com · key in `docs/credentials.md` (gitignored)
-- See `/Users/mattwright/pandora/jwm-demo/docs/credentials.md` for full set
+- **Demo shell:** `https://jwm-demo.beyondpandora.com` — Authentik SSO
+- **ERPNext:** `https://jwm-erp.beyondpandora.com` — Administrator / `JWMdemo2026!`
+- **n8n (public, no Authentik as of tonight):** `https://n8n.beyondpandora.com` — `matt@beyondpandora.com` / `JWMdemo2026!`
+- **n8n LAN backup:** `http://10.90.10.7:5678`
+- **Localhost fallback (Matt's laptop):** `http://localhost:3100`
+
+---
+
+## Post-demo (T+45 onwards)
+
+- [ ] Pull Chris's recording → transcribe → backlog items → Plane
+- [ ] Merge live backlog table (§5) with recording
+- [ ] Send Chris the updated PRD reflecting Monday's feedback
+- [ ] Schedule follow-up within 72 hours
+- [ ] If menu SMS arrived: refactor sidebar, redeploy, tell Chris
