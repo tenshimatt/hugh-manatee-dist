@@ -29,18 +29,21 @@ Run this while driving to work / on the phone to Chris. Everything here is a har
 
 | # | URL | What it shows |
 |---|---|---|
-| 1 | `/dashboard` | Global home (Chris-approved) |
-| 2 | `/exec/arch` | Executive Current Contracts (Sales / Pipeline / Backlog / Margin tiles) |
+| 1 | `/dashboard` | Global home (Chris-approved). Greeting + "As of" stamp auto-localised to CDT |
+| 2 | `/exec/arch` | Executive Current Contracts (Sales / Pipeline / Backlog / Margin tiles) — live tile count from ERPNext |
 | 3 | `/arch/pm` | PMO index — 4 real PMs from Production Schedule |
 | 4 | `/arch/pm/cole-norona` | Cole's "My Projects" — 6 real projects, Quick Links, Forms buttons, tasks, budget |
-| 5 | `/arch/projects/25071-IAD181` | IAD181 Fitout replica — 61%, $1.553M, 24% margin, Field Install progression |
-| 6 | `/engineering/pipeline` | Engineering Kanban — 316 real jobs × 13 stages, click → drawer |
-| 7 | `/shop/scheduler` | Drew's grid schedule — rows × workstations, colour-coded |
-| 8 | `/shop/efficiency` | Per-operator efficiency (Chris-approved verbatim) |
-| 9 | `/shop/flat-laser-2` | Kiosk with **clickable** active anomaly (ANOM-2026-0042) |
-| 10 | `/erf` (alias `/arch/erf`) | ERF form — field-parity with the Smartsheet form |
-| 11 | `/qc` | Quality Control |
-| 12 | `/estimator/quick-quote` | Tshop Estimator Excel replacement |
+| 5 | `/arch/projects/25071-IAD181` | IAD181 Fitout replica — 61%, $1.553M, 24% margin, Field Install progression. **Embedded cradle-to-grave pipeline at the top** |
+| 6 | `/engineering/pipeline` | Engineering Kanban — 316 real jobs × 13 stages (real stages + statuses after Phase-2 derivation), click → drawer |
+| 7 | `/engineering/routes` | **NEW.** List of 3 live Routes in ERPNext. Click ROUTE-24060-BM01 for the NCR demo |
+| 8 | `/engineering/routes/ROUTE-24060-BM01` | **NEW.** Router editor. NCR finishing side-branch visible. Drag the grip handle to reorder steps (top = do first) |
+| 9 | `/shop/scheduler` | Drew's grid schedule — rows × workstations, colour-coded (full-bleed) |
+| 10 | `/shop/ship-schedule` | **NEW.** Drew's ship-date bottleneck view (🔴 5+ / 🟡 3–4 / ⚪ 1–2). Calendar heatmap + grouped list |
+| 11 | `/shop/efficiency` | Per-operator efficiency (Chris-approved verbatim) |
+| 12 | `/shop/flat-laser-2` | Kiosk with **clickable** active anomaly (ANOM-2026-0042). Qty + Scrap now accept typed numbers |
+| 13 | `/erf` (alias `/arch/erf`) | ERF form — field-parity with the Smartsheet form |
+| 14 | `/qc` | Quality Control |
+| 15 | `/estimator/quick-quote` | Tshop Estimator Excel replacement |
 
 ---
 
@@ -99,6 +102,7 @@ Click any row in Cole's projects table → lands on the IAD181 Fitout dashboard.
 
 Narrate slowly:
 - *"Job 25071, IAD181 Fitout. 61% complete. $1.553M contract, 24% margin, $1,852 budget remaining."* Point at the green health dots.
+- **Point at the horizontal pipeline at the top.** *"Cradle-to-grave — every station this job will pass through. Green balls done, yellow in progress, white pending. Click any of them and I'll land on that step."* This is the Router viz Chris asked for on Sunday; it's now live.
 - *"Field Install progression — every install stage tracked: Layout, Single Skin, Panel Install, QC Shipping, Crating, Shipped, QC Final, Rolled Up, Sealed."* That column set is the one from their real Smartsheet.
 - *"Change Order Budget summary is zero today — structure's in place for when orders come in."*
 - *"Project Links rail — Budget, Change Order Request Log, Forecast, Production, Project Charter, ROM, Field Daily Report."*
@@ -109,7 +113,7 @@ Let Chris react. He spent the call Sunday night walking Matt through this exact 
 
 ---
 
-### T+20 → T+28 — Engineering pipeline (`/engineering/pipeline`)
+### T+20 → T+26 — Engineering pipeline (`/engineering/pipeline`)
 
 Click **Engineering → Pipeline** in sidebar.
 
@@ -127,7 +131,27 @@ Filter by **Cole Norona** or **Marc Ribar** — show that the board respects PM 
 
 ---
 
-### T+28 → T+34 — Shop scheduler (`/shop/scheduler`)
+### T+26 → T+30 — Routes + NCR branching (`/engineering/routes/ROUTE-24060-BM01`)
+
+Click **Engineering → Routes**, then open **ROUTE-24060-BM01** (Loves Blacksburg).
+
+*"Every job gets a Route — the sequence of stations it passes through. Defined at estimate time, bespoke per project."*
+
+Walk the pipeline viz at the top. Point at the **orange finishing node** branching off Flat Laser 2.
+
+*"QC flagged burrs on the laser output. The router doesn't fail the job — it side-branches through Finishing, and rejoins at Press Brake. That's NCR loopback, the conversation Chris and I had Sunday about what happens when things don't go right."*
+
+Demo the interaction:
+- Drag the grip handle on one main step to reorder it. *"Top = do first. Step numbers renumber automatically."*
+- Click the status dropdown on any step. *"In Progress / Complete / NCR Loopback. Shop lead flips this as the job moves."*
+
+*Chris will notice:* the viz matches the "lines and balls" he described verbatim on the Sunday call.
+
+**Pivot trigger:** if someone asks "where does the router live?" — *"ERPNext. Route is a real DocType, linked from every Work Order. Three seeded tonight; add more from this screen."* Don't open the ERP.
+
+---
+
+### T+30 → T+34 — Shop scheduler (`/shop/scheduler`)
 
 Click **Shop Floor → Scheduler**.
 
@@ -138,6 +162,14 @@ Point at a few cells. Show a cluster on Flat Laser 2 (setup for T+34 beat). Don'
 *Chris will notice:* bottom-tabs style layout, per-workstation columns. The Missed Outsource Receipts, MX, PXL, PBM, FAB, GRINDING, QC, SLAB, SHIP tabs from Drew's Excel are recognisable as column groups.
 
 **Pivot trigger:** if Drew-proxy pushback arrives ("that's not how I do it") — don't defend. *"This is draft. Chris said you'd want the final word on layout. What would you move?"* Note it in the backlog table.
+
+**Then pivot right**: click **Ship Schedule** in the sidebar (new).
+
+*"Same data, different cut. Every upcoming ship date, colour-coded for bottleneck. Red = five or more jobs that day. Yellow = three or four. This is the view Drew builds in Excel every Friday — automated."*
+
+Hover a red cell → tooltip shows top jobs. Click → side panel with the full job list. 286 jobs, 138 unique ship dates.
+
+*Chris will notice:* his team never had this auto-flagged before. Drew does it manually.
 
 ---
 
@@ -191,13 +223,13 @@ Close laptop. Stop talking.
 
 Four callouts, drop verbatim where the moment lands.
 
-### The router line (if asked about workflow)
+### The router line (if asked about workflow — or unprompted when landing on IAD181)
 
-> *"That path through the stations — laser, press brake, weld, and the side-branches when NCR hits — that's what Chris called a 'router' on Sunday night. ERPNext plus this UI can now show you the router live, per job, cradle to grave."*
+> *"That path through the stations — laser, press brake, weld, and the side-branches when NCR hits — that's what Chris called a 'router' on Sunday night. ERPNext plus this UI can now show you the router live, per job, cradle to grave. The coloured balls at the top of the Project Dashboard are that router for IAD181."*
 
 ### The real-ERP line (only if asked)
 
-> *"3,948 real schedule lines, 92 customers, 2,197 items, 52 workstations — all in a live ERP behind this UI. Phase 1 migration is already in. You're not looking at mockups."*
+> *"3,948 real schedule lines, 92 customers, 2,197 items, 52 workstations, 3 live routes, 430 daily efficiency rows — all in a live ERPNext behind this UI. Phase 1 migration is already in. You're not looking at mockups."*
 
 ### The headless-ERP framing
 
