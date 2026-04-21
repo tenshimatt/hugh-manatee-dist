@@ -7,8 +7,8 @@
  */
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Handshake, MapPin, User, Building2, FileText, ArrowRight, CheckCircle2, Clock, XCircle } from "lucide-react";
-import { getOpportunityById, fmtUsd, stageColour, initials, type SalesStage } from "@/lib/arch-sales";
+import { ArrowLeft, Handshake, MapPin, User, Building2, FileText, ArrowRight, CheckCircle2, Clock, XCircle, Bell, AlertTriangle, CalendarClock } from "lucide-react";
+import { getOpportunityById, fmtUsd, stageColour, initials, type SalesStage, type Opportunity } from "@/lib/arch-sales";
 
 export const dynamic = "force-dynamic";
 
@@ -151,6 +151,11 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
         </Panel>
       )}
 
+      {/* Follow-up cadence (JWM1451-130) */}
+      {(opp.stage === "Active" || opp.stage === "Submitted") && (
+        <FollowUpPanel opp={opp} />
+      )}
+
       {/* Latest comment + link to full thread */}
       {opp.latestComment && (
         <Panel title="Latest comment">
@@ -164,6 +169,130 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
         </Panel>
       )}
     </div>
+  );
+}
+
+function FollowUpPanel({ opp }: { opp: Opportunity }) {
+  const today = Date.now();
+  const followUp = opp.followUpDate ? Date.parse(opp.followUpDate) : null;
+  const overdueDays = followUp != null ? Math.floor((today - followUp) / 86400000) : null;
+
+  // Build the cadence sequence (1st / 2nd / 3rd) — pure UI, derived from
+  // the single Follow-up date in the source. Each cadence step is +14 days.
+  const STEPS = [
+    { n: 1, offset: 0,  label: "First follow-up" },
+    { n: 2, offset: 14, label: "Second follow-up" },
+    { n: 3, offset: 28, label: "Third follow-up · auto-escalate to manager" },
+  ];
+
+  const escalated = overdueDays != null && overdueDays >= 28;
+
+  return (
+    <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <header className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 inline-flex items-center gap-2">
+          <CalendarClock className="w-4 h-4 text-[#e69b40]" /> Follow-up cadence
+        </h2>
+        {overdueDays != null && overdueDays > 0 && (
+          <span
+            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+              escalated
+                ? "bg-rose-100 text-rose-800"
+                : overdueDays > 7
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-slate-100 text-slate-600"
+            }`}
+          >
+            {overdueDays}d overdue
+          </span>
+        )}
+      </header>
+      <div className="p-4 space-y-3">
+        {!followUp && (
+          <div className="text-sm text-slate-500 italic">
+            No follow-up date set. Add one to put this opportunity on the cadence.
+          </div>
+        )}
+        {followUp && (
+          <div className="grid grid-cols-3 gap-2">
+            {STEPS.map((s) => {
+              const stepDate = followUp + s.offset * 86400000;
+              const stepOverdue = today >= stepDate;
+              const isCurrent = stepOverdue && (s.n === 3 ? true : today < followUp + STEPS[s.n].offset * 86400000);
+              return (
+                <div
+                  key={s.n}
+                  className={`rounded-lg border p-3 ${
+                    isCurrent && escalated
+                      ? "bg-rose-50 border-rose-300"
+                      : isCurrent
+                        ? "bg-amber-50 border-amber-300"
+                        : stepOverdue
+                          ? "bg-emerald-50 border-emerald-200"
+                          : "bg-slate-50 border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                      {s.label}
+                    </div>
+                    {stepOverdue ? (
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    ) : (
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                    )}
+                  </div>
+                  <div className="text-sm font-bold text-[#064162] mt-0.5 tabular-nums">
+                    {new Date(stepDate).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "America/Chicago" })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {escalated && (
+          <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-rose-700 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-rose-900">
+              <strong>Escalated.</strong> Third follow-up is past due. Sales/Precon Manager
+              {opp.estimator ? ` for ${opp.estimator}` : ""} will be notified next polling
+              cycle. Capture the next action below to clear escalation.
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-2 pt-1">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 px-3 h-9 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            disabled
+            title="Phase-2: posts a Comment + reschedules cadence"
+          >
+            <Bell className="w-3.5 h-3.5" /> Log follow-up
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 px-3 h-9 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            disabled
+            title="Phase-2: snooze 7 days"
+          >
+            Snooze 7d
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 px-3 h-9 rounded-lg bg-rose-50 border border-rose-300 text-xs font-semibold text-rose-700 hover:bg-rose-100"
+            disabled
+            title="Phase-2: marks Lost with reason"
+          >
+            <XCircle className="w-3.5 h-3.5" /> Drop
+          </button>
+        </div>
+        <div className="text-[10px] text-slate-400">
+          Phase-2 wires actions to ERPNext Comments + scheduled reminders + manager notification.
+        </div>
+      </div>
+    </section>
   );
 }
 

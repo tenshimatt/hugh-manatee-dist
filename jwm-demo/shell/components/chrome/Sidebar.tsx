@@ -116,6 +116,7 @@ export function Sidebar({
           defaultOpen={groupActive(["/arch", "/estimator"]) && !pathname.startsWith("/estimator/quick-quote")}
           items={[
             { href: "/arch/pm", label: "Project Managers" },
+            { href: "/arch/people", label: "People (FM, FX, Precon)" },
             { href: "/arch/projects", label: "Projects" },
             { href: "/arch/estimating", label: "Estimating", matchPrefix: "/estimator" },
             { href: "/arch/sales", label: "Sales Pipeline" },
