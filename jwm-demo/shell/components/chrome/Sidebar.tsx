@@ -99,6 +99,7 @@ export function Sidebar({
           defaultOpen={groupActive(["/exec"])}
           items={[
             { href: "/exec/pmo", label: "PMO Rollup" },
+            { href: "/exec/spectrum-drift", label: "Spectrum Drift" },
             { href: "/exec/arch", label: "Arch" },
             { href: "/exec/processing", label: "Processing" },
           ]}

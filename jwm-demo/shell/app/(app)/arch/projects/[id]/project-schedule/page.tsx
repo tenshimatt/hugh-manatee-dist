@@ -14,6 +14,7 @@ import {
 } from "@/components/project-dashboard/SubtabChrome";
 import { Card, CardBody } from "@/components/ui/card";
 import { DataSourceFootnote } from "@/components/project-dashboard/DataSourceFootnote";
+import { ProjectGantt, type GanttTask } from "@/components/project-dashboard/ProjectGantt";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,39 @@ export default async function Page({
         <Tile label="Not Started" value={`${data.summary.notStarted}`} />
         <Tile label="In Progress" value={`${data.summary.inProgress}`} />
         <Tile label="Complete" value={`${data.summary.complete}`} tone="green" />
+      </div>
+
+      {/* Gantt — new 2026-04-21, JWM1451-65 */}
+      <div className="mb-5">
+        <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
+          Gantt view
+        </div>
+        <ProjectGantt
+          tasks={data.tasks.map<GanttTask>((t) => ({
+            id: t.taskId,
+            name: t.name,
+            start: t.startDate,
+            end: t.finishDate,
+            progress: (t.percentComplete ?? 0) / 100,
+            indent: Math.max(0, (t.indent ?? 1) - 1),
+            status:
+              t.status === "Complete"
+                ? "complete"
+                : t.status === "In Progress"
+                  ? "in_progress"
+                  : t.status === "Blocked"
+                    ? "blocked"
+                    : t.health === "Red"
+                      ? "behind"
+                      : "pending",
+            dependencies: t.predecessors
+              ? t.predecessors
+                  .split(/[,;]\s*/)
+                  .map((p) => p.trim())
+                  .filter(Boolean)
+              : undefined,
+          }))}
+        />
       </div>
 
       <Card>
