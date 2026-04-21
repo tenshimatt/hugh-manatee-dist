@@ -430,7 +430,36 @@ Mirrors the JWM demo's stack (Next.js 16 App Router, React 19, Tailwind v4, CVA 
 | `automagic-console.service` | 3100 | enabled | Express API (stays running) |
 | `automagic-console-next.service` | 3200 | enabled | Next.js UI (replaces old Alpine frontend) |
 
-Traefik route on CT 103 (`/etc/traefik/conf.d/proxy-automagic.yml`) points `automagic.beyondpandora.com` at CT 120:3200 after cutover.
+Traefik route on CT 103 (`/etc/traefik/conf.d/proxy-automagic.yml`) points `automagic.beyondpandora.com` at CT 120:3200 (cut over 2026-04-21).
+
+### 10.4 Local audio drop ingest (added 2026-04-21)
+
+Second ingestion path alongside PLAUD polling. Web UI has a drag-drop widget on `/dashboard`. Files land on CT 107 and are processed by a Python script that mirrors WF-1a's chain (no new n8n workflow; avoids DB surgery).
+
+**Upload flow:**
+1. User drops audio on `/dashboard` → `DropZone.tsx` XHR-posts multipart to `/proxy-upload`
+2. Next.js route `/proxy-upload` streams to Express `/api/upload` at `127.0.0.1:3100`
+3. Express (`/opt/console/upload-route.js`, uses `multer`): saves to `/opt/console/uploads/`, `scp`'s to `root@10.90.10.7:/opt/PLAUD_NOTES/_drops/<YYYY-MM-DD HH:MM title__dropId>.<ext>`
+4. File sits in `_drops/` until the timer picks it up
+
+**Processor (CT 107):**
+- `/opt/automagic_drops_processor.py` — one-shot, fires per-minute via `automagic-drops-processor.timer`
+- Lock file at `/tmp/automagic_drops.lock` (one file at a time)
+- Per file: ffprobe duration → Whisper (`10.90.10.46:8000/v1/audio/transcriptions`) → Sonnet 4.6 summarise → Sonnet 4.6 title-fix → Sonnet 4.6 classify (reads `00 Folder Config.md`) → build markdown → write to `PROJECTS/<folder>/` or root → POST to `wf2-classify` webhook → move file to `_drops/_processed/` (or `_drops/_errored/<file>` + `<file>.error.txt` on failure)
+- Frontmatter marks drops: `source: automagic-drop`, tags include `local-drop`
+
+**Limits / assumptions:**
+- Accepted: mp3, m4a, wav, ogg, flac, webm, mp4, aac, opus
+- Max size: 500 MB per file
+- Express-side SSH uses existing `/root/.ssh/id_ed25519` key on CT 120 → CT 107
+- Failed Whisper call = file parked in `_errored/` (NOT retried — human review needed)
+
+**Source files (in repo):**
+- `automagic/console-next/components/dashboard/DropZone.tsx` — widget
+- `automagic/console-next/app/proxy-upload/route.ts` — streaming multipart proxy
+- `automagic/console/upload-route.js` — Express handler + multer + scp
+- `automagic/scripts/automagic_drops_processor.py` — CT 107 processor
+- `automagic/scripts/automagic-drops-processor.{service,timer}` — systemd units
 
 **Update code:**
 ```bash

@@ -3,6 +3,7 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { ProjectDonut, ClassificationBars, WorkflowBars } from "@/components/dashboard/Charts";
+import { DropZone } from "@/components/dashboard/DropZone";
 import {
   FileAudio,
   FolderKanban,
@@ -63,6 +64,8 @@ export default async function DashboardPage() {
           Pipeline health and voice-note activity across the last 24 hours.
         </p>
       </header>
+
+      <DropZone />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard

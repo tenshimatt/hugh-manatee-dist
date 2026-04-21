@@ -1,0 +1,12 @@
+[Unit]
+Description=Automagic Drops Processor (one-shot)
+After=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/opt/n8n.env
+WorkingDirectory=/opt
+ExecStart=/usr/bin/python3 /opt/automagic_drops_processor.py
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=automagic-drops
