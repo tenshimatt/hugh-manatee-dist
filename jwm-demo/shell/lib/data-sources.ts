@@ -568,17 +568,17 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     route: "/fleet/bookings",
-    label: "Vehicle bookings",
+    label: "Vehicle bookings calendar",
     plane: "fleet",
-    state: "canned",
-    source: "Client-side state only",
+    state: "live",
+    source: "ERPNext Pool Vehicle Booking DocType (read + write)",
   },
   {
     route: "/fleet/bookings/new",
     label: "New booking",
     plane: "fleet",
-    state: "canned",
-    source: "Client-side form, not persisted",
+    state: "live",
+    source: "Writes to ERPNext Pool Vehicle Booking; gated on Approved Driver list",
   },
 
   // ───────────────────────── INVENTORY ─────────────────────────

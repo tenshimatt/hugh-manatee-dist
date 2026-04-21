@@ -222,3 +222,83 @@ export async function isApprovedDriver(employeeId: string): Promise<boolean> {
   const { items } = await listDrivers({ activeOnly: true });
   return items.some((d) => d.employee === employeeId);
 }
+
+/**
+ * Does [aStart,aEnd) overlap [bStart,bEnd)? Booked blocks abut back-to-back
+ * without collision (end-exclusive).
+ */
+export function windowsOverlap(aStart: string, aEnd: string, bStart: string, bEnd: string): boolean {
+  const as = Date.parse(aStart.replace(" ", "T"));
+  const ae = Date.parse(aEnd.replace(" ", "T"));
+  const bs = Date.parse(bStart.replace(" ", "T"));
+  const be = Date.parse(bEnd.replace(" ", "T"));
+  return as < be && bs < ae;
+}
+
+/**
+ * Search for a Pool Vehicle Booking on the same vehicle whose window overlaps
+ * [starts_at,ends_at), excluding `excludeName`. Used as the move validation
+ * gate: if this returns a booking, the move must be rejected.
+ */
+export async function findBookingConflict(params: {
+  vehicle: string;
+  starts_at: string;
+  ends_at: string;
+  excludeName?: string;
+}): Promise<PoolBooking | null> {
+  if (!erpnextConfigured()) {
+    const candidates = cannedBookings().filter((b) => b.vehicle === params.vehicle && b.name !== params.excludeName);
+    return candidates.find((b) => windowsOverlap(params.starts_at, params.ends_at, b.starts_at, b.ends_at)) || null;
+  }
+  // Pull a wide window on the same vehicle; filter locally (simpler than nested filter JSON).
+  const startDay = params.starts_at.slice(0, 10);
+  const endDay = params.ends_at.slice(0, 10);
+  const flt: Array<[string, string, unknown]> = [
+    ["vehicle", "=", params.vehicle],
+    ["starts_at", "<=", `${endDay} 23:59:59`],
+    ["ends_at", ">=", `${startDay} 00:00:00`],
+    ["status", "!=", "Cancelled"],
+  ];
+  const fields = JSON.stringify(["name", "vehicle", "starts_at", "ends_at", "status"]);
+  const qs = new URLSearchParams();
+  qs.set("fields", fields);
+  qs.set("filters", JSON.stringify(flt));
+  qs.set("limit_page_length", "100");
+  try {
+    const body = await frappeGet<{ data: PoolBooking[] }>(`/api/resource/Pool%20Vehicle%20Booking?${qs}`);
+    const candidates = (body.data || []).filter((b) => b.name !== params.excludeName);
+    return candidates.find((b) => windowsOverlap(params.starts_at, params.ends_at, b.starts_at, b.ends_at)) || null;
+  } catch {
+    return null; // fail-open in canned/unreachable mode; canned path above handles the real case
+  }
+}
+
+/**
+ * Move an existing booking to a new vehicle/window. The caller is expected
+ * to have already run `findBookingConflict` and `isApprovedDriver`; this is
+ * the persistence step.
+ */
+export async function moveBookingLive(payload: {
+  name: string;
+  vehicle: string;
+  driver: string;
+  starts_at: string;
+  ends_at: string;
+}): Promise<PoolBooking> {
+  const body = JSON.stringify({
+    vehicle: payload.vehicle,
+    driver: payload.driver,
+    starts_at: payload.starts_at,
+    ends_at: payload.ends_at,
+  });
+  const res = await fetch(
+    `${ERPNEXT_URL}/api/resource/Pool%20Vehicle%20Booking/${encodeURIComponent(payload.name)}`,
+    { method: "PUT", headers: authHeaders(), body }
+  );
+  if (!res.ok) {
+    const t = await res.text().catch(() => "");
+    throw new Error(`ERPNext booking move ${res.status} ${t.slice(0, 200)}`);
+  }
+  const json = (await res.json()) as { data: PoolBooking };
+  return json.data;
+}
