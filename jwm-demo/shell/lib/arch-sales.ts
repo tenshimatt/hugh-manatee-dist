@@ -250,6 +250,11 @@ async function fetchLive(): Promise<Opportunity[]> {
 }
 
 /** Load the opportunity board. Prefers live when it returns rows; else canned. */
+export async function getOpportunityById(id: string): Promise<Opportunity | null> {
+  const board = await getOpportunities();
+  return board.opportunities.find((o) => o.id === id) ?? null;
+}
+
 export async function getOpportunities(): Promise<OpportunityBoard> {
   const canned = loadCanned();
   try {
@@ -304,6 +309,101 @@ export interface SalesKpis {
   winRate12mo: number; // 0..1
   totalCount: number;
   totalPipeline: number;  // active + submitted $
+}
+
+/**
+ * Per-estimator rollup: counts + pipeline $ + win rate + avg margin
+ * (sold GP from Won deals vs WIP GP from Active/Submitted).
+ */
+export interface EstimatorStats {
+  estimator: string;
+  slug: string;
+  active: number;
+  submitted: number;
+  won: number;
+  lost: number;
+  noBid: number;
+  pipelineValue: number;     // active + submitted $
+  wonValue: number;          // sum of actual/total close $ on Won
+  winRate: number;           // won / (won+lost) lifetime
+  avgSoldMargin: number;     // average margin on Won
+  avgWipMargin: number;      // average margin on Active+Submitted
+  marginDelta: number;       // sold - WIP (drift: are we winning at lower margin than we're bidding?)
+}
+
+export function computeEstimatorStats(opps: Opportunity[]): EstimatorStats[] {
+  const byEst = new Map<string, Opportunity[]>();
+  for (const o of opps) {
+    const key = (o.estimator ?? "Unassigned").trim() || "Unassigned";
+    if (!byEst.has(key)) byEst.set(key, []);
+    byEst.get(key)!.push(o);
+  }
+  const out: EstimatorStats[] = [];
+  for (const [name, list] of byEst) {
+    let active = 0, submitted = 0, won = 0, lost = 0, noBid = 0;
+    let pipeline = 0, wonValue = 0;
+    const soldMargins: number[] = [];
+    const wipMargins: number[] = [];
+    for (const o of list) {
+      const v = o.totalBidValue ?? 0;
+      const m = o.margin ?? null;
+      switch (o.stage) {
+        case "Active":    active++; pipeline += v; if (m != null) wipMargins.push(m); break;
+        case "Submitted": submitted++; pipeline += v; if (m != null) wipMargins.push(m); break;
+        case "Won":       won++; wonValue += (o.actualCloseValue ?? v); if (m != null) soldMargins.push(m); break;
+        case "Lost":      lost++; break;
+        case "No Bid":    noBid++; break;
+        default: break;
+      }
+    }
+    const avg = (arr: number[]) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    const avgSoldMargin = avg(soldMargins);
+    const avgWipMargin = avg(wipMargins);
+    const winRate = won + lost > 0 ? won / (won + lost) : 0;
+    out.push({
+      estimator: name,
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+      active, submitted, won, lost, noBid,
+      pipelineValue: pipeline, wonValue,
+      winRate, avgSoldMargin, avgWipMargin,
+      marginDelta: avgSoldMargin - avgWipMargin,
+    });
+  }
+  out.sort((a, b) => b.pipelineValue - a.pipelineValue);
+  return out;
+}
+
+export interface SalesGpRollup {
+  avgSoldMargin: number;
+  avgWipMargin: number;
+  avgClosedMargin: number;  // Won+Lost mix
+  marginDelta: number;      // sold - WIP, signed
+  estimatorCount: number;
+  underwritersOver5pctDrift: number;
+}
+
+export function computeSalesGp(opps: Opportunity[]): SalesGpRollup {
+  const sold: number[] = [];
+  const wip: number[] = [];
+  const closed: number[] = [];
+  for (const o of opps) {
+    const m = o.margin ?? null;
+    if (m == null) continue;
+    if (o.stage === "Won") { sold.push(m); closed.push(m); }
+    else if (o.stage === "Lost") { closed.push(m); }
+    else if (o.stage === "Active" || o.stage === "Submitted") { wip.push(m); }
+  }
+  const avg = (arr: number[]) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+  const ests = computeEstimatorStats(opps);
+  const drift = ests.filter((e) => Math.abs(e.marginDelta) > 0.05).length;
+  return {
+    avgSoldMargin: avg(sold),
+    avgWipMargin: avg(wip),
+    avgClosedMargin: avg(closed),
+    marginDelta: avg(sold) - avg(wip),
+    estimatorCount: ests.length,
+    underwritersOver5pctDrift: drift,
+  };
 }
 
 export function computeKpis(opps: Opportunity[]): SalesKpis {

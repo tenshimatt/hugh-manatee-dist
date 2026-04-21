@@ -28,6 +28,7 @@ import { ProjectBudgetOverview } from "@/components/exec/ProjectBudgetOverview";
 import { PersonaCardRow } from "@/components/exec/PersonaCardRow";
 import { ActiveProjectsTable } from "@/components/exec/ActiveProjectsTable";
 import { PMO_ROWS } from "@/lib/pmo-rollup";
+import { getOpportunities, computeSalesGp } from "@/lib/arch-sales";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,8 @@ const DASHBOARD_LINKS: Array<{ label: string; href: string; icon: React.ElementT
 
 export default async function ExecArchPage() {
   const kpis = await getExecKpis("Architectural");
+  const board = await getOpportunities();
+  const gp = computeSalesGp(board.opportunities);
 
   // Spectrum vs Smartsheet drift aggregate — Σ |spectrumDelta| over active projects.
   const activeRows = PMO_ROWS.filter((r) => !r.archived);
@@ -159,13 +162,23 @@ export default async function ExecArchPage() {
             trend="up"
             size="lg"
           />
-          <Link href="/exec/spectrum-drift" className="col-span-4 block group">
+          <Link href="/exec/spectrum-drift" className="col-span-2 block group">
             <KpiTile
               label="Spectrum drift"
               value={fmtUsd(driftAbsTotal)}
-              subtitle={`${driftOver10k} project${driftOver10k === 1 ? "" : "s"} with >$10k drift · click to reconcile`}
+              subtitle={`${driftOver10k} project${driftOver10k === 1 ? "" : "s"} with >$10k drift`}
               accent={driftAccent}
               source="canned"
+              size="lg"
+            />
+          </Link>
+          <Link href="/arch/sales/leaders" className="col-span-2 block group">
+            <KpiTile
+              label="Sales GP — Sold vs WIP"
+              value={`${(gp.avgSoldMargin * 100).toFixed(1)}% / ${(gp.avgWipMargin * 100).toFixed(1)}%`}
+              subtitle={`Δ ${gp.marginDelta >= 0 ? "+" : ""}${(gp.marginDelta * 100).toFixed(1)}pp · ${gp.underwritersOver5pctDrift} estimator${gp.underwritersOver5pctDrift === 1 ? "" : "s"} drifting >5pp`}
+              accent={gp.marginDelta < -0.03 ? "rose" : gp.marginDelta < 0 ? "amber" : "emerald"}
+              source={board.source}
               size="lg"
             />
           </Link>
