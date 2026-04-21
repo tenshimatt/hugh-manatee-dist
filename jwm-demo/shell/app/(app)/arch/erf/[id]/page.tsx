@@ -31,7 +31,7 @@ export default async function ErfDetailPage({
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <Link
-        href="/erf"
+        href="/arch/erf"
         className="inline-flex items-center gap-2 text-[#064162] font-semibold hover:underline"
       >
         <ArrowLeft className="w-4 h-4" />

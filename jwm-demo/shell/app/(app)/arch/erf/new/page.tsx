@@ -106,7 +106,7 @@ export default function NewErfPage() {
       });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const j = await r.json();
-      router.push(`/erf/${j.erf.id}`);
+      router.push(`/arch/erf/${j.erf.id}`);
     } catch (e) {
       setError(`Submit failed: ${String(e)}`);
       setSubmitting(false);
@@ -116,7 +116,7 @@ export default function NewErfPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <Link
-        href="/erf"
+        href="/arch/erf"
         className="inline-flex items-center gap-2 text-[#064162] font-semibold hover:underline"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -328,7 +328,7 @@ export default function NewErfPage() {
 
       <div className="flex items-center justify-end gap-3 sticky bottom-4 bg-white/80 backdrop-blur rounded-xl border border-slate-200 p-3 shadow-sm">
         <Link
-          href="/erf"
+          href="/arch/erf"
           className="text-sm text-slate-600 hover:underline px-3 py-2"
         >
           Cancel

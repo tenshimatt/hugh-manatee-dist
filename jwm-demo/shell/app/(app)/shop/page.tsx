@@ -316,7 +316,7 @@ export default async function ShopOverviewPage() {
           front end and QC on the back end." */}
       <div className="grid md:grid-cols-3 gap-4">
         <Link
-          href="/erf"
+          href="/arch/erf"
           className="jwm-card p-4 hover:shadow-md transition-shadow flex items-center gap-3"
         >
           <div className="h-10 w-10 rounded-lg bg-[#fdf2e3] text-[#8a5716] flex items-center justify-center">

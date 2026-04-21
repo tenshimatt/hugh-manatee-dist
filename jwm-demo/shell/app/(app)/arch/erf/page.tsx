@@ -55,7 +55,7 @@ export default function ErfQueuePage() {
             blocked · {formatMoney(totalValue)} in the pipeline
           </p>
         </div>
-        <Link href="/erf/new">
+        <Link href="/arch/erf/new">
           <Button variant="primary" size="md">
             <Plus className="w-4 h-4" />
             New ERF

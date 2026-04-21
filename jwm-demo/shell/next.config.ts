@@ -8,42 +8,19 @@ const nextConfig: NextConfig = {
   // pdf-parse / pdfjs-dist rely on a worker file loaded from disk at runtime.
   // Bundling them breaks the worker resolution. Keep them external on the server.
   serverExternalPackages: ["pdf-parse", "pdfjs-dist"],
-  // Canonical menu paths per Chris Ball's 2026-04-19 spec (MENU_ORDER.md).
-  // Physical pages still live at /estimator and /erf — redirects keep the
-  // sidebar pointing at the persona-driven URLs without breaking internal
-  // cross-links in existing pages. Revisit after Phase 2 once pages move.
+  // JWM1451-63: physical pages moved to canonical parents 2026-04-21.
+  //   /estimator/*                  → /arch/estimating/*          (rename, 1 file)
+  //   /estimator/quick-quote/*      → /processing/estimating/quick-quote/*
+  //   /erf/*                        → /arch/erf/*
+  // These redirects preserve any bookmark / internal deep-link that still
+  // uses the old URL. Not `permanent: true` yet because we're <1 week in.
   async redirects() {
     return [
-      {
-        source: "/arch/estimating",
-        destination: "/estimator",
-        permanent: false,
-      },
-      {
-        source: "/arch/estimating/:path*",
-        destination: "/estimator/:path*",
-        permanent: false,
-      },
-      {
-        source: "/arch/erf",
-        destination: "/erf",
-        permanent: false,
-      },
-      {
-        source: "/arch/erf/:path*",
-        destination: "/erf/:path*",
-        permanent: false,
-      },
-      {
-        source: "/processing/estimating/quick-quote",
-        destination: "/estimator/quick-quote",
-        permanent: false,
-      },
-      {
-        source: "/processing/estimating/quick-quote/:path*",
-        destination: "/estimator/quick-quote/:path*",
-        permanent: false,
-      },
+      { source: "/estimator",                   destination: "/arch/estimating",                   permanent: false },
+      { source: "/estimator/quick-quote",       destination: "/processing/estimating/quick-quote", permanent: false },
+      { source: "/estimator/quick-quote/:path*",destination: "/processing/estimating/quick-quote/:path*", permanent: false },
+      { source: "/erf",                         destination: "/arch/erf",                          permanent: false },
+      { source: "/erf/:path*",                  destination: "/arch/erf/:path*",                   permanent: false },
     ];
   },
 };

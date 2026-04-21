@@ -83,7 +83,7 @@ export default function QuickQuotePreviewPage({
     return (
       <div className="space-y-4">
         <Link
-          href="/estimator/quick-quote"
+          href="/processing/estimating/quick-quote"
           className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[#064162]"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Quick Quote
@@ -113,7 +113,7 @@ export default function QuickQuotePreviewPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <Link
-          href="/estimator/quick-quote"
+          href="/processing/estimating/quick-quote"
           className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[#064162]"
         >
           <ArrowLeft className="w-4 h-4" /> New quote
