@@ -3,8 +3,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 3.1 |
-| Date | 2026-04-18 |
+| Version | 3.2 |
+| Date | 2026-04-22 |
 | Author | Matt Wright |
 | Status | Living Document |
 | Plane Project | Automagic (43e10311) |
@@ -398,7 +398,7 @@ Pipeline management UI for monitoring and searching PLAUD voice note processing.
 | Component | Technology | Location |
 |---|---|---|
 | API Backend | Node.js 20 + Express | CT 120 `/opt/console/server.js` (port 3100) |
-| UI Frontend | Next.js 16 + React 19 + Tailwind v4 | CT 120 `/opt/console-next/` (port 3200) |
+| UI Frontend | Next.js 16 + React 19 + Tailwind v4 | CT 120 `/opt/console-next/` (port **3201** — moved from 3200 on 2026-04-22 due to jwm-demo collision) |
 | Database | SQLite + FTS5 (better-sqlite3) | `/opt/console/data/index.sqlite` |
 | Real-time | SSE (Server-Sent Events) | Express `/api/sse`, proxied via Next `/proxy/sse` |
 | Indexer | node-cron, every 5 min | `/opt/console/indexer.js` |
@@ -409,13 +409,13 @@ Mirrors the JWM demo's stack (Next.js 16 App Router, React 19, Tailwind v4, CVA 
 
 **Brand palette:** three hex values — `#61a5c2` (sky, primary), `#52b69a` (teal, success), `#ffbf69` (gold, accent). Light AND dark mode, toggle persists in `localStorage` with inline-script FOUC prevention.
 
-**Pages:**
-- `/dashboard` — KPI cards (transcriptions, projects, pipeline success %, 24h errors), 3-chart row (project donut, classification bars, workflow success/error stacked), recent transcriptions + Plane issues feeds
-- `/transcriptions` — filterable list (project / tag / classification / date range), 25/page pagination, detail view with linked Plane issues
+**Pages (as of 2026-04-22):**
+- `/dashboard` — KPI cards, **drop zone + drop queue** (two-column top row), 3-chart row (project donut, **top tags** (replaced "classification breakdown"), workflow success/error stacked), recent transcriptions + Plane issues feeds (all hyperlinked to internal detail + native Plane/Obsidian)
+- `/transcriptions` — filterable list (project / tag / date range), 25/page pagination, detail view with "Open in Obsidian" + linked Plane issues panel (hidden when empty)
 - `/projects` — grid of Plane projects with issue + transcription counts
-- `/projects/[id]` — 5-column kanban (Backlog / To Do / In Progress / Done / Cancelled) + linked voice notes
-- `/pipeline` — live SSE timeline of n8n executions + workflow breakdown with progress bars
-- `/search` — FTS5 full-text search across transcriptions and issues
+- `/projects/[id]` — issue list where each issue nests its correlated voice notes with confidence %, "Open in Plane" header button, per-issue external link, orphan voice-note section at bottom
+- `/pipeline` — live SSE timeline of n8n executions + workflow breakdown with progress bars (execution rows fall back to "Run @ time" when workflow name is null)
+- `/search` — FTS5 full-text search (reachable via TopBar search form; sidebar nav item removed 2026-04-22 as redundant)
 
 **Data layer:** Server components fetch from Express via `AUTOMAGIC_API_URL=http://127.0.0.1:3100`. Client components hit `/proxy/[...path]` (Next route handler) to avoid CORS and keep the URL server-only.
 
@@ -427,23 +427,11 @@ Mirrors the JWM demo's stack (Next.js 16 App Router, React 19, Tailwind v4, CVA 
 
 | Service | Port | systemd | Purpose |
 |---|---|---|---|
-| `automagic-console.service` | 3100 | enabled | Express API (stays running) |
-| `automagic-console-next.service` | 3200 | enabled | Next.js UI (replaces old Alpine frontend) |
+| `automagic-console.service` | 3100 | enabled | Express API |
+| `automagic-console-next.service` | **3201** | enabled | Next.js UI (replaces old Alpine frontend) |
+| `jwm-demo.service` | 3200 | enabled | Unrelated — but occupies :3200 on CT 120, hence Automagic's move to :3201 |
 
-Traefik route on CT 103 (`/etc/traefik/conf.d/proxy-automagic.yml`) points `automagic.beyondpandora.com` at CT 120:3200 (cut over 2026-04-21).
-
-### 10.5 Correlation engine (fixed 2026-04-22)
-
-Voice-note ↔ Plane-issue linking was shipped inert (0 links in DB). Root cause: the scorer required title similarity against issue names, but voice-note titles rarely echo ticket names. Fixed by making `project_folder` the primary join key:
-
-- Voice-note `project_folder` is normalised and matched against each Plane project's `name` and `identifier` (case-insensitive, symbol-stripped)
-- Within the matched project, pairs are scored: +0.3 for project match, up to +0.5 for title trigram similarity, +0.3 for content-overlap (issue name words appearing in the summary or transcript), +0.05..0.25 for date proximity (30d / 7d / 1d)
-- Threshold 0.4; top 5 issues kept per transcription
-- Cross-project fallback: pure title match ≥ 0.45
-
-Result on current corpus: 215 transcriptions → 685 links (up from 0), 141 transcriptions covered, 651 above 0.6 confidence.
-
-Source: `automagic/console/lib/correlator.js` (exec from `automagic/console/indexer.js` every 5 min).
+Traefik route on CT 103 (`/etc/traefik/conf.d/proxy-automagic.yml`) points `automagic.beyondpandora.com` at CT 120:3201 (cut 2026-04-22 after the port conflict fix).
 
 ### 10.4 Local audio drop ingest (added 2026-04-21)
 
@@ -474,43 +462,86 @@ Second ingestion path alongside PLAUD polling. Web UI has a drag-drop widget on 
 - `automagic/scripts/automagic_drops_processor.py` — CT 107 processor
 - `automagic/scripts/automagic-drops-processor.{service,timer}` — systemd units
 
-**Update code:**
-```bash
-cd /Users/mattwright/pandora/automagic/console-next
-tar czf /tmp/automagic-console-next.tar.gz --exclude='node_modules' --exclude='.next' .
-scp /tmp/automagic-console-next.tar.gz root@10.90.10.10:/tmp/
-ssh root@10.90.10.10 "pct push 120 /tmp/automagic-console-next.tar.gz /tmp/automagic-console-next.tar.gz && \
-  pct exec 120 -- bash -c 'tar xzf /tmp/automagic-console-next.tar.gz -C /opt/console-next && \
-    cd /opt/console-next && npm install && npm run build && \
-    systemctl restart automagic-console-next'"
-```
+### 10.5 Correlation engine (fixed 2026-04-22)
 
-### 10.2 Data Flow
+Voice-note ↔ Plane-issue linking was shipped inert (0 links in DB). Root cause: the scorer required title similarity against issue names, but voice-note titles rarely echo ticket names. Fixed by making `project_folder` the primary join key:
+
+- Voice-note `project_folder` is normalised and matched against each Plane project's `name` and `identifier` (case-insensitive, symbol-stripped)
+- Within the matched project, pairs are scored: +0.3 for project match, up to +0.5 for title trigram similarity, +0.3 for content-overlap (issue name words appearing in the summary or transcript), +0.05..0.25 for date proximity (30d / 7d / 1d)
+- Threshold 0.4; top 5 issues kept per transcription
+- Cross-project fallback: pure title match ≥ 0.45
+
+Result on current corpus: 215 transcriptions → 685 links (up from 0), 141 transcriptions covered, 651 above 0.6 confidence.
+
+Source: `automagic/console/lib/correlator.js` (exec from `automagic/console/indexer.js` every 5 min).
+
+### 10.6 UX pass (2026-04-22)
+
+A focused "actionable-only" sweep through the console. Every surface now either (a) does something functional, or (b) links out to the canonical system (Plane, Obsidian).
+
+**Drop queue** (`/dashboard`, polls `/api/queue` every 5s):
+- Sections: processing-now (pulse animation) · waiting (FIFO numbered) · errored (with diagnosis) · recently processed (linked)
+- Recently processed items are **Obsidian deep-links** (`obsidian://open?vault=Obsidian&file=PLAUD/…`) — opens the generated markdown directly in the user's Obsidian app. Processor writes a `.result.json` sidecar in `_processed/` containing `markdownPath`, `title`, `projectFolder`, `tags`; UI reads via `/api/queue`.
+- Errored items show a **human-readable diagnosis + recommended action** derived from error-text patterns (Whisper 500, Whisper unreachable, scp failure, LiteLLM gateway, empty transcript, unknown fallback). Raw error tucked behind a disclosure.
+- **Actions**: Retry (re-queue from `_errored/` → `_drops/`, clears `.error.txt`) · Delete (purge audio + sidecars) · Cancel × on waiting items. Server-side validation whitelists audio extensions; no traversal.
+
+**Hyperlink everywhere** (via `lib/utils.ts` helpers):
+- `toObsidianUri(plaudRelPath)` — builds Obsidian deep-links; vault/subdir configurable via `NEXT_PUBLIC_OBSIDIAN_VAULT` / `NEXT_PUBLIC_OBSIDIAN_PLAUD_SUBDIR`
+- `toPlaneIssueUrl(projectId, issueId)` — Plane native URL (`beyond-pandora/projects/<id>/issues/<id>`)
+- `toPlaneProjectUrl(projectId)` — Plane project issues view
+- Rendered: dashboard Recent Transcriptions + Recent Plane Issues, Transcriptions list, Transcription detail ("Open in Obsidian" prominent button), Linked Plane Issues rows, `/projects/[id]` issue rows
+
+**Dashboard charts:**
+- "Classification breakdown" replaced by **Top tags** — the `classification` field was WF-2 junk (`APPLICATION/JSON`, `SELECT`, 8 of 215 rows populated). Top tags queries `json_each(transcriptions.tags)` and filters system tags (`voice-note`, `plaud`, `local-drop`, `recording`, `auto-summary`, `transcript`, `note`). Chart tooltip now shows the tag name, not "Count".
+- Project donut tooltip fixed to show slice name (was showing generic "Count").
+
+**Pipeline timeline:**
+- Execution rows fell back to `—` when workflow_name was null — mismatch between Express (snake_case) and client (camelCase). Added normaliser in `api.pipeline()` + fallback `Run @ <time>` when neither name nor id resolves.
+
+**Trims** (nothing with a link removed):
+- Classification filter + badges (broken data source)
+- Always-empty "Linked Plane issues" placeholder card on transcription detail — only renders when there are links
+- `/search` sidebar entry (TopBar search form already routes to `/search`; page still accessible)
+
+**`/projects/[id]` rebuild:**
+- Kanban dropped (Plane's is better). Replaced with a flat issues list where each issue **nests its correlated voice notes with confidence %**. Header has "Open in Plane" button; each issue name links out to the Plane ticket. Orphan-folder voice notes (matched folder but no issue correlation) listed separately at bottom.
+
+**Port collision fix (2026-04-22):**
+Both `automagic-console-next.service` and `jwm-demo.service` were configured for port 3200 on CT 120 — they fought on every restart. Moved Automagic to `:3201` (`systemd unit + package.json + Traefik route`); JWM stays on `:3200`.
+
+### 10.7 Data flow
 
 ```
 CT107 (n8n) ──rsync cron 5min──> CT120:/opt/console/data/plaud-notes/
 CT107 (n8n) ──rsync cron 5min──> CT120:/opt/console/data/n8n.sqlite (read-only copy)
 CT106 (Plane) ──HTTP API poll──> CT120 indexer (14 projects, 1316 issues → FTS5 index)
+CT120 Express ──ssh JSON-over-bash──> CT107 /opt/PLAUD_NOTES/_drops/* (queue + retry/delete)
 ```
 
-### 10.3 Access
+### 10.8 Access
 
-- LAN: `http://10.90.10.20:3100`
-- External: `https://automagic.beyondpandora.com` (Cloudflare → Traefik → Authentik SSO → CT120)
-- systemd service: `automagic-console.service`, env: `/opt/console/.env`
+- LAN API: `http://10.90.10.20:3100` · LAN UI: `http://10.90.10.20:3201`
+- External: `https://automagic.beyondpandora.com` (Cloudflare → Traefik → Authentik SSO → CT 120:3201 → proxies `/proxy/*`, `/proxy-upload` to Express :3100)
+- systemd: `automagic-console.service` (Express), `automagic-console-next.service` (Next.js)
+- Env files: `/opt/console/.env`, `/opt/console-next/.env.local`
 
-### 10.4 API Endpoints
+### 10.9 API endpoints
 
 | Endpoint | Description |
 |---|---|
-| `GET /api/stats` | Dashboard metrics (counts, health, distributions) |
-| `GET /api/transcriptions` | Paginated list with filters (project, date, tag, classification) |
+| `GET /api/stats` | Dashboard metrics (counts, health, project + **tags** distributions, recent lists) |
+| `GET /api/transcriptions` | Paginated list with filters (project, tag, dateFrom, dateTo) |
 | `GET /api/transcriptions/:id` | Single transcription + linked Plane issues |
 | `GET /api/search?q=...` | FTS5 full-text search across transcriptions and issues |
 | `GET /api/projects` | All Plane projects with transcription counts |
+| `GET /api/projects/:id` | Project + issues + folder-matched transcriptions + correlation links |
 | `GET /api/pipeline` | Recent n8n executions + per-workflow breakdown |
 | `GET /api/sse` | Server-Sent Events for live pipeline status |
-| `POST /api/reindex` | Manual reindex trigger |
+| `POST /api/reindex` | Manual full-index trigger |
+| `POST /api/upload` | Audio drop upload (multer multipart); scp's to CT 107 `_drops/` |
+| `GET /api/queue` | Drop queue state (awaiting / processing / processed / errored) via ssh to CT 107 |
+| `POST /api/queue/retry` | Move errored drop back to `_drops/` for reprocessing |
+| `POST /api/queue/delete` | Remove audio + sidecars from `_errored/` or `_drops/` |
 
 ---
 
