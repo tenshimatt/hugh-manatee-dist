@@ -47,9 +47,9 @@ export default async function DashboardPage() {
     value: p.cnt,
   }));
 
-  const classDist = stats.distributions.classifications.map((c) => ({
-    name: c.classification,
-    value: c.cnt,
+  const tagDist = (stats.distributions.tags || []).map((t) => ({
+    name: t.tag,
+    value: t.cnt,
   }));
 
   const wfBreakdown = stats.pipeline.workflows.map((w) => ({
@@ -117,10 +117,14 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="am-fade-in">
           <CardHeader className="flex items-center justify-between">
-            <CardTitle>Project distribution</CardTitle>
+            <CardTitle>Voice notes by project folder</CardTitle>
             <span className="text-xs text-muted">{projectDist.length} folders</span>
           </CardHeader>
           <CardBody>
+            <p className="text-xs text-muted mb-3">
+              How the LLM routed each recording into <code className="text-foreground">PROJECTS/&lt;folder&gt;/</code>.
+              Hover a slice for the count.
+            </p>
             {projectDist.length > 0 ? (
               <ProjectDonut data={projectDist} />
             ) : (
@@ -130,14 +134,22 @@ export default async function DashboardPage() {
         </Card>
 
         <Card className="am-fade-in">
-          <CardHeader>
-            <CardTitle>Classification breakdown</CardTitle>
+          <CardHeader className="flex items-center justify-between">
+            <CardTitle>Top tags</CardTitle>
+            <span className="text-xs text-muted">{tagDist.length} tags</span>
           </CardHeader>
           <CardBody>
-            {classDist.length > 0 ? (
-              <ClassificationBars data={classDist} />
+            <p className="text-xs text-muted mb-3">
+              The semantic tags the LLM assigned (e.g. <code className="text-foreground">jwm</code>,{" "}
+              <code className="text-foreground">archon</code>). System tags{" "}
+              <code className="text-foreground">voice-note</code>,{" "}
+              <code className="text-foreground">plaud</code>,{" "}
+              <code className="text-foreground">local-drop</code> are excluded.
+            </p>
+            {tagDist.length > 0 ? (
+              <ClassificationBars data={tagDist} />
             ) : (
-              <div className="text-sm text-muted text-center py-12">No classification data yet.</div>
+              <div className="text-sm text-muted text-center py-12">No tag data yet.</div>
             )}
           </CardBody>
         </Card>

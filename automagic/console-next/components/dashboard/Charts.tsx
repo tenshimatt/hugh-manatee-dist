@@ -74,21 +74,27 @@ export function ClassificationBars({
 }: {
   data: { name: string; value: number }[];
 }) {
+  const total = data.reduce((s, d) => s + d.value, 0);
   return (
     <ResponsiveContainer width="100%" height={260}>
-      <BarChart data={data} barGap={4} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+      <BarChart data={data} barGap={4} margin={{ top: 8, right: 8, left: 0, bottom: 30 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
         <XAxis
           dataKey="name"
           tick={{ fontSize: 11, fill: "var(--muted)" }}
           axisLine={false}
           tickLine={false}
+          interval={0}
+          angle={-30}
+          textAnchor="end"
+          height={50}
         />
         <YAxis
           tick={{ fontSize: 11, fill: "var(--muted)" }}
           axisLine={false}
           tickLine={false}
           width={32}
+          allowDecimals={false}
         />
         <Tooltip
           contentStyle={{
@@ -98,6 +104,13 @@ export function ClassificationBars({
             color: "var(--foreground)",
           }}
           cursor={{ fill: "rgba(97,165,194,0.08)" }}
+          formatter={(v, _s, item) => {
+            const n = Number(v);
+            const label =
+              (item as { payload?: { name?: string } })?.payload?.name || "—";
+            const pct = total > 0 ? ((n / total) * 100).toFixed(1) : "0";
+            return [`${n} (${pct}%)`, label];
+          }}
         />
         <Bar dataKey="value" fill="#61a5c2" radius={[8, 8, 0, 0]} />
       </BarChart>

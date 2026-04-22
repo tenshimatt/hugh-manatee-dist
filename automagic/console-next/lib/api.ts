@@ -53,6 +53,7 @@ export type Stats = {
   distributions: {
     projects: Array<{ project_folder: string; cnt: number }>;
     classifications: Array<{ classification: string; cnt: number }>;
+    tags?: Array<{ tag: string; cnt: number }>;
   };
 };
 

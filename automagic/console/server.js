@@ -55,7 +55,7 @@ app.get('/api/stats', (req, res) => {
     ORDER BY cnt DESC
   `).all();
 
-  // Classification breakdown
+  // Classification breakdown (legacy — WF-2 classifier field; kept for compatibility)
   const classDist = db.prepare(`
     SELECT classification, COUNT(*) as cnt
     FROM transcriptions
@@ -64,11 +64,28 @@ app.get('/api/stats', (req, res) => {
     ORDER BY cnt DESC
   `).all();
 
+  // Top tags — expands JSON tags array and counts, excluding generic system tags.
+  // This is what the UI actually shows: the semantic project/topic tags assigned by the LLM.
+  let tagDist = [];
+  try {
+    tagDist = db.prepare(`
+      SELECT je.value AS tag, COUNT(*) AS cnt
+      FROM transcriptions, json_each(transcriptions.tags) AS je
+      WHERE transcriptions.tags IS NOT NULL
+        AND je.value NOT IN ('voice-note', 'plaud', 'local-drop', 'recording', 'auto-summary', 'transcript', 'note')
+      GROUP BY je.value
+      ORDER BY cnt DESC
+      LIMIT 12
+    `).all();
+  } catch (e) {
+    // tags column may not be JSON on older rows — ignore
+  }
+
   res.json({
     counts: { transcriptions: transcriptionCount, issues: issueCount, projects: projectCount, links: linkCount },
     pipeline: { stats: execStats, lastExecution: lastExec, workflows: wfBreakdown },
     recent: { transcriptions: recentTranscriptions, issues: recentIssues },
-    distributions: { projects: projectDist, classifications: classDist },
+    distributions: { projects: projectDist, classifications: classDist, tags: tagDist },
   });
 });
 
