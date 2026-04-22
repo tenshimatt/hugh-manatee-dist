@@ -319,6 +319,7 @@ cron.schedule('*/5 * * * *', async () => {
 
 // --------------- Upload route (audio drops) ---------------
 require('./upload-route').registerUploadRoute(app);
+require('./queue-route').registerQueueRoute(app);
 
 // --------------- Start ---------------
 
