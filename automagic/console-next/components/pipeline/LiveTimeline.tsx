@@ -31,7 +31,16 @@ export function LiveTimeline({ initial }: { initial: Execution[] }) {
           const r = await fetch("/proxy/pipeline?limit=50");
           if (r.ok) {
             const j = await r.json();
-            setExecutions(j.executions || []);
+            const normalized = (j.executions || []).map((e: Record<string, unknown>) => ({
+              id: String(e.id ?? ""),
+              workflowId: (e.workflowId as string) ?? (e.workflow_id as string) ?? "",
+              workflowName: (e.workflowName as string) ?? (e.workflow_name as string) ?? "",
+              startedAt: (e.startedAt as string) ?? (e.started_at as string) ?? "",
+              stoppedAt: (e.stoppedAt as string | null) ?? (e.finished_at as string | null) ?? null,
+              status: String(e.status ?? ""),
+              mode: String(e.mode ?? ""),
+            }));
+            setExecutions(normalized);
           }
         }
       } catch {
@@ -90,7 +99,15 @@ export function LiveTimeline({ initial }: { initial: Execution[] }) {
               <Icon className={cn("w-5 h-5 flex-shrink-0", tone)} />
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium text-foreground truncate">
-                  {e.workflowName || e.workflowId}
+                  {e.workflowName ||
+                    (e.workflowId
+                      ? `WF ${e.workflowId.slice(0, 8)}`
+                      : `Run @ ${new Date(e.startedAt).toLocaleString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}`)}
                 </div>
                 <div className="text-[11px] text-muted">
                   {formatRelative(e.startedAt)}

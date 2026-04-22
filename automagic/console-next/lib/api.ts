@@ -158,7 +158,55 @@ export const api = {
       transcriptions: Transcription[];
       links: Array<{ transcription_id: number; issue_id: string; confidence: number }>;
     }>(`/api/projects/${id}`),
-  pipeline: (limit = 50) => apiFetch<PipelineResponse>(`/api/pipeline?limit=${limit}`),
+  pipeline: async (limit = 50) => {
+    type RawExec = {
+      id: number | string;
+      workflow_id?: string;
+      workflowId?: string;
+      workflow_name?: string;
+      workflowName?: string;
+      started_at?: string;
+      startedAt?: string;
+      finished_at?: string | null;
+      stoppedAt?: string | null;
+      status: string;
+      mode?: string;
+    };
+    const raw = await apiFetch<{
+      executions: RawExec[];
+      stats: PipelineResponse["stats"];
+      breakdown: Array<{
+        workflow_id?: string;
+        workflowId?: string;
+        workflow_name?: string;
+        workflowName?: string;
+        success: number;
+        error: number;
+        total: number;
+      }>;
+    }>(`/api/pipeline?limit=${limit}`);
+    if (!raw) return null;
+    const normalized: PipelineResponse = {
+      stats: raw.stats,
+      executions: raw.executions.map((e) => ({
+        id: String(e.id),
+        workflowId: e.workflowId ?? e.workflow_id ?? "",
+        workflowName: e.workflowName ?? e.workflow_name ?? "",
+        startedAt: e.startedAt ?? e.started_at ?? "",
+        stoppedAt: e.stoppedAt ?? e.finished_at ?? null,
+        status: e.status,
+        mode: e.mode ?? "",
+      })),
+      breakdown: (raw.breakdown || []).map((b) => ({
+        workflowId: b.workflowId ?? b.workflow_id ?? "",
+        workflowName: b.workflowName ?? b.workflow_name ?? "",
+        success: b.success,
+        error: b.error,
+        total: b.total,
+      })),
+    };
+    return normalized;
+  },
   filters: () => apiFetch<Filters>(`/api/filters`),
   search: (q: string, params: Record<string, string | number | undefined> = {}) => {
     const qs = new URLSearchParams({ q });

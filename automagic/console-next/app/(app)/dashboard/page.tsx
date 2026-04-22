@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { ProjectDonut, ClassificationBars, WorkflowBars } from "@/components/dashboard/Charts";
 import { DropZone } from "@/components/dashboard/DropZone";
+import { DropQueue } from "@/components/dashboard/DropQueue";
 import {
   FileAudio,
   FolderKanban,
@@ -65,7 +66,10 @@ export default async function DashboardPage() {
         </p>
       </header>
 
-      <DropZone />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <DropZone />
+        <DropQueue />
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
