@@ -432,6 +432,19 @@ Mirrors the JWM demo's stack (Next.js 16 App Router, React 19, Tailwind v4, CVA 
 
 Traefik route on CT 103 (`/etc/traefik/conf.d/proxy-automagic.yml`) points `automagic.beyondpandora.com` at CT 120:3200 (cut over 2026-04-21).
 
+### 10.5 Correlation engine (fixed 2026-04-22)
+
+Voice-note ↔ Plane-issue linking was shipped inert (0 links in DB). Root cause: the scorer required title similarity against issue names, but voice-note titles rarely echo ticket names. Fixed by making `project_folder` the primary join key:
+
+- Voice-note `project_folder` is normalised and matched against each Plane project's `name` and `identifier` (case-insensitive, symbol-stripped)
+- Within the matched project, pairs are scored: +0.3 for project match, up to +0.5 for title trigram similarity, +0.3 for content-overlap (issue name words appearing in the summary or transcript), +0.05..0.25 for date proximity (30d / 7d / 1d)
+- Threshold 0.4; top 5 issues kept per transcription
+- Cross-project fallback: pure title match ≥ 0.45
+
+Result on current corpus: 215 transcriptions → 685 links (up from 0), 141 transcriptions covered, 651 above 0.6 confidence.
+
+Source: `automagic/console/lib/correlator.js` (exec from `automagic/console/indexer.js` every 5 min).
+
 ### 10.4 Local audio drop ingest (added 2026-04-21)
 
 Second ingestion path alongside PLAUD polling. Web UI has a drag-drop widget on `/dashboard`. Files land on CT 107 and are processed by a Python script that mirrors WF-1a's chain (no new n8n workflow; avoids DB surgery).

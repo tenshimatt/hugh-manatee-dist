@@ -7,18 +7,18 @@ import {
   FileText,
   FolderKanban,
   Activity,
-  Search,
   Menu,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// /search still exists — reachable via the top-bar search form. Keeping the nav
+// item here was redundant with that, so it's been dropped.
 const NAV = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/transcriptions", icon: FileText, label: "Transcriptions" },
   { href: "/projects", icon: FolderKanban, label: "Projects" },
   { href: "/pipeline", icon: Activity, label: "Pipeline" },
-  { href: "/search", icon: Search, label: "Search" },
 ];
 
 export function Sidebar({

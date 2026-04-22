@@ -26,6 +26,13 @@ export function toPlaneIssueUrl(projectId: string | null | undefined, issueId: s
   return `${base}/${workspace}/projects/${projectId}/issues/${issueId}`;
 }
 
+export function toPlaneProjectUrl(projectId: string | null | undefined): string | null {
+  if (!projectId) return null;
+  const base = process.env.NEXT_PUBLIC_PLANE_URL || "https://plane.beyondpandora.com";
+  const workspace = process.env.NEXT_PUBLIC_PLANE_WORKSPACE || "beyond-pandora";
+  return `${base}/${workspace}/projects/${projectId}/issues`;
+}
+
 export function toObsidianUri(plaudRelPath: string | null | undefined): string | null {
   if (!plaudRelPath) return null;
   const vault = process.env.NEXT_PUBLIC_OBSIDIAN_VAULT || "Obsidian";
