@@ -50,9 +50,13 @@ export function ProjectDonut({
             background: "var(--surface)",
             color: "var(--foreground)",
           }}
-          formatter={(v) => {
+          formatter={(v, _seriesName, item) => {
             const n = Number(v);
-            return [`${n} (${((n / total) * 100).toFixed(1)}%)`, "Count"];
+            const label =
+              (item as { payload?: { name?: string }; name?: string })?.payload?.name ||
+              (item as { name?: string })?.name ||
+              "—";
+            return [`${n} (${((n / total) * 100).toFixed(1)}%)`, label];
           }}
         />
         <Legend
