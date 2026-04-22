@@ -14,7 +14,7 @@ import {
   Clock,
 } from "lucide-react";
 import Link from "next/link";
-import { formatRelative, toObsidianUri } from "@/lib/utils";
+import { formatRelative, toObsidianUri, toPlaneIssueUrl } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -202,9 +202,6 @@ export default async function DashboardPage() {
                         </div>
                       </Link>
                       <div className="flex items-center gap-2 shrink-0">
-                        {t.classification && (
-                          <Badge tone="teal" className="text-[10px]">{t.classification}</Badge>
-                        )}
                         {obsidianUri && (
                           <a
                             href={obsidianUri}
@@ -242,18 +239,38 @@ export default async function DashboardPage() {
                   : i.state_group === "started" ? "sky"
                   : i.state_group === "cancelled" ? "slate"
                   : "gold";
+                const planeUrl = toPlaneIssueUrl(i.project_id, i.id);
                 return (
-                  <li key={i.id} className="px-5 py-3 hover:bg-surface-alt transition-colors">
+                  <li key={i.id} className="group px-5 py-3 hover:bg-surface-alt transition-colors">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium text-foreground truncate">{i.name}</div>
+                      <Link
+                        href={`/projects/${i.project_id}`}
+                        className="min-w-0 flex-1"
+                      >
+                        <div className="text-sm font-medium text-foreground truncate group-hover:text-sky-brand-600">
+                          {i.name}
+                        </div>
                         <div className="flex items-center gap-2 mt-1 text-[11px] text-muted">
                           <span>{i.project_identifier || i.project_name}</span>
                           <span>·</span>
                           <span>{formatRelative(i.created_at)}</span>
                         </div>
+                      </Link>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge tone={tone} className="text-[10px]">{i.state_name}</Badge>
+                        {planeUrl && (
+                          <a
+                            href={planeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1 rounded text-muted hover:text-sky-brand-600 hover:bg-sky-brand-50"
+                            title="Open in Plane"
+                            aria-label="Open in Plane"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
                       </div>
-                      <Badge tone={tone} className="text-[10px]">{i.state_name}</Badge>
                     </div>
                   </li>
                 );

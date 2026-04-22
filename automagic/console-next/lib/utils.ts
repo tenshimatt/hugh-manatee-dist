@@ -18,6 +18,14 @@ export function formatPct(n: number, d = 1) {
 // Build an Obsidian deep-link for a PLAUD_NOTES-relative path (e.g. "PROJECTS/Automagic/foo.md").
 // Vault defaults to "Obsidian"; PLAUD notes live under `PLAUD/` inside that vault.
 // Drops the ".md" extension — Obsidian handles both forms but the no-ext form is canonical.
+// Build a URL to the Plane issue detail page. Vars default to the Beyond Pandora workspace.
+export function toPlaneIssueUrl(projectId: string | null | undefined, issueId: string | null | undefined): string | null {
+  if (!projectId || !issueId) return null;
+  const base = process.env.NEXT_PUBLIC_PLANE_URL || "https://plane.beyondpandora.com";
+  const workspace = process.env.NEXT_PUBLIC_PLANE_WORKSPACE || "beyond-pandora";
+  return `${base}/${workspace}/projects/${projectId}/issues/${issueId}`;
+}
+
 export function toObsidianUri(plaudRelPath: string | null | undefined): string | null {
   if (!plaudRelPath) return null;
   const vault = process.env.NEXT_PUBLIC_OBSIDIAN_VAULT || "Obsidian";

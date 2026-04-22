@@ -10,7 +10,6 @@ export const dynamic = "force-dynamic";
 type SearchParams = Promise<{
   project?: string;
   tag?: string;
-  classification?: string;
   dateFrom?: string;
   dateTo?: string;
   page?: string;
@@ -31,7 +30,6 @@ export default async function TranscriptionsPage({
       limit,
       project: sp.project,
       tag: sp.tag,
-      classification: sp.classification,
       dateFrom: sp.dateFrom,
       dateTo: sp.dateTo,
     }),
@@ -93,19 +91,6 @@ export default async function TranscriptionsPage({
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-semibold text-muted uppercase tracking-wide">Classification</label>
-              <select
-                name="classification"
-                defaultValue={sp.classification || ""}
-                className="h-9 px-3 rounded-xl bg-surface-alt border border-border text-sm text-foreground focus:outline-none focus:border-sky-brand"
-              >
-                <option value="">Any</option>
-                {filters?.classifications.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1">
               <label className="text-[11px] font-semibold text-muted uppercase tracking-wide">From</label>
               <input
                 type="date"
@@ -129,7 +114,7 @@ export default async function TranscriptionsPage({
             >
               Apply
             </button>
-            {(sp.project || sp.tag || sp.classification || sp.dateFrom || sp.dateTo) && (
+            {(sp.project || sp.tag || sp.dateFrom || sp.dateTo) && (
               <Link
                 href="/transcriptions"
                 className="h-9 px-3 rounded-xl text-sm font-medium text-muted-strong hover:bg-surface-alt flex items-center"
@@ -182,9 +167,6 @@ export default async function TranscriptionsPage({
                         </div>
                       </div>
                     </Link>
-                    {t.classification && (
-                      <Badge tone="teal" className="text-[10px] flex-shrink-0">{t.classification}</Badge>
-                    )}
                     {obsidianUri && (
                       <a
                         href={obsidianUri}

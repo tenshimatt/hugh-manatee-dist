@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, FileAudio, FolderKanban, Tag, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { toObsidianUri } from "@/lib/utils";
+import { toObsidianUri, toPlaneIssueUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -55,12 +55,6 @@ export default async function TranscriptionDetailPage({
                     <FolderKanban className="w-3.5 h-3.5" />
                     {t.project_folder}
                   </span>
-                </>
-              )}
-              {t.classification && (
-                <>
-                  <span>·</span>
-                  <Badge tone="teal">{t.classification}</Badge>
                 </>
               )}
             </div>
@@ -115,17 +109,13 @@ export default async function TranscriptionDetailPage({
         </CardBody>
       </Card>
 
-      <Card className="am-fade-in">
-        <CardHeader className="flex items-center justify-between">
-          <CardTitle>Linked Plane issues</CardTitle>
-          <span className="text-xs text-muted">{t.linked_issues?.length || 0} linked</span>
-        </CardHeader>
-        <CardBody className="px-0">
-          {!t.linked_issues || t.linked_issues.length === 0 ? (
-            <div className="px-5 py-4 text-sm text-muted">
-              No Plane issues linked yet. The correlation engine matches transcriptions to issues by title similarity.
-            </div>
-          ) : (
+      {t.linked_issues && t.linked_issues.length > 0 && (
+        <Card className="am-fade-in">
+          <CardHeader className="flex items-center justify-between">
+            <CardTitle>Linked Plane issues</CardTitle>
+            <span className="text-xs text-muted">{t.linked_issues.length} linked</span>
+          </CardHeader>
+          <CardBody className="px-0">
             <ul className="divide-y divide-border">
               {t.linked_issues.map((i) => {
                 const tone =
@@ -133,21 +123,33 @@ export default async function TranscriptionDetailPage({
                   : i.state_group === "started" ? "sky"
                   : i.state_group === "cancelled" ? "slate"
                   : "gold";
+                const planeUrl = toPlaneIssueUrl(i.project_id, i.id);
                 return (
-                  <li key={i.id} className="px-5 py-3">
+                  <li key={i.id} className="px-5 py-3 hover:bg-surface-alt">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium text-foreground">{i.name}</div>
                       </div>
                       <Badge tone={tone}>{i.state_name}</Badge>
+                      {planeUrl && (
+                        <a
+                          href={planeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1 rounded text-muted hover:text-sky-brand-600"
+                          title="Open in Plane"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
                     </div>
                   </li>
                 );
               })}
             </ul>
-          )}
-        </CardBody>
-      </Card>
+          </CardBody>
+        </Card>
+      )}
     </div>
   );
 }
