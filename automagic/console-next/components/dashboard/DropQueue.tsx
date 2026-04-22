@@ -12,6 +12,9 @@ import {
   AudioLines,
   ExternalLink,
   Info,
+  RotateCcw,
+  Trash2,
+  X,
 } from "lucide-react";
 import { cn, toObsidianUri } from "@/lib/utils";
 
@@ -109,6 +112,7 @@ export function DropQueue() {
   const [q, setQ] = useState<QueueResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [busy, setBusy] = useState<Record<string, "retry" | "delete" | undefined>>({});
 
   const load = useCallback(async () => {
     try {
@@ -130,6 +134,41 @@ export function DropQueue() {
     const id = setInterval(load, 5000);
     return () => clearInterval(id);
   }, [load]);
+
+  const action = useCallback(
+    async (
+      kind: "retry" | "delete",
+      name: string,
+      bucket: "awaiting" | "errored" | "processed"
+    ) => {
+      const verb = kind === "retry" ? "re-queue" : bucket === "awaiting" ? "cancel" : "delete";
+      if (!window.confirm(`${verb[0].toUpperCase() + verb.slice(1)} "${niceName(name)}"?`)) {
+        return;
+      }
+      setBusy((b) => ({ ...b, [name]: kind }));
+      try {
+        const r = await fetch(`/proxy/queue/${kind}`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ name, bucket }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || j.ok === false) {
+          throw new Error(j.error || j.detail || `HTTP ${r.status}`);
+        }
+        await load();
+      } catch (e) {
+        window.alert(`Action failed: ${String(e)}`);
+      } finally {
+        setBusy((b) => {
+          const nb = { ...b };
+          delete nb[name];
+          return nb;
+        });
+      }
+    },
+    [load]
+  );
 
   const hasActivity =
     q && (q.current || q.awaiting.length > 0 || q.errored.length > 0);
@@ -218,6 +257,19 @@ export function DropQueue() {
                     </div>
                   </div>
                   <span className="text-[11px] text-muted">#{i + 1}</span>
+                  <button
+                    onClick={() => action("delete", f.name, "awaiting")}
+                    disabled={!!busy[f.name]}
+                    className="p-1 rounded text-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50"
+                    title="Cancel — remove before processing"
+                    aria-label="Cancel"
+                  >
+                    {busy[f.name] === "delete" ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <X className="w-3.5 h-3.5" />
+                    )}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -267,6 +319,35 @@ export function DropQueue() {
                             </pre>
                           </details>
                         )}
+                        <div className="mt-2 flex items-center gap-2">
+                          <button
+                            onClick={() => action("retry", f.name, "errored")}
+                            disabled={!!busy[f.name]}
+                            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-semibold bg-sky-brand text-white hover:bg-sky-brand-600 disabled:opacity-50"
+                          >
+                            {busy[f.name] === "retry" ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <RotateCcw className="w-3 h-3" />
+                            )}
+                            Retry
+                          </button>
+                          <button
+                            onClick={() => action("delete", f.name, "errored")}
+                            disabled={!!busy[f.name]}
+                            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-medium text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-500/15 hover:bg-red-200 dark:hover:bg-red-500/25 disabled:opacity-50"
+                          >
+                            {busy[f.name] === "delete" ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3 h-3" />
+                            )}
+                            Delete
+                          </button>
+                          <span className="text-[10px] text-muted ml-auto">
+                            Retry re-runs the pipeline · Delete removes the audio
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </li>

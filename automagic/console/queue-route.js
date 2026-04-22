@@ -74,40 +74,105 @@ print(json.dumps(out))
 PY
 `;
 
+// Safe filename: no slashes, no traversal, must be an audio filename.
+const SAFE_NAME_RE = /^[^\/\\\x00]+\.(mp3|m4a|wav|ogg|flac|webm|mp4|aac|opus)$/i;
+const VALID_BUCKETS = new Set(['awaiting', 'errored', 'processed']);
+const BUCKET_DIRS = {
+  awaiting: '',
+  errored: '_errored/',
+  processed: '_processed/',
+};
+
+function runRemote(script, cb) {
+  const child = spawn(
+    'ssh',
+    ['-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=5', DROPS_HOST, 'bash', '-s'],
+    { timeout: 15000 }
+  );
+  let out = '';
+  let err = '';
+  child.stdout.on('data', (d) => { out += d.toString(); });
+  child.stderr.on('data', (d) => { err += d.toString(); });
+  child.on('error', (e) => cb(e, null, ''));
+  child.on('close', (code) => cb(code === 0 ? null : new Error(`exit ${code}`), out, err));
+  child.stdin.end(script);
+}
+
+function actionScript(kind, bucket, name) {
+  const base = DROPS_DIR.replace(/\/$/, '');
+  const dir = `${base}/${BUCKET_DIRS[bucket] || ''}`.replace(/\/$/, '');
+  const fn = name.replace(/'/g, "'\\''");
+  const dirQ = dir.replace(/'/g, "'\\''");
+  const baseQ = base.replace(/'/g, "'\\''");
+
+  if (kind === 'delete') {
+    return `
+python3 - <<'PY'
+import json, os
+from pathlib import Path
+d = Path('${dirQ}')
+name = '${fn}'
+removed = []
+for suffix in ['', '.error.txt', '.result.json']:
+    p = d / (name + suffix)
+    if p.exists() and p.is_file():
+        p.unlink()
+        removed.append(str(p))
+print(json.dumps({"ok": True, "removed": removed}))
+PY
+`;
+  }
+  if (kind === 'retry') {
+    return `
+python3 - <<'PY'
+import json, shutil
+from pathlib import Path
+src = Path('${dirQ}/${fn}')
+dst = Path('${baseQ}/${fn}')
+if not src.exists():
+    print(json.dumps({"ok": False, "error": "source not found"}))
+else:
+    # remove any leftover .error.txt before re-queuing
+    err_path = src.parent / (src.name + '.error.txt')
+    if err_path.exists(): err_path.unlink()
+    shutil.move(str(src), str(dst))
+    print(json.dumps({"ok": True, "requeued": str(dst)}))
+PY
+`;
+  }
+  throw new Error(`unknown action ${kind}`);
+}
+
+function handleAction(kind) {
+  return (req, res) => {
+    const { name, bucket } = req.body || {};
+    if (!name || typeof name !== 'string' || !SAFE_NAME_RE.test(name)) {
+      return res.status(400).json({ error: 'invalid or missing filename' });
+    }
+    const b = bucket || (kind === 'retry' ? 'errored' : 'errored');
+    if (!VALID_BUCKETS.has(b)) {
+      return res.status(400).json({ error: 'invalid bucket' });
+    }
+    const script = actionScript(kind, b, name);
+    runRemote(script, (e, out, errText) => {
+      if (e) return res.status(502).json({ error: 'remote action failed', detail: e.message, stderr: (errText || '').slice(0, 500) });
+      try { res.json(JSON.parse(out)); }
+      catch (parseErr) { res.status(502).json({ error: 'bad JSON', raw: out.slice(0, 500) }); }
+    });
+  };
+}
+
 function registerQueueRoute(app) {
   app.get('/api/queue', (req, res) => {
-    const child = spawn(
-      'ssh',
-      [
-        '-o', 'BatchMode=yes',
-        '-o', 'StrictHostKeyChecking=no',
-        '-o', 'ConnectTimeout=5',
-        DROPS_HOST,
-        'bash', '-s',
-      ],
-      { timeout: 15000 }
-    );
-
-    let out = '';
-    let err = '';
-    child.stdout.on('data', (d) => { out += d.toString(); });
-    child.stderr.on('data', (d) => { err += d.toString(); });
-    child.on('error', (e) => {
-      if (!res.headersSent) res.status(502).json({ error: 'ssh spawn failed', detail: e.message });
+    runRemote(REMOTE_SCRIPT, (e, out, errText) => {
+      if (e) return res.status(502).json({ error: 'queue query failed', detail: e.message, stderr: (errText || '').slice(0, 1000) });
+      try { res.json(JSON.parse(out)); }
+      catch (parseErr) { res.status(502).json({ error: 'bad JSON from remote', detail: parseErr.message, raw: out.slice(0, 500) }); }
     });
-    child.on('close', (code) => {
-      if (code !== 0) {
-        return res.status(502).json({ error: 'queue query failed', code, stderr: err.slice(0, 1000) });
-      }
-      try {
-        res.json(JSON.parse(out));
-      } catch (e) {
-        res.status(502).json({ error: 'bad JSON from remote', detail: e.message, raw: out.slice(0, 500) });
-      }
-    });
-
-    child.stdin.end(REMOTE_SCRIPT);
   });
+
+  app.post('/api/queue/retry', handleAction('retry'));
+  app.post('/api/queue/delete', handleAction('delete'));
 }
 
 module.exports = { registerQueueRoute };
