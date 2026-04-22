@@ -1,9 +1,10 @@
 import { api, parseTags } from "@/lib/api";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, FileAudio, FolderKanban, Tag } from "lucide-react";
+import { ArrowLeft, Clock, FileAudio, FolderKanban, Tag, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { toObsidianUri } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -90,8 +91,17 @@ export default async function TranscriptionDetailPage({
       )}
 
       <Card className="am-fade-in">
-        <CardHeader>
+        <CardHeader className="flex items-center justify-between">
           <CardTitle>File</CardTitle>
+          {toObsidianUri(t.filepath) && (
+            <a
+              href={toObsidianUri(t.filepath) || "#"}
+              className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg bg-sky-brand text-white text-xs font-semibold hover:bg-sky-brand-600"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Open in Obsidian
+            </a>
+          )}
         </CardHeader>
         <CardBody>
           <code className="text-xs text-muted-strong bg-surface-alt px-2 py-1 rounded break-all">

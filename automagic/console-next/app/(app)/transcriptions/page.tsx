@@ -2,7 +2,8 @@ import { api, parseTags } from "@/lib/api";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Clock, FileAudio, ChevronRight } from "lucide-react";
+import { Clock, FileAudio, ChevronRight, ExternalLink } from "lucide-react";
+import { toObsidianUri } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -153,11 +154,12 @@ export default async function TranscriptionsPage({
               {results.map((t) => {
                 const tags = parseTags(t.tags);
                 const domainTags = tags.filter((x) => x !== "voice-note" && x !== "plaud");
+                const obsidianUri = toObsidianUri(t.filepath);
                 return (
-                  <li key={t.id}>
+                  <li key={t.id} className="group flex items-center gap-4 px-5 py-4 hover:bg-surface-alt transition-colors">
                     <Link
                       href={`/transcriptions/${t.id}`}
-                      className="flex items-center gap-4 px-5 py-4 hover:bg-surface-alt transition-colors group"
+                      className="flex items-center gap-4 min-w-0 flex-1"
                     >
                       <div className="w-10 h-10 rounded-xl bg-sky-brand-50 text-sky-brand-600 flex items-center justify-center flex-shrink-0">
                         <FileAudio className="w-5 h-5" />
@@ -179,9 +181,25 @@ export default async function TranscriptionsPage({
                           ))}
                         </div>
                       </div>
-                      {t.classification && (
-                        <Badge tone="teal" className="text-[10px] flex-shrink-0">{t.classification}</Badge>
-                      )}
+                    </Link>
+                    {t.classification && (
+                      <Badge tone="teal" className="text-[10px] flex-shrink-0">{t.classification}</Badge>
+                    )}
+                    {obsidianUri && (
+                      <a
+                        href={obsidianUri}
+                        className="p-1.5 rounded text-muted hover:text-sky-brand-600 hover:bg-sky-brand-50 flex-shrink-0"
+                        title="Open in Obsidian"
+                        aria-label="Open in Obsidian"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                    <Link
+                      href={`/transcriptions/${t.id}`}
+                      className="flex-shrink-0"
+                      aria-label="Open detail"
+                    >
                       <ChevronRight className="w-4 h-4 text-muted group-hover:text-foreground" />
                     </Link>
                   </li>

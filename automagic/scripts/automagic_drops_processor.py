@@ -276,6 +276,18 @@ def process_one(audio: Path) -> None:
     shutil.move(str(audio), str(dest))
     log(f"moved drop → {dest}")
 
+    sidecar = dest.with_suffix(dest.suffix + ".result.json")
+    try:
+        sidecar.write_text(json.dumps({
+            "markdownPath": rel,
+            "title": title,
+            "projectFolder": folder,
+            "tags": tags,
+            "finishedAt": datetime.now().isoformat(timespec="seconds"),
+        }), encoding="utf-8")
+    except Exception as e:
+        log(f"sidecar write failed (non-fatal): {e}")
+
 
 def main() -> int:
     if not acquire_lock():

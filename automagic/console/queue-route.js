@@ -15,7 +15,7 @@ base = Path(${JSON.stringify(DROPS_DIR.replace(/\/$/, ''))})
 lock = Path("/tmp/automagic_drops.lock")
 audio_exts = {".mp3",".m4a",".wav",".ogg",".flac",".webm",".mp4",".aac",".opus"}
 
-def ls(d, max_n, with_err=False):
+def ls(d, max_n, with_err=False, with_result=False):
     if not d.is_dir(): return []
     items = []
     for p in d.iterdir():
@@ -28,13 +28,18 @@ def ls(d, max_n, with_err=False):
             if err_path.exists():
                 try: row["error"] = err_path.read_text(encoding="utf-8")[:1000]
                 except Exception: pass
+        if with_result:
+            sc = d / (p.name + ".result.json")
+            if sc.exists():
+                try: row["result"] = json.loads(sc.read_text(encoding="utf-8"))
+                except Exception: pass
         items.append(row)
     items.sort(key=lambda x: x["mtime"], reverse=True)
     return items[:max_n]
 
 awaiting = ls(base, 50)
 awaiting.sort(key=lambda x: x["mtime"])
-processed = ls(base / "_processed", 30)
+processed = ls(base / "_processed", 30, with_result=True)
 errored = ls(base / "_errored", 30, with_err=True)
 
 current = None

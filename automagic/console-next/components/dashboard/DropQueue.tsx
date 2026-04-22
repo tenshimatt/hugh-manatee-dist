@@ -10,14 +10,25 @@ import {
   AlertCircle,
   RefreshCw,
   AudioLines,
+  ExternalLink,
+  Info,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, toObsidianUri } from "@/lib/utils";
+
+type QueueResult = {
+  markdownPath?: string;
+  title?: string;
+  projectFolder?: string | null;
+  tags?: string[];
+  finishedAt?: string;
+};
 
 type QueueItem = {
   name: string;
   size: number;
   mtime: number;
   error?: string;
+  result?: QueueResult;
 };
 
 type QueueResponse = {
@@ -47,6 +58,51 @@ function timeAgo(nowSec: number, mtime: number) {
 
 function niceName(name: string) {
   return name.replace(/__[a-f0-9]+(?=\.[^.]+$)/i, "").replace(/\.[^.]+$/, "");
+}
+
+function diagnoseError(err: string): { summary: string; action: string } {
+  const e = err.toLowerCase();
+  if (e.includes("whisper") || e.includes("audio/transcriptions")) {
+    if (e.includes("500")) {
+      return {
+        summary: "Whisper refused the file (HTTP 500).",
+        action:
+          "Usually: file is too short, corrupt, or an unreadable container. Try re-exporting as plain mp3/wav. To inspect: `journalctl -u whisper-api -n 40` on PCT 146.",
+      };
+    }
+    if (e.includes("timeout") || e.includes("connection")) {
+      return {
+        summary: "Whisper API unreachable.",
+        action:
+          "Check `whisper-api` on PCT 146: `pct exec 146 -- systemctl status whisper-api`. GPU may be stuck — restart it.",
+      };
+    }
+  }
+  if (e.includes("scp") || e.includes("permission denied")) {
+    return {
+      summary: "Transport CT 120 → CT 107 failed.",
+      action:
+        "SSH key between containers is broken. Verify `/root/.ssh/id_ed25519` on CT 120 + `/root/.ssh/authorized_keys` on CT 107.",
+    };
+  }
+  if (e.includes("litellm") || e.includes("anthropic") || e.includes("4000")) {
+    return {
+      summary: "LiteLLM gateway refused the request.",
+      action:
+        "Check LiteLLM on 10.90.10.23:4000 + verify LITELLM_API_KEY on CT 107 still matches. Budget exhaustion also presents this way.",
+    };
+  }
+  if (e.includes("empty transcript")) {
+    return {
+      summary: "Whisper succeeded but returned no text.",
+      action: "Audio was silence or too quiet. Nothing to salvage — delete or re-record.",
+    };
+  }
+  return {
+    summary: "Unclassified processor error.",
+    action:
+      "Full log: `ssh root@10.90.10.7 journalctl -u automagic-drops-processor -n 80 --no-pager`. File is parked in `_drops/_errored/` for manual review.",
+  };
 }
 
 export function DropQueue() {
@@ -173,30 +229,49 @@ export function DropQueue() {
             <div className="text-[11px] font-semibold uppercase tracking-wider text-muted mb-2">
               Errored ({q.errored.length})
             </div>
-            <ul className="space-y-1.5">
-              {q.errored.slice(0, 5).map((f) => (
-                <li
-                  key={f.name}
-                  className="rounded-lg border border-red-200 bg-red-50/60 dark:bg-red-500/10 dark:border-red-500/30 px-3 py-2"
-                >
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm text-foreground truncate">
-                        {niceName(f.name)}
-                      </div>
-                      <div className="text-[11px] text-muted">
-                        {formatBytes(f.size)} · {timeAgo(q.now, f.mtime)}
-                      </div>
-                      {f.error && (
-                        <div className="text-[11px] text-red-700 dark:text-red-300 mt-1 font-mono truncate">
-                          {f.error.split("\n").slice(-2).join(" ").slice(0, 200)}
+            <ul className="space-y-2">
+              {q.errored.slice(0, 5).map((f) => {
+                const diag = f.error ? diagnoseError(f.error) : null;
+                return (
+                  <li
+                    key={f.name}
+                    className="rounded-lg border border-red-200 bg-red-50/60 dark:bg-red-500/10 dark:border-red-500/30 px-3 py-2.5"
+                  >
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium text-foreground truncate">
+                          {niceName(f.name)}
                         </div>
-                      )}
+                        <div className="text-[11px] text-muted">
+                          {formatBytes(f.size)} · {timeAgo(q.now, f.mtime)}
+                        </div>
+                        {diag && (
+                          <div className="mt-2 space-y-1">
+                            <div className="text-[12px] text-red-700 dark:text-red-300 font-medium">
+                              {diag.summary}
+                            </div>
+                            <div className="text-[11px] text-muted flex items-start gap-1.5">
+                              <Info className="w-3 h-3 shrink-0 mt-0.5" />
+                              <span>{diag.action}</span>
+                            </div>
+                          </div>
+                        )}
+                        {f.error && (
+                          <details className="mt-1.5">
+                            <summary className="text-[10px] text-muted cursor-pointer hover:text-foreground">
+                              Raw error
+                            </summary>
+                            <pre className="text-[10px] text-red-700 dark:text-red-300 mt-1 whitespace-pre-wrap break-words font-mono">
+                              {f.error}
+                            </pre>
+                          </details>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -207,20 +282,49 @@ export function DropQueue() {
               Recently processed ({q.processed.length})
             </div>
             <ul className="space-y-1">
-              {q.processed.slice(0, 6).map((f) => (
-                <li
-                  key={f.name}
-                  className="px-3 py-1.5 flex items-center gap-3 text-sm"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-brand-500 shrink-0" />
-                  <span className="min-w-0 flex-1 truncate text-foreground">
-                    {niceName(f.name)}
-                  </span>
-                  <span className="text-[11px] text-muted shrink-0">
-                    {timeAgo(q.now, f.mtime)}
-                  </span>
-                </li>
-              ))}
+              {q.processed.slice(0, 6).map((f) => {
+                const title = f.result?.title || niceName(f.name);
+                const obsidianUri = toObsidianUri(f.result?.markdownPath);
+                const folder = f.result?.projectFolder;
+                return (
+                  <li key={f.name}>
+                    {obsidianUri ? (
+                      <a
+                        href={obsidianUri}
+                        className="group px-3 py-1.5 flex items-center gap-3 text-sm rounded hover:bg-surface-alt transition-colors"
+                        title="Open in Obsidian"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 text-teal-brand-500 shrink-0" />
+                        <span className="min-w-0 flex-1 truncate text-foreground group-hover:text-sky-brand-600 group-hover:underline">
+                          {title}
+                        </span>
+                        {folder && (
+                          <span className="text-[10px] text-muted shrink-0">
+                            {folder}
+                          </span>
+                        )}
+                        <span className="text-[11px] text-muted shrink-0">
+                          {timeAgo(q.now, f.mtime)}
+                        </span>
+                        <ExternalLink className="w-3 h-3 text-muted group-hover:text-sky-brand-600 shrink-0" />
+                      </a>
+                    ) : (
+                      <div
+                        className="px-3 py-1.5 flex items-center gap-3 text-sm"
+                        title="No Obsidian path recorded (older drop — sidecar missing)"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 text-teal-brand-500 shrink-0" />
+                        <span className="min-w-0 flex-1 truncate text-foreground">
+                          {title}
+                        </span>
+                        <span className="text-[11px] text-muted shrink-0">
+                          {timeAgo(q.now, f.mtime)}
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

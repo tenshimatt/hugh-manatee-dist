@@ -15,6 +15,18 @@ export function formatPct(n: number, d = 1) {
   return `${n.toFixed(d)}%`;
 }
 
+// Build an Obsidian deep-link for a PLAUD_NOTES-relative path (e.g. "PROJECTS/Automagic/foo.md").
+// Vault defaults to "Obsidian"; PLAUD notes live under `PLAUD/` inside that vault.
+// Drops the ".md" extension — Obsidian handles both forms but the no-ext form is canonical.
+export function toObsidianUri(plaudRelPath: string | null | undefined): string | null {
+  if (!plaudRelPath) return null;
+  const vault = process.env.NEXT_PUBLIC_OBSIDIAN_VAULT || "Obsidian";
+  const subdir = process.env.NEXT_PUBLIC_OBSIDIAN_PLAUD_SUBDIR || "PLAUD";
+  const clean = plaudRelPath.replace(/^\/+/, "").replace(/\.md$/i, "");
+  const full = subdir ? `${subdir}/${clean}` : clean;
+  return `obsidian://open?vault=${encodeURIComponent(vault)}&file=${encodeURIComponent(full)}`;
+}
+
 export function formatRelative(iso: string | null | undefined) {
   if (!iso) return "—";
   const then = new Date(iso).getTime();

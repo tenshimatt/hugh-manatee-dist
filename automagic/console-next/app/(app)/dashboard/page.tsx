@@ -14,7 +14,8 @@ import {
   Clock,
 } from "lucide-react";
 import Link from "next/link";
-import { formatRelative } from "@/lib/utils";
+import { formatRelative, toObsidianUri } from "@/lib/utils";
+import { ExternalLink } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -168,12 +169,13 @@ export default async function DashboardPage() {
               {stats.recent.transcriptions.length === 0 && (
                 <li className="px-5 py-4 text-sm text-muted">No transcriptions yet.</li>
               )}
-              {stats.recent.transcriptions.map((t) => (
-                <li key={t.id} className="px-5 py-3 hover:bg-surface-alt transition-colors">
-                  <Link href={`/transcriptions/${t.id}`} className="block">
+              {stats.recent.transcriptions.map((t) => {
+                const obsidianUri = toObsidianUri(t.filepath);
+                return (
+                  <li key={t.id} className="px-5 py-3 hover:bg-surface-alt transition-colors group/row">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium text-foreground truncate">
+                      <Link href={`/transcriptions/${t.id}`} className="block min-w-0 flex-1">
+                        <div className="text-sm font-medium text-foreground truncate group-hover/row:text-sky-brand-600">
                           {t.title}
                         </div>
                         <div className="flex items-center gap-2 mt-1 text-[11px] text-muted">
@@ -186,14 +188,26 @@ export default async function DashboardPage() {
                             </>
                           )}
                         </div>
+                      </Link>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {t.classification && (
+                          <Badge tone="teal" className="text-[10px]">{t.classification}</Badge>
+                        )}
+                        {obsidianUri && (
+                          <a
+                            href={obsidianUri}
+                            className="p-1 rounded text-muted hover:text-sky-brand-600 hover:bg-sky-brand-50"
+                            title="Open in Obsidian"
+                            aria-label="Open in Obsidian"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
                       </div>
-                      {t.classification && (
-                        <Badge tone="teal" className="text-[10px]">{t.classification}</Badge>
-                      )}
                     </div>
-                  </Link>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </CardBody>
         </Card>
