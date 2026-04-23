@@ -1,5 +1,19 @@
 # Hugh Manatee — Changelog
 
+## 2026-04-23 — collage background
+
+New `CollageBackground` component sits behind the conversation:
+- Gradient (from/to colors from the Worker collage response; warm fallback matching the theme).
+- 3–5 blurred stock images at 15% opacity, positioned in a 2-column mosaic, each drifting independently (Ken Burns via react-native-reanimated — slow sine waves on translateX/Y and a gentle scale pulse, 28–40s cycles).
+- `BlurView` over the top (intensity 30) keeps everything ambient.
+- Falls back to gradient-only if `/collage/images` errors. Network failure never blocks the conversation.
+
+Worker `/collage/images` already fetched Unsplash by era + hometown + theme, KV-cached 24h. Fallback gradient corrected from dark navy to the app's warm palette.
+
+Added deps: `expo-image` (faster remote loads + disk cache), `expo-blur`.
+
+Plane: VIS-01, VIS-02, VIS-03 → Done.
+
 ## 2026-04-23 — voice loop landed
 
 Wired the real ElevenLabs Conversational AI integration end-to-end in `conversation.tsx`:

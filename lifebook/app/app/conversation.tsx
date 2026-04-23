@@ -9,10 +9,10 @@ import {
   Alert,
   type AppStateStatus,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { useConversation } from "@elevenlabs/react-native";
+import { CollageBackground } from "../src/components/CollageBackground";
 import { colors, fontSize, spacing } from "../src/lib/theme";
 import { useProfile } from "../src/lib/useProfile";
 import { fetchAgentConfig, fetchSessionAnchor } from "../src/services/worker";
@@ -215,9 +215,9 @@ export default function Conversation() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient
-        colors={[colors.bgTop, colors.bgBottom]}
-        style={StyleSheet.absoluteFillObject}
+      <CollageBackground
+        birthYear={profile?.birth_year ?? null}
+        hometown={profile?.hometown ?? null}
       />
       <View style={styles.centerPanel}>
         {(status === "loading" || status === "ready" || status === "ending") && (

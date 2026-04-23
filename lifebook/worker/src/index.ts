@@ -244,9 +244,10 @@ async function handleCollageImages(request: Request, env: Env): Promise<Response
 	}));
 
 	const colors = data.results.map((r) => r.color).filter((c): c is string => !!c);
+	// Fallback gradient matches the app's warm theme (colors.bgTop / bgBottom).
 	const gradient = {
-		from: colors[0] || "#1a1a2e",
-		to: colors[colors.length - 1] || "#16213e",
+		from: colors[0] || "#F4ECE1",
+		to: colors[colors.length - 1] || "#E8D9C4",
 	};
 
 	const payload = { images, gradient };
