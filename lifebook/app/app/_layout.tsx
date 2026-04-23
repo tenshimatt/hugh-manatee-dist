@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { ConversationProvider } from "@elevenlabs/react-native";
 import { initDb } from "../src/db/schema";
 import { colors } from "../src/lib/theme";
 
@@ -14,11 +15,13 @@ export default function RootLayout() {
   if (!ready) return <View style={{ flex: 1, backgroundColor: colors.bgTop }} />;
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: colors.bgTop },
-      }}
-    />
+    <ConversationProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.bgTop },
+        }}
+      />
+    </ConversationProvider>
   );
 }

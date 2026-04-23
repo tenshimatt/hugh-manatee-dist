@@ -2,7 +2,7 @@
  * Hugh Manatee Worker
  *
  * Three narrow endpoints:
- *   POST /agent/config     — ElevenLabs CAI agent_id + signed WS URL + first turn + runtime context
+ *   POST /agent/config     — ElevenLabs CAI agent_id + conversation token + first turn + runtime context
  *   POST /collage/images   — Unsplash-backed collage images + gradient (24h KV cache)
  *   POST /session/anchor   — Claude-extracted anchor phrase + title + entities from recent turns
  *
@@ -87,23 +87,25 @@ async function handleAgentConfig(request: Request, env: Env): Promise<Response> 
 	const agent_id = agents[body.voice_id];
 	if (!agent_id) return err(`No agent configured for voice_id=${body.voice_id}`, 404);
 
-	// Fetch signed WS URL from ElevenLabs.
-	const signedRes = await fetch(
-		`https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${encodeURIComponent(agent_id)}`,
+	// Fetch short-lived conversation token from ElevenLabs.
+	// The @elevenlabs/react-native SDK accepts { agentId, conversationToken }
+	// and uses LiveKit WebRTC under the hood.
+	const tokenRes = await fetch(
+		`https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${encodeURIComponent(agent_id)}`,
 		{ headers: { "xi-api-key": env.ELEVENLABS_API_KEY } },
 	);
-	if (!signedRes.ok) {
-		const detail = await signedRes.text();
-		return err(`ElevenLabs signed URL fetch failed: ${signedRes.status} ${detail}`, 502);
+	if (!tokenRes.ok) {
+		const detail = await tokenRes.text();
+		return err(`ElevenLabs token fetch failed: ${tokenRes.status} ${detail}`, 502);
 	}
-	const signed = (await signedRes.json()) as { signed_url: string };
+	const { token } = (await tokenRes.json()) as { token: string };
 
 	const first_turn = renderFirstTurn(body.first_name, body.last_anchor);
 	const runtime_context = buildRuntimeContext(body.birth_year, body.preference);
 
 	return json({
 		agent_id,
-		signed_url: signed.signed_url,
+		conversation_token: token,
 		first_turn,
 		runtime_context,
 	});

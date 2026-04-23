@@ -41,7 +41,7 @@ export interface AgentConfigRequest {
 
 export interface AgentConfigResponse {
   agent_id: string;
-  signed_url: string;
+  conversation_token: string;
   first_turn: string;
   runtime_context: {
     seed_prompts: string[];
