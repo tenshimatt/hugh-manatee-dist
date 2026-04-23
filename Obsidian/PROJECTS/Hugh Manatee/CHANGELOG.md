@@ -1,5 +1,11 @@
 # Hugh Manatee — Changelog
 
+## 2026-04-23 — handoff + listening-test protocol
+
+- Runbook `40-operations/05-listening-test-protocol.md` — step-by-step for running elderly-user voice tests, scoring, and updating the app with real voice IDs.
+- `HANDOFF.md` at project root — snapshot of what's built, user-blocked steps in order, what I'll do next, what I won't do without permission.
+- Roadmap collapsed: week 1 largely landed day 1; week 2 pivots to accessibility + audio persistence + settings export; week 3 becomes beta prep (listening test, EAS first builds).
+
 ## 2026-04-23 — collage background
 
 New `CollageBackground` component sits behind the conversation:
