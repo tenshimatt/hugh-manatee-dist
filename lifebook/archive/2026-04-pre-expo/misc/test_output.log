@@ -1,0 +1,977 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test -project Aurora.xcodeproj -scheme Aurora -destination "platform=iOS Simulator,name=iPhone 17,OS=26.0" "-only-testing:AuroraTests"
+
+2025-10-03 07:44:43.064 xcodebuild[31457:4542404] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (3 targets)
+    Target 'AuroraTests' in project 'Aurora'
+        ➜ Explicit dependency on target 'Aurora' in project 'Aurora'
+    Target 'AuroraUITests' in project 'Aurora'
+        ➜ Explicit dependency on target 'Aurora' in project 'Aurora'
+    Target 'Aurora' in project 'Aurora' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/mattwright/pandora/lifebook/Aurora/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+Build description signature: 3921c54d9a948d6b33ed6c9c5cfa279d
+Build description path: /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/XCBuildData/3921c54d9a948d6b33ed6c9c5cfa279d.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache
+    cd /Users/mattwright/pandora/lifebook/Aurora.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -o /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-project-headers.hmap (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-project-headers.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/empty-AuroraTests.plist (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/empty-AuroraTests.plist
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests.hmap (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-OutputFileMap.json (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests_const_extract_protocols.json (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.LinkFileList (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.LinkFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/empty-AuroraUITests.plist (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/empty-AuroraUITests.plist
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/ProductTypeInfoPlistAdditions.plist (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/ProductTypeInfoPlistAdditions.plist
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests_const_extract_protocols.json (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.SwiftFileList (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.SwiftFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.SwiftConstValuesFileList (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.LinkFileList (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.LinkFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-OutputFileMap.json (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources/Entitlements-Simulated.plist (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources/Entitlements-Simulated.plist
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.hmap (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.DependencyStaticMetadataFileList (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.DependencyMetadataFileList (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-project-headers.hmap (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-project-headers.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-own-target-headers.hmap (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-generated-files.hmap (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-generated-files.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-all-target-headers.hmap (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-all-non-framework-target-headers.hmap (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.SwiftFileList (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.SwiftFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.SwiftConstValuesFileList (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests.DependencyStaticMetadataFileList (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests.DependencyMetadataFileList (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-own-target-headers.hmap (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-generated-files.hmap (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-generated-files.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-all-target-headers.hmap (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-all-non-framework-target-headers.hmap (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    write-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-all-non-framework-target-headers.hmap
+
+MkDir /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PlugIns/AuroraTests.xctest (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /bin/mkdir -p /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PlugIns/AuroraTests.xctest
+
+MkDir /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PlugIns (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /bin/mkdir -p /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PlugIns
+
+MkDir /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests-Runner.app/PlugIns/AuroraUITests.xctest (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /bin/mkdir -p /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests-Runner.app/PlugIns/AuroraUITests.xctest
+
+MkDir /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /bin/mkdir -p /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+ProcessProductPackaging "" /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "5VK729B4Q9.com.oshun.Aurora";
+}
+    
+    builtin-productPackagingUtility -entitlements -format xml -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent
+
+ProcessProductPackagingDER /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent.der (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /usr/bin/derq query -f xml -i /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent.der --raw
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/libXCTestBundleInject.dylib /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestBundleInject.dylib (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestBundleInject.dylib /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/XCUnit.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/libXCTestSwiftSupport.dylib /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/XCTestSupport.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestSupport.framework (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestSupport.framework /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/XCUIAutomation.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/XCTestCore.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestCore.framework (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestCore.framework /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/XCTest.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/XCTAutomationSupport.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks/Testing.framework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks
+
+ProcessInfoPlistFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Info.plist /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/empty-Aurora.plist (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-infoPlistUtility /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/empty-Aurora.plist -producttype com.apple.product-type.application -genpkginfo /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/assetcatalog_generated_info.plist -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Info.plist
+
+Ld /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora.debug.dylib normal (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios26.0-simulator -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -O0 -L/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -filelist /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora.LinkFileList -install_name @rpath/Aurora.debug.dylib -Xlinker -rpath -Xlinker @executable_path/Frameworks -dead_strip -Xlinker -object_path_lto -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -debug_variant -Xlinker -dependency_info -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora_dependency_info.dat -fobjc-link-runtime -fprofile-instr-generate -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora.swiftmodule @/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora-linker-args.resp -Xlinker -alias -Xlinker _main -Xlinker ___debug_main_executable_dylib_entry_point -Xlinker -no_adhoc_codesign -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora.debug.dylib
+
+ProcessProductPackaging "" /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.xctest-Simulated.xcent (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "5VK729B4Q9.com.oshun.AuroraUITests.xctrunner";
+    "keychain-access-groups" =     (
+        "5VK729B4Q9.com.oshun.AuroraUITests.xctrunner"
+    );
+}
+    
+    builtin-productPackagingUtility -entitlements -format xml -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.xctest-Simulated.xcent
+
+ProcessProductPackagingDER /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.xctest-Simulated.xcent /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.xctest-Simulated.xcent.der (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /usr/bin/derq query -f xml -i /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.xctest-Simulated.xcent -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests.xctest-Simulated.xcent.der --raw
+
+SwiftDriver AuroraTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AuroraTests -Onone -enforce-exclusivity\=checked @/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.SwiftFileList -DDEBUG -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache -output-file-map /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-generated-files.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-own-target-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-project-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-Swift.h -working-directory /Users/mattwright/pandora/lifebook -experimental-emit-module-separately -disable-cmo
+
+SwiftDriver AuroraUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AuroraUITests -Onone -enforce-exclusivity\=checked @/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache -output-file-map /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-generated-files.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-own-target-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-project-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-Swift.h -working-directory /Users/mattwright/pandora/lifebook -experimental-emit-module-separately -disable-cmo
+
+ConstructStubExecutorLinkFileList /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora-ExecutorLinkFileList-normal-arm64.txt (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    construct-stub-executor-link-file-list /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora.debug.dylib /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora-ExecutorLinkFileList-normal-arm64.txt
+note: Using stub executor library with Swift entry point. (in target 'Aurora' from project 'Aurora')
+
+Ld /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora normal (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios26.0-simulator -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -O0 -L/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/Frameworks -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -debug_variant -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora-DebugDylibPath-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora-DebugDylibInstallName-normal-arm64.txt -Xlinker -filelist -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora-ExecutorLinkFileList-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __entitlements -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __ents_der -Xlinker /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.app-Simulated.xcent.der /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora.debug.dylib -Xlinker -no_adhoc_codesign -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora
+
+CopySwiftLibs /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora.debug.dylib --scan-folder /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks --scan-folder /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PlugIns --scan-folder /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/SystemExtensions --scan-folder /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Extensions --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+ExtractAppIntentsMetadata (in target 'Aurora' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Aurora --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk --xcode-version 17A400 --platform-family iOS --deployment-target 26.0 --bundle-identifier com.oshun.Aurora --output /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app --target-triple arm64-apple-ios26.0-simulator --binary-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/Aurora --dependency-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora_dependency_info.dat --stringsdata-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora.SwiftFileList --metadata-file-list /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.DependencyMetadataFileList --static-metadata-file-list /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Aurora.DependencyStaticMetadataFileList --swift-const-vals-list /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/Aurora.build/Objects-normal/arm64/Aurora.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2025-10-03 07:44:51.210 appintentsmetadataprocessor[31654:4543096] Starting appintentsmetadataprocessor export
+2025-10-03 07:44:51.211 appintentsmetadataprocessor[31654:4543096] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-BOK0E2EZP3SE7SN9ATIJW8GW7.pcm
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/Testing-3UCVWX1UQCJG0.swiftmodule
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-6HVK4TMDRLJKL1XXR7F4OMMNS.pcm
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-3CTKST2RR4FYM.swiftmodule
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-3BWBIYSUU7JEQ.swiftmodule
+
+ProcessInfoPlistFile /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PlugIns/AuroraTests.xctest/Info.plist /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/empty-AuroraTests.plist (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-infoPlistUtility /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/empty-AuroraTests.plist -producttype com.apple.product-type.bundle.unit-test -expandbuildsettings -format binary -platform iphonesimulator -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/Aurora.app/PlugIns/AuroraTests.xctest/Info.plist
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ AuroraUITests (in target 'AuroraUITests' from project 'Aurora')
+EmitSwiftModule normal arm64 (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftCompile normal arm64 Compiling\ LifebookDemoUITestsLaunchTests.swift /Users/mattwright/pandora/lifebook/AuroraUITests/LifebookDemoUITestsLaunchTests.swift (in target 'AuroraUITests' from project 'Aurora')
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraUITests/LifebookDemoUITestsLaunchTests.swift (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftCompile normal arm64 Compiling\ AuroraUITests.swift /Users/mattwright/pandora/lifebook/AuroraUITests/AuroraUITests.swift (in target 'AuroraUITests' from project 'Aurora')
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraUITests/AuroraUITests.swift (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/_Testing_Foundation-DC2IHL38617D.swiftmodule
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for AuroraUITests (in target 'AuroraUITests' from project 'Aurora')
+
+SwiftDriver\ Compilation\ Requirements AuroraUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AuroraUITests -Onone -enforce-exclusivity\=checked @/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache -output-file-map /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-generated-files.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-own-target-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-project-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-Swift.h -working-directory /Users/mattwright/pandora/lifebook -experimental-emit-module-separately -disable-cmo
+
+SwiftMergeGeneratedHeaders /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources/AuroraUITests-Swift.h /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-Swift.h (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-swiftHeaderTool -arch arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-Swift.h -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources/AuroraUITests-Swift.h
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.abi.json (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.abi.json /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftmodule (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftmodule /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/arm64-apple-ios-simulator.swiftmodule
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftdoc (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftdoc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/arm64-apple-ios-simulator.swiftdoc
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftsourceinfo (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftsourceinfo /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+SwiftDriverJobDiscovery normal arm64 Compiling LifebookDemoUITestsLaunchTests.swift (in target 'AuroraUITests' from project 'Aurora')
+
+SwiftCompile normal arm64 Compiling\ CoreDataTestHelpersExample.swift /Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpersExample.swift (in target 'AuroraTests' from project 'Aurora')
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpersExample.swift (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ AuroraTests (in target 'AuroraTests' from project 'Aurora')
+EmitSwiftModule normal arm64 (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftCompile normal arm64 Compiling\ AIEntityExtractorTests.swift /Users/mattwright/pandora/lifebook/AuroraTests/AIEntityExtractorTests.swift (in target 'AuroraTests' from project 'Aurora')
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/AIEntityExtractorTests.swift (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftCompile normal arm64 Compiling\ RecordingDataManagerTests.swift /Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift (in target 'AuroraTests' from project 'Aurora')
+Failed frontend command:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/mattwright/pandora/lifebook/AuroraTests/AIEntityExtractorTests.swift /Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpers.swift /Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpersExample.swift /Users/mattwright/pandora/lifebook/AuroraTests/LifebookDemoTests.swift -primary-file /Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift /Users/mattwright/pandora/lifebook/AuroraTests/TestDataGenerator.swift /Users/mattwright/pandora/lifebook/AuroraTests/TestDataGeneratorExampleTests.swift -emit-dependencies-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/RecordingDataManagerTests.d -emit-const-values-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/RecordingDataManagerTests.swiftconstvalues -emit-reference-dependencies-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/RecordingDataManagerTests.swiftdeps -serialize-diagnostics-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/RecordingDataManagerTests.dia -target arm64-apple-ios26.0-simulator -disable-cross-import-overlay-search -swift-module-cross-import CoreData /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/CoreData.framework/Modules/CoreData.swiftcrossimport/CloudKit.swiftoverlay -swift-module-cross-import CoreData /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk/System/Library/Frameworks/CoreData.framework/Modules/CoreData.swiftcrossimport/CloudKit.swiftoverlay -swift-module-cross-import Testing /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework/Modules/Testing.swiftcrossimport/Foundation.swiftoverlay -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libFoundationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#FoundationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libObservationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#ObservationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libPreviewsMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#PreviewsMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libSwiftMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#SwiftMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libSwiftUIMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#SwiftUIMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing/libTestingMacros.dylib\#\#TestingMacros -disable-implicit-swift-modules -Xcc -fno-implicit-modules -Xcc -fno-implicit-module-maps -explicit-swift-module-map-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-dependencies-1.json -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -I /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk/Developer/Library/Frameworks -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=5 -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -profile-generate -profile-coverage-mapping -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests_const_extract_protocols.json -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/mattwright/pandora/lifebook -enable-anonymous-context-mangled-names -file-compilation-dir /Users/mattwright/pandora/lifebook -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -ivfsstatcache -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-generated-files.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-own-target-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-project-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources -Xcc -DDEBUG\=1 -no-auto-bridging-header-chaining -module-name AuroraTests -frontend-parseable-output -disable-clang-spi -target-sdk-version 26.0 -target-sdk-name iphonesimulator26.0 -clang-target arm64-apple-ios26.0-simulator -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/RecordingDataManagerTests.o -index-unit-output-path /Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/RecordingDataManagerTests.o -index-store-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Index.noindex/DataStore -index-system-modules
+
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:21:13: warning: initialization of immutable value 'testStack' was never used; consider replacing with assignment to '_' or removing it
+        let testStack = CoreDataTestStack()
+        ~~~~^~~~~~~~~
+        _
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:39:29: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'persistentContainer'
+        let model = manager.persistentContainer.managedObjectModel
+                    ~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:65:40: error: type 'TestDataGenerator' has no member 'sampleRecording1'
+        let sample = TestDataGenerator.sampleRecording1()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:68:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.isEmpty, "Manager should start with no recordings")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:71:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:75:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:80:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == 1, "Should have 1 recording after save")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:82:29: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let saved = manager.savedRecordings[0]
+                    ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:93:40: error: type 'TestDataGenerator' has no member 'sampleRecording2'
+        let sample = TestDataGenerator.sampleRecording2()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:96:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:104:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == 1)
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:105:29: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let saved = manager.savedRecordings[0]
+                    ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:112:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:115:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:119:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:124:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == samples.count, "Should have saved all recordings")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:133:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'persistentContainer'
+        manager.persistentContainer = testStack.persistentContainer
+        ~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:153:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'loadAllRecordings'
+        manager.loadAllRecordings()
+        ~~~~~~~ ^~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:156:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == 3, "Should have 3 recordings")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:157:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].title == "Newest", "First should be newest")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:158:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[1].title == "Middle", "Second should be middle")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:159:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[2].title == "Oldest", "Third should be oldest")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:167:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'isLoading'
+        #expect(manager.isLoading == false, "Should not be loading initially")
+                ~~~~~~~ ^~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:170:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'loadAllRecordings'
+        manager.loadAllRecordings()
+        ~~~~~~~ ^~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:171:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'isLoading'
+        #expect(manager.isLoading == false, "Should not be loading after load completes")
+                ~~~~~~~ ^~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:178:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'loadAllRecordings'
+        manager.loadAllRecordings()
+        ~~~~~~~ ^~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:180:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.isEmpty, "Should have no recordings in empty database")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:181:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'isLoading'
+        #expect(manager.isLoading == false, "Should not be loading")
+                ~~~~~~~ ^~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:189:40: error: type 'TestDataGenerator' has no member 'sampleRecording1'
+        let sample = TestDataGenerator.sampleRecording1()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:197:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:205:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == 1, "Should have 1 recording")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:209:41: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let recordingToDelete = manager.savedRecordings[0]
+                                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:210:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'deleteRecording'
+        manager.deleteRecording(recordingToDelete)
+        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:213:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.isEmpty, "Recording should be deleted")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:220:40: error: type 'TestDataGenerator' has no member 'sampleRecording1'
+        let sample = TestDataGenerator.sampleRecording1()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:222:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:226:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:230:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == 1)
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:232:41: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let recordingToDelete = manager.savedRecordings[0]
+                                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:233:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'deleteRecording'
+        manager.deleteRecording(recordingToDelete)
+        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:235:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.isEmpty, "Recording should be deleted")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:241:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:245:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:249:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:254:36: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let initialCount = manager.savedRecordings.count
+                           ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:258:41: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let recordingToDelete = manager.savedRecordings[2]
+                                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:259:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'deleteRecording'
+        manager.deleteRecording(recordingToDelete)
+        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:261:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == initialCount - 1, "Should have one less recording")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:262:26: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(!manager.savedRecordings.contains(where: { $0.id == recordingToDelete.id }),
+                 ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:271:40: error: type 'TestDataGenerator' has no member 'sampleRecording1'
+        let sample = TestDataGenerator.sampleRecording1()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:273:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:277:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:281:33: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let recording = manager.savedRecordings[0]
+                        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:284:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'updateRecording'
+        manager.updateRecording(recording, title: newTitle, category: nil)
+        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:284:71: error: 'nil' requires a contextual type
+        manager.updateRecording(recording, title: newTitle, category: nil)
+                                                                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:286:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].title == newTitle, "Title should be updated")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:287:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].transcription == sample.transcription,
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:294:40: error: type 'TestDataGenerator' has no member 'sampleRecording1'
+        let sample = TestDataGenerator.sampleRecording1()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:296:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:300:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:304:33: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let recording = manager.savedRecordings[0]
+                        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:307:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'updateRecording'
+        manager.updateRecording(recording, title: nil, category: newCategory)
+        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:307:51: error: 'nil' requires a contextual type
+        manager.updateRecording(recording, title: nil, category: newCategory)
+                                                  ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:309:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].category == newCategory, "Category should be updated")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:310:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].title == sample.title,
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:317:40: error: type 'TestDataGenerator' has no member 'sampleRecording1'
+        let sample = TestDataGenerator.sampleRecording1()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:319:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:323:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:327:33: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        let recording = manager.savedRecordings[0]
+                        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:331:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'updateRecording'
+        manager.updateRecording(recording, title: newTitle, category: newCategory)
+        ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:333:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].title == newTitle, "Title should be updated")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:334:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].category == newCategory, "Category should be updated")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:342:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:345:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:349:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:354:31: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results = manager.searchRecordings(query: "School")
+                      ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:363:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:366:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:370:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:375:31: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results = manager.searchRecordings(query: "dance")
+                      ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:385:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:388:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:392:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:397:31: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results = manager.searchRecordings(query: "Family")
+                      ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:406:40: error: type 'TestDataGenerator' has no member 'sampleRecording1'
+        let sample = TestDataGenerator.sampleRecording1()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:408:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:412:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:416:32: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results1 = manager.searchRecordings(query: "school")
+                       ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:417:32: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results2 = manager.searchRecordings(query: "SCHOOL")
+                       ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:418:32: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results3 = manager.searchRecordings(query: "ScHoOl")
+                       ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:428:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:431:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:435:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:440:31: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results = manager.searchRecordings(query: "")
+                      ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:448:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:451:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:455:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:460:31: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+        let results = manager.searchRecordings(query: "xyz123nonexistent")
+                      ~~~~~~~ ^~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:470:41: error: type 'TestDataGenerator' has no member 'allSampleRecordings'
+        let samples = TestDataGenerator.allSampleRecordings()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:472:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+        #expect(manager.totalRecordings == 0, "Should start with 0 recordings")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:475:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:479:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:484:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+        #expect(manager.totalRecordings == samples.count,
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:491:41: error: type 'TestDataGenerator' has no member 'statisticsTestSet'
+        let samples = TestDataGenerator.statisticsTestSet()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:495:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:499:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:505:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+        #expect(manager.totalDuration == expectedDuration,
+                ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:507:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+        #expect(manager.totalDuration == 60.0,
+                ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:514:41: error: type 'TestDataGenerator' has no member 'statisticsTestSet'
+        let samples = TestDataGenerator.statisticsTestSet()
+                      ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:517:21: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+            manager.saveRecording(
+            ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:521:27: error: 'nil' requires a contextual type
+                audioURL: nil,
+                          ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:527:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalWords'
+        #expect(manager.totalWords == 30,
+                ~~~~~~~ ^~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:535:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+        #expect(manager.totalRecordings == 0, "Total recordings should be 0")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:536:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+        #expect(manager.totalDuration == 0, "Total duration should be 0")
+                ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:537:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalWords'
+        #expect(manager.totalWords == 0, "Total words should be 0")
+                ~~~~~~~ ^~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:543:40: error: type 'TestDataGenerator' has no member 'emptyTranscription'
+        let sample = TestDataGenerator.emptyTranscription()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:545:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:549:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:553:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+        #expect(manager.totalRecordings == 1, "Should have 1 recording")
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:554:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+        #expect(manager.totalDuration == sample.duration, "Duration should be recorded")
+                ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:555:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalWords'
+        #expect(manager.totalWords == 0, "Empty transcription should have 0 words")
+                ~~~~~~~ ^~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:563:40: error: type 'TestDataGenerator' has no member 'specialCharactersTitle'
+        let sample = TestDataGenerator.specialCharactersTitle()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:565:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:569:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:573:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == 1)
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:574:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].title == sample.title,
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:581:40: error: type 'TestDataGenerator' has no member 'veryLongTranscription'
+        let sample = TestDataGenerator.veryLongTranscription()
+                     ~~~~~~~~~~~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:583:17: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+        manager.saveRecording(
+        ~~~~~~~ ^~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:587:23: error: 'nil' requires a contextual type
+            audioURL: nil,
+                      ^
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:591:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings.count == 1)
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:592:25: error: value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+        #expect(manager.savedRecordings[0].transcription == sample.transcription,
+                ~~~~~~~ ^~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift:598:23: warning: immutable value 'testStack' was never used; consider replacing with '_' or removing it
+        let (manager, testStack) = createTestManager()
+                      ^~~~~~~~~
+                      _
+
+SwiftCompile normal arm64 Compiling\ TestDataGeneratorExampleTests.swift /Users/mattwright/pandora/lifebook/AuroraTests/TestDataGeneratorExampleTests.swift (in target 'AuroraTests' from project 'Aurora')
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/TestDataGeneratorExampleTests.swift (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftCompile normal arm64 Compiling\ TestDataGenerator.swift /Users/mattwright/pandora/lifebook/AuroraTests/TestDataGenerator.swift (in target 'AuroraTests' from project 'Aurora')
+
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/TestDataGenerator.swift (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftCompile normal arm64 Compiling\ CoreDataTestHelpers.swift /Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpers.swift (in target 'AuroraTests' from project 'Aurora')
+
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpers.swift (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+/Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpers.swift:274:5: warning: result of 'try?' is unused
+    try? context.execute(recordingDelete)
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/mattwright/pandora/lifebook/AuroraTests/CoreDataTestHelpers.swift:279:5: warning: result of 'try?' is unused
+    try? context.execute(profileDelete)
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SwiftCompile normal arm64 Compiling\ LifebookDemoTests.swift /Users/mattwright/pandora/lifebook/AuroraTests/LifebookDemoTests.swift (in target 'AuroraTests' from project 'Aurora')
+
+SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/LifebookDemoTests.swift (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling AuroraUITests.swift (in target 'AuroraUITests' from project 'Aurora')
+
+SwiftDriver\ Compilation AuroraUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AuroraUITests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AuroraUITests -Onone -enforce-exclusivity\=checked @/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache -output-file-map /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-generated-files.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-own-target-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/AuroraUITests-project-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources-normal/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraUITests.build/Objects-normal/arm64/AuroraUITests-Swift.h -working-directory /Users/mattwright/pandora/lifebook -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal arm64 Compiling CoreDataTestHelpersExample.swift (in target 'AuroraTests' from project 'Aurora')
+
+SwiftDriverJobDiscovery normal arm64 Compiling CoreDataTestHelpers.swift (in target 'AuroraTests' from project 'Aurora')
+
+SwiftDriverJobDiscovery normal arm64 Compiling LifebookDemoTests.swift (in target 'AuroraTests' from project 'Aurora')
+
+SwiftDriverJobDiscovery normal arm64 Compiling TestDataGenerator.swift (in target 'AuroraTests' from project 'Aurora')
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for AuroraTests (in target 'AuroraTests' from project 'Aurora')
+
+SwiftDriver\ Compilation\ Requirements AuroraTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AuroraTests -Onone -enforce-exclusivity\=checked @/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.SwiftFileList -DDEBUG -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.0-23A339-26257891a6c027eb51374368541b8346.sdkstatcache -output-file-map /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/mattwright/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-generated-files.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-own-target-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/AuroraTests-project-headers.hmap -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources-normal/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources/arm64 -Xcc -I/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-Swift.h -working-directory /Users/mattwright/pandora/lifebook -experimental-emit-module-separately -disable-cmo
+
+SwiftMergeGeneratedHeaders /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources/AuroraTests-Swift.h /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-Swift.h (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-swiftHeaderTool -arch arm64 /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests-Swift.h -o /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/DerivedSources/AuroraTests-Swift.h
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/arm64-apple-ios-simulator.abi.json /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.abi.json (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.abi.json /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftdoc (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftdoc /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftmodule (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftmodule /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule
+
+Copy /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftsourceinfo (in target 'AuroraTests' from project 'Aurora')
+    cd /Users/mattwright/pandora/lifebook
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Intermediates.noindex/Aurora.build/Debug-iphonesimulator/AuroraTests.build/Objects-normal/arm64/AuroraTests.swiftsourceinfo /Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Build/Products/Debug-iphonesimulator/AuroraTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+
+Test session results, code coverage, and logs:
+	/Users/mattwright/Library/Developer/Xcode/DerivedData/Aurora-gwgnhwkncypqigfdghsagssytivg/Logs/Test/Test-Aurora-2025.10.03_7-44-43-+0100.xcresult
+
+Testing failed:
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'persistentContainer'
+	Type 'TestDataGenerator' has no member 'sampleRecording1'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'sampleRecording2'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'persistentContainer'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'loadAllRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'isLoading'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'loadAllRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'isLoading'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'loadAllRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'isLoading'
+	Type 'TestDataGenerator' has no member 'sampleRecording1'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'deleteRecording'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'sampleRecording1'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'deleteRecording'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'deleteRecording'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'sampleRecording1'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'updateRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'sampleRecording1'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'updateRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'sampleRecording1'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'updateRecording'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Type 'TestDataGenerator' has no member 'sampleRecording1'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'searchRecordings'
+	Type 'TestDataGenerator' has no member 'allSampleRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+	Type 'TestDataGenerator' has no member 'statisticsTestSet'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+	Type 'TestDataGenerator' has no member 'statisticsTestSet'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalWords'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalWords'
+	Type 'TestDataGenerator' has no member 'emptyTranscription'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalDuration'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'totalWords'
+	Type 'TestDataGenerator' has no member 'specialCharactersTitle'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Type 'TestDataGenerator' has no member 'veryLongTranscription'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'saveRecording'
+	'nil' requires a contextual type
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Value of tuple type '(manager: RecordingDataManager, testStack: CoreDataTestStack)' has no member 'savedRecordings'
+	Testing cancelled because the build failed.
+
+** TEST FAILED **
+
+
+The following build commands failed:
+	SwiftCompile normal arm64 Compiling\ RecordingDataManagerTests.swift /Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift (in target 'AuroraTests' from project 'Aurora')
+	SwiftCompile normal arm64 /Users/mattwright/pandora/lifebook/AuroraTests/RecordingDataManagerTests.swift (in target 'AuroraTests' from project 'Aurora')
+	Testing project Aurora with scheme Aurora
+(3 failures)

@@ -1,2 +1,26 @@
 node_modules
 *.fig
+
+/openclaw/obsidian/Jake/Environment variables.md
+
+# macOS
+.DS_Store
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# Wrangler
+.wrangler/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+*.ipa
+*.aab
+*.apk

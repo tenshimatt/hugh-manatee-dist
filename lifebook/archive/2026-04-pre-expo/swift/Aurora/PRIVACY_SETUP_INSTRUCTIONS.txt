@@ -1,0 +1,32 @@
+🚨 CRITICAL: Privacy Permissions Setup (Required for Audio Recording)
+
+FOLLOW THESE EXACT STEPS IN XCODE:
+
+1. Open: /Users/mattwright/pandora/lifebook/LifebookDemo.xcodeproj
+
+2. In Xcode Project Navigator (left sidebar):
+   - Click on "LifebookDemo" (blue project icon at the top)
+
+3. In the main editor area:
+   - Select "LifebookDemo" target (under TARGETS section)
+   - Click the "Info" tab at the top
+
+4. Under "Custom iOS Target Properties" section:
+   - Click the "+" button to add a new entry
+   - Type: "Privacy - Microphone Usage Description"
+   - Value: "We need access to your microphone to record your life stories and memories."
+
+5. Click the "+" button again to add second entry:
+   - Type: "Privacy - Speech Recognition Usage Description" 
+   - Value: "We use speech recognition to transcribe your recordings into text, making them searchable and shareable."
+
+6. Save the project (Cmd+S)
+
+7. Build and run (Cmd+R)
+
+✅ This will fix the "Multiple commands produce Info.plist" error
+✅ Your app will now properly request microphone and speech permissions
+✅ Audio recording and transcription will work correctly
+
+The error occurred because modern Xcode projects auto-generate Info.plist files, 
+so adding a separate Info.plist file created a conflict.

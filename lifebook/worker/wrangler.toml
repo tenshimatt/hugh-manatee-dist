@@ -1,0 +1,16 @@
+name = "hugh-manatee-worker"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Secrets to set via `npx wrangler secret put <NAME>`:
+#   ELEVENLABS_API_KEY
+#   ELEVENLABS_AGENTS    # JSON map {"<voice_id>": "<agent_id>"}
+#   UNSPLASH_ACCESS_KEY
+#   ANTHROPIC_API_KEY
+
+# KV namespace for collage image lookup cache (24h TTL).
+# Create with: `npx wrangler kv:namespace create COLLAGE_CACHE`
+# Then paste the returned id below.
+# [[kv_namespaces]]
+# binding = "COLLAGE_CACHE"
+# id = "<fill-me-in-after-create>"

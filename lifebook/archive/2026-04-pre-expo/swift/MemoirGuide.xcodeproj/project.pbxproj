@@ -1,0 +1,562 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2107CCD2A7C50D0C9DA54B56 /* HughVoiceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BFDA1A3D8A7858D27E3F899 /* HughVoiceService.swift */; };
+		28C08FAF34484DD8BF9135BF /* StoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B6223DE95B4A48A897FE9C /* StoryCard.swift */; };
+		6FD14F38C0EA4D34B792A04D /* StoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23CE4269296846F8B554E877 /* StoryDetailView.swift */; };
+		8D15376DAF5629A0E550C9D7 /* SilenceDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8380FD2DE415570F3E4C399 /* SilenceDetectionService.swift */; };
+		A7FF0B55BA50406BAAEF0153 /* AudioPlaybackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262798956AEC4263884D82B7 /* AudioPlaybackManager.swift */; };
+		AA1111111111111111111111 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2222222222222222222222 /* DesignSystem.swift */; };
+		AA3333333333333333333333 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4444444444444444444444 /* HomeView.swift */; };
+		AA5555555555555555555555 /* RecordingCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6666666666666666666666 /* RecordingCompleteView.swift */; };
+		AA7777777777777777777777 /* StoriesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8888888888888888888888 /* StoriesListView.swift */; };
+		AA9999999999999999999999 /* ProfileProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0000000000000000000000 /* ProfileProgressView.swift */; };
+		BB1234567890123456789001 /* MemoirGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789002 /* MemoirGuideApp.swift */; };
+		BB1234567890123456789003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789004 /* ContentView.swift */; };
+		BB1234567890123456789005 /* AccessibleRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789006 /* AccessibleRecordingView.swift */; };
+		BB1234567890123456789007 /* RecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789008 /* RecordingView.swift */; };
+		BB1234567890123456789009 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789010 /* LibraryView.swift */; };
+		BB1234567890123456789011 /* ReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789012 /* ReaderView.swift */; };
+		BB1234567890123456789013 /* RecordingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789014 /* RecordingManager.swift */; };
+		BB1234567890123456789015 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789016 /* CoreDataManager.swift */; };
+		BB1234567890123456789017 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789018 /* CloudKitManager.swift */; };
+		BB1234567890123456789019 /* AIInterviewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789020 /* AIInterviewer.swift */; };
+		BB1234567890123456789021 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789022 /* AppState.swift */; };
+		BB1234567890123456789023 /* CoreDataEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789024 /* CoreDataEntities.swift */; };
+		BB1234567890123456789025 /* MemoirSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789026 /* MemoirSession.swift */; };
+		BB1234567890123456789027 /* MemoirSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789028 /* MemoirSegment.swift */; };
+		BB1234567890123456789029 /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789030 /* Chapter.swift */; };
+		BB1234567890123456789031 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789032 /* AppError.swift */; };
+		BB1234567890123456789033 /* SilenceDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789034 /* SilenceDetector.swift */; };
+		BB1234567890123456789035 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789036 /* Extensions.swift */; };
+		BB1234567890123456789060 /* LifeBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789061 /* LifeBook.xcdatamodeld */; };
+		BB1234567890123456789063 /* AIStoryGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789064 /* AIStoryGenerator.swift */; };
+		BB1234567890123456789065 /* StoryVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789066 /* StoryVersion.swift */; };
+		BB1234567890123456789067 /* StoryAssignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890123456789068 /* StoryAssignmentView.swift */; };
+		C3560B485C1E8CA4FAA6F7B6 /* ConversationManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D3BE0F0A2721D39A73894B /* ConversationManagerService.swift */; };
+		DDE599AE2E8EC588009CF592 /* ProfileChecklistManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE599AD2E8EC588009CF592 /* ProfileChecklistManager.swift */; };
+		DDE599B02E8EC59B009CF592 /* ProfileChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE599AF2E8EC59B009CF592 /* ProfileChecklistView.swift */; };
+		FE07772C7B5DB7AF4C9A51DC /* ContinuousRecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D58B0C1847E28CEAFB08E57 /* ContinuousRecordingService.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1BFDA1A3D8A7858D27E3F899 /* HughVoiceService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HughVoiceService.swift; sourceTree = "<group>"; };
+		23CE4269296846F8B554E877 /* StoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailView.swift; sourceTree = "<group>"; };
+		262798956AEC4263884D82B7 /* AudioPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackManager.swift; sourceTree = "<group>"; };
+		8D58B0C1847E28CEAFB08E57 /* ContinuousRecordingService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContinuousRecordingService.swift; sourceTree = "<group>"; };
+		B9D3BE0F0A2721D39A73894B /* ConversationManagerService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConversationManagerService.swift; sourceTree = "<group>"; };
+		BB0000000000000000000000 /* ProfileProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileProgressView.swift; sourceTree = "<group>"; };
+		BB1234567890123456789002 /* MemoirGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoirGuideApp.swift; sourceTree = "<group>"; };
+		BB1234567890123456789004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BB1234567890123456789006 /* AccessibleRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleRecordingView.swift; sourceTree = "<group>"; };
+		BB1234567890123456789008 /* RecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingView.swift; sourceTree = "<group>"; };
+		BB1234567890123456789010 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		BB1234567890123456789012 /* ReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderView.swift; sourceTree = "<group>"; };
+		BB1234567890123456789014 /* RecordingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingManager.swift; sourceTree = "<group>"; };
+		BB1234567890123456789016 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		BB1234567890123456789018 /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
+		BB1234567890123456789020 /* AIInterviewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIInterviewer.swift; sourceTree = "<group>"; };
+		BB1234567890123456789022 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		BB1234567890123456789024 /* CoreDataEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataEntities.swift; sourceTree = "<group>"; };
+		BB1234567890123456789026 /* MemoirSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoirSession.swift; sourceTree = "<group>"; };
+		BB1234567890123456789028 /* MemoirSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoirSegment.swift; sourceTree = "<group>"; };
+		BB1234567890123456789030 /* Chapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chapter.swift; sourceTree = "<group>"; };
+		BB1234567890123456789032 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		BB1234567890123456789034 /* SilenceDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilenceDetector.swift; sourceTree = "<group>"; };
+		BB1234567890123456789036 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		BB1234567890123456789037 /* MemoirGuide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemoirGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB1234567890123456789038 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB1234567890123456789039 /* MemoirGuide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemoirGuide.entitlements; sourceTree = "<group>"; };
+		BB1234567890123456789062 /* LifeBook.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LifeBook.xcdatamodel; sourceTree = "<group>"; };
+		BB1234567890123456789064 /* AIStoryGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStoryGenerator.swift; sourceTree = "<group>"; };
+		BB1234567890123456789066 /* StoryVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryVersion.swift; sourceTree = "<group>"; };
+		BB1234567890123456789068 /* StoryAssignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAssignmentView.swift; sourceTree = "<group>"; };
+		BB2222222222222222222222 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		BB4444444444444444444444 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		BB6666666666666666666666 /* RecordingCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCompleteView.swift; sourceTree = "<group>"; };
+		BB8888888888888888888888 /* StoriesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesListView.swift; sourceTree = "<group>"; };
+		D3B6223DE95B4A48A897FE9C /* StoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCard.swift; sourceTree = "<group>"; };
+		DDE599AD2E8EC588009CF592 /* ProfileChecklistManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileChecklistManager.swift; sourceTree = "<group>"; };
+		DDE599AF2E8EC59B009CF592 /* ProfileChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileChecklistView.swift; sourceTree = "<group>"; };
+		F8380FD2DE415570F3E4C399 /* SilenceDetectionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SilenceDetectionService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BB1234567890123456789040 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		63E41B1B824D8E9D4564D55D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1BFDA1A3D8A7858D27E3F899 /* HughVoiceService.swift */,
+				8D58B0C1847E28CEAFB08E57 /* ContinuousRecordingService.swift */,
+				F8380FD2DE415570F3E4C399 /* SilenceDetectionService.swift */,
+				B9D3BE0F0A2721D39A73894B /* ConversationManagerService.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789041 = {
+			isa = PBXGroup;
+			children = (
+				BB1234567890123456789042 /* MemoirGuide */,
+				BB1234567890123456789043 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789042 /* MemoirGuide */ = {
+			isa = PBXGroup;
+			children = (
+				BB1234567890123456789039 /* MemoirGuide.entitlements */,
+				BB1234567890123456789002 /* MemoirGuideApp.swift */,
+				BB1234567890123456789022 /* AppState.swift */,
+				BB2222222222222222222222 /* DesignSystem.swift */,
+				BB1234567890123456789044 /* Views */,
+				BB1234567890123456789045 /* Managers */,
+				BB1234567890123456789046 /* Models */,
+				BB1234567890123456789047 /* Utilities */,
+				BB1234567890123456789048 /* Resources */,
+				BB1234567890123456789049 /* Tests */,
+				BB1234567890123456789038 /* Info.plist */,
+				FA11D1D4B8091E28967C8E7B /* Services */,
+				63E41B1B824D8E9D4564D55D /* Services */,
+			);
+			path = MemoirGuide;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789043 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BB1234567890123456789037 /* MemoirGuide.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789044 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				DDE599AF2E8EC59B009CF592 /* ProfileChecklistView.swift */,
+				BB1234567890123456789004 /* ContentView.swift */,
+				BB4444444444444444444444 /* HomeView.swift */,
+				BB1234567890123456789006 /* AccessibleRecordingView.swift */,
+				BB1234567890123456789008 /* RecordingView.swift */,
+				BB6666666666666666666666 /* RecordingCompleteView.swift */,
+				BB1234567890123456789010 /* LibraryView.swift */,
+				BB8888888888888888888888 /* StoriesListView.swift */,
+				BB1234567890123456789012 /* ReaderView.swift */,
+				BB1234567890123456789068 /* StoryAssignmentView.swift */,
+				BB0000000000000000000000 /* ProfileProgressView.swift */,
+				D3B6223DE95B4A48A897FE9C /* StoryCard.swift */,
+				23CE4269296846F8B554E877 /* StoryDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789045 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				DDE599AD2E8EC588009CF592 /* ProfileChecklistManager.swift */,
+				BB1234567890123456789014 /* RecordingManager.swift */,
+				BB1234567890123456789016 /* CoreDataManager.swift */,
+				BB1234567890123456789018 /* CloudKitManager.swift */,
+				BB1234567890123456789020 /* AIInterviewer.swift */,
+				BB1234567890123456789064 /* AIStoryGenerator.swift */,
+				262798956AEC4263884D82B7 /* AudioPlaybackManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789046 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BB1234567890123456789061 /* LifeBook.xcdatamodeld */,
+				BB1234567890123456789024 /* CoreDataEntities.swift */,
+				BB1234567890123456789026 /* MemoirSession.swift */,
+				BB1234567890123456789028 /* MemoirSegment.swift */,
+				BB1234567890123456789030 /* Chapter.swift */,
+				BB1234567890123456789032 /* AppError.swift */,
+				BB1234567890123456789066 /* StoryVersion.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789047 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				BB1234567890123456789034 /* SilenceDetector.swift */,
+				BB1234567890123456789036 /* Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789048 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		BB1234567890123456789049 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		FA11D1D4B8091E28967C8E7B /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BB1234567890123456789050 /* MemoirGuide */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB1234567890123456789051 /* Build configuration list for PBXNativeTarget "MemoirGuide" */;
+			buildPhases = (
+				BB1234567890123456789052 /* Sources */,
+				BB1234567890123456789040 /* Frameworks */,
+				BB1234567890123456789053 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MemoirGuide;
+			productName = MemoirGuide;
+			productReference = BB1234567890123456789037 /* MemoirGuide.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BB1234567890123456789054 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = TenshiMatt;
+				TargetAttributes = {
+					BB1234567890123456789050 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = BB1234567890123456789055 /* Build configuration list for PBXProject "MemoirGuide" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BB1234567890123456789041;
+			productRefGroup = BB1234567890123456789043 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BB1234567890123456789050 /* MemoirGuide */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BB1234567890123456789053 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BB1234567890123456789052 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB1234567890123456789003 /* ContentView.swift in Sources */,
+				AA1111111111111111111111 /* DesignSystem.swift in Sources */,
+				AA3333333333333333333333 /* HomeView.swift in Sources */,
+				BB1234567890123456789005 /* AccessibleRecordingView.swift in Sources */,
+				BB1234567890123456789007 /* RecordingView.swift in Sources */,
+				AA5555555555555555555555 /* RecordingCompleteView.swift in Sources */,
+				BB1234567890123456789009 /* LibraryView.swift in Sources */,
+				AA7777777777777777777777 /* StoriesListView.swift in Sources */,
+				BB1234567890123456789011 /* ReaderView.swift in Sources */,
+				AA9999999999999999999999 /* ProfileProgressView.swift in Sources */,
+				BB1234567890123456789001 /* MemoirGuideApp.swift in Sources */,
+				BB1234567890123456789021 /* AppState.swift in Sources */,
+				BB1234567890123456789013 /* RecordingManager.swift in Sources */,
+				DDE599AE2E8EC588009CF592 /* ProfileChecklistManager.swift in Sources */,
+				BB1234567890123456789015 /* CoreDataManager.swift in Sources */,
+				BB1234567890123456789017 /* CloudKitManager.swift in Sources */,
+				BB1234567890123456789019 /* AIInterviewer.swift in Sources */,
+				BB1234567890123456789023 /* CoreDataEntities.swift in Sources */,
+				BB1234567890123456789025 /* MemoirSession.swift in Sources */,
+				BB1234567890123456789027 /* MemoirSegment.swift in Sources */,
+				BB1234567890123456789029 /* Chapter.swift in Sources */,
+				DDE599B02E8EC59B009CF592 /* ProfileChecklistView.swift in Sources */,
+				BB1234567890123456789031 /* AppError.swift in Sources */,
+				BB1234567890123456789033 /* SilenceDetector.swift in Sources */,
+				BB1234567890123456789035 /* Extensions.swift in Sources */,
+				BB1234567890123456789060 /* LifeBook.xcdatamodeld in Sources */,
+				BB1234567890123456789063 /* AIStoryGenerator.swift in Sources */,
+				BB1234567890123456789065 /* StoryVersion.swift in Sources */,
+				BB1234567890123456789067 /* StoryAssignmentView.swift in Sources */,
+				A7FF0B55BA50406BAAEF0153 /* AudioPlaybackManager.swift in Sources */,
+				28C08FAF34484DD8BF9135BF /* StoryCard.swift in Sources */,
+				6FD14F38C0EA4D34B792A04D /* StoryDetailView.swift in Sources */,
+				2107CCD2A7C50D0C9DA54B56 /* HughVoiceService.swift in Sources */,
+				FE07772C7B5DB7AF4C9A51DC /* ContinuousRecordingService.swift in Sources */,
+				8D15376DAF5629A0E550C9D7 /* SilenceDetectionService.swift in Sources */,
+				C3560B485C1E8CA4FAA6F7B6 /* ConversationManagerService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BB1234567890123456789056 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5VK729B4Q9;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BB1234567890123456789057 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5VK729B4Q9;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BB1234567890123456789058 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MemoirGuide/MemoirGuide.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MemoirGuide/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MemoirGuide;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "MemoirGuide needs microphone access to record your life stories and memories for future generations.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "MemoirGuide uses speech recognition to transcribe your recorded stories, making them easily readable and searchable.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = "armv7 microphone";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tenshimatt.memoirguide;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		BB1234567890123456789059 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MemoirGuide/MemoirGuide.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MemoirGuide/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MemoirGuide;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "MemoirGuide needs microphone access to record your life stories and memories for future generations.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "MemoirGuide uses speech recognition to transcribe your recorded stories, making them easily readable and searchable.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = "armv7 microphone";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tenshimatt.memoirguide;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BB1234567890123456789051 /* Build configuration list for PBXNativeTarget "MemoirGuide" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB1234567890123456789058 /* Debug */,
+				BB1234567890123456789059 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB1234567890123456789055 /* Build configuration list for PBXProject "MemoirGuide" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB1234567890123456789056 /* Debug */,
+				BB1234567890123456789057 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		BB1234567890123456789061 /* LifeBook.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				BB1234567890123456789062 /* LifeBook.xcdatamodel */,
+			);
+			currentVersion = BB1234567890123456789062 /* LifeBook.xcdatamodel */;
+			path = LifeBook.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = BB1234567890123456789054 /* Project object */;
+}

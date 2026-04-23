@@ -1,0 +1,10 @@
+node_modules/
+.wrangler/
+.dev.vars
+*.log
+.DS_Store
+
+# NEVER commit these files - they contain secrets!
+.env
+.env.local
+secrets.json

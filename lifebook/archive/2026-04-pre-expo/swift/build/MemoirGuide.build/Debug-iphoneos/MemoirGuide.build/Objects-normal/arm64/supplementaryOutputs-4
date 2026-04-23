@@ -1,0 +1,30 @@
+{
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Managers/CloudKitManager.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CloudKitManager.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CloudKitManager.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CloudKitManager.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CloudKitManager.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CloudKitManager.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Managers/CoreDataManager.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CoreDataManager.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CoreDataManager.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CoreDataManager.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CoreDataManager.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/CoreDataManager.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Managers/ProfileChecklistManager.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileChecklistManager.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileChecklistManager.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileChecklistManager.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileChecklistManager.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileChecklistManager.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Managers/RecordingManager.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingManager.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingManager.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingManager.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingManager.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingManager.swiftdeps"
+  }
+}

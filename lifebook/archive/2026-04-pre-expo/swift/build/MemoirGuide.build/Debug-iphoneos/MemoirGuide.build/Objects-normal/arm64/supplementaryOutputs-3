@@ -1,0 +1,30 @@
+{
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/AppState.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AppState.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AppState.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AppState.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AppState.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AppState.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/MemoirGuideApp.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/MemoirGuideApp.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/MemoirGuideApp.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/MemoirGuideApp.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/MemoirGuideApp.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/MemoirGuideApp.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/ProfileProgressView.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileProgressView.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileProgressView.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileProgressView.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileProgressView.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ProfileProgressView.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/ReaderView.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ReaderView.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ReaderView.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ReaderView.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ReaderView.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/ReaderView.swiftdeps"
+  }
+}

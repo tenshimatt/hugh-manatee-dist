@@ -1,0 +1,23 @@
+{
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Managers/AudioPlaybackManager.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AudioPlaybackManager.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AudioPlaybackManager.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AudioPlaybackManager.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AudioPlaybackManager.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/AudioPlaybackManager.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/StoryCard.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryCard.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryCard.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryCard.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryCard.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryCard.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/StoryDetailView.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryDetailView.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryDetailView.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryDetailView.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryDetailView.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoryDetailView.swiftdeps"
+  }
+}

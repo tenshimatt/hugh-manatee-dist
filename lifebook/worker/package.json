@@ -1,0 +1,25 @@
+{
+  "name": "hugh-manatee-worker",
+  "version": "1.0.0",
+  "description": "Secure API proxy for Aurora memoir app",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "api",
+    "proxy"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260422.1",
+    "typescript": "^6.0.3",
+    "wrangler": "^3.78.0",
+    "yaml": "^2.8.3"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/LibraryView.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/LibraryView.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/LibraryView.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/LibraryView.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/LibraryView.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/LibraryView.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/RecordingCompleteView.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingCompleteView.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingCompleteView.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingCompleteView.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingCompleteView.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingCompleteView.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/RecordingView.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingView.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingView.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingView.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingView.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/RecordingView.swiftdeps"
+  },
+  "/Users/mattwright/pandora/lifebook/MemoirGuide/Views/StoriesListView.swift" : {
+    "const-values" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoriesListView.swiftconstvalues",
+    "dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoriesListView.d",
+    "diagnostics" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoriesListView.dia",
+    "object" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoriesListView.o",
+    "swift-dependencies" : "/Users/mattwright/pandora/lifebook/build/MemoirGuide.build/Debug-iphoneos/MemoirGuide.build/Objects-normal/arm64/StoriesListView.swiftdeps"
+  }
+}

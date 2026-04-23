@@ -1,0 +1,186 @@
+# Question library for Hugh
+#
+# Structure: themes → life_stages → prompts
+# Each prompt is a seed Hugh may paraphrase. He never reads them verbatim.
+# The app picks a cluster based on what the user has given so far, then hands
+# 3–5 seeds to Hugh as "options you could draw from if the conversation stalls."
+#
+# Design rules encoded here:
+# - Every prompt leads with a concrete, sensory noun — never "how did you feel".
+# - Every prompt is answerable in one breath by someone with mild memory loss.
+# - No compound questions. No "and also".
+# - Era-specific prompts use decade tags so the app can filter by the user's
+#   birth_year (childhood ≈ birth_year + 5 to birth_year + 15).
+#
+# life_stages:
+#   early_childhood   ~ ages 0-6
+#   school_years      ~ ages 7-12
+#   teens             ~ ages 13-18
+#   young_adult       ~ ages 19-29
+#   middle_life       ~ ages 30-55
+#   later_life        ~ ages 55+
+#   recent            ~ last few years, any age
+
+themes:
+
+  home_and_place:
+    early_childhood:
+      - "What did the floor in your kitchen look like?"
+      - "Where did you sleep when you were very small?"
+      - "Was there a smell in the house that meant home?"
+      - "What could you hear from your bed at night?"
+      - "Where did the light come in, in the mornings?"
+    school_years:
+      - "What was the walk to school like?"
+      - "Where in the house did you do your homework?"
+      - "Was there a room you weren't supposed to go in?"
+      - "What did you do when it rained?"
+    teens:
+      - "Where did you go when you wanted to be alone?"
+      - "What did your bedroom look like?"
+      - "Was there a place in town that was yours?"
+    later_life:
+      - "Which of the houses you've lived in do you miss?"
+      - "What's the first home you remember making your own?"
+
+  family:
+    early_childhood:
+      - "Who picked you up when you cried?"
+      - "What did your mother's hands look like?"
+      - "Was there a grandparent you spent time with?"
+      - "Did your family have a way of eating together?"
+    school_years:
+      - "Who was the loudest person at the dinner table?"
+      - "What did your father do during the day?"
+      - "Did you have a brother or sister you followed around?"
+    teens:
+      - "Who in your family did you argue with most?"
+      - "Was there someone who understood you without asking?"
+    middle_life:
+      - "When did you first feel like the grown-up in the room?"
+      - "What was the hardest thing to tell your parents?"
+    later_life:
+      - "Who in your family do you think about the most now?"
+
+  school:
+    school_years:
+      - "What did your first classroom smell like?"
+      - "Was there a teacher whose name you still remember?"
+      - "What did you carry your lunch in?"
+      - "Who did you sit next to?"
+      - "What did you do at break time?"
+    teens:
+      - "Was there a subject you secretly loved?"
+      - "Did you have a best friend in those years?"
+      - "What did you wear to school?"
+
+  food:
+    any:
+      - "What did you have for breakfast when you were little?"
+      - "Was there a meal that meant something good was happening?"
+      - "What did your kitchen smell like on a Sunday?"
+      - "Is there a dish nobody makes the way they used to?"
+      - "What was the first thing you learned to cook?"
+
+  play_and_friends:
+    early_childhood:
+      - "What did you play with before you started school?"
+      - "Was there a toy you wouldn't sleep without?"
+    school_years:
+      - "Where did the children in your neighborhood meet up?"
+      - "What games did you play outside?"
+      - "Did you have a hiding place?"
+      - "Who was the fastest kid on the street?"
+    teens:
+      - "What did you and your friends do on a Saturday?"
+      - "Was there music you played over and over?"
+
+  work:
+    young_adult:
+      - "What was your first job?"
+      - "Who was the first boss you remember?"
+      - "What did you wear to work?"
+      - "How much were you paid, that first time?"
+    middle_life:
+      - "What was the hardest day at work you can remember?"
+      - "Did you ever love a job?"
+      - "Who did you eat lunch with?"
+
+  love_and_partnership:
+    teens:
+      - "Do you remember the first person you had a crush on?"
+    young_adult:
+      - "Where did you meet the person who became important to you?"
+      - "What were they wearing the first time you saw them?"
+      - "What did you do on your first date?"
+    middle_life:
+      - "What's a small thing they did that you noticed?"
+    later_life:
+      - "What's something about them you want remembered?"
+
+  milestones:
+    any:
+      - "What were you doing the day you first left home?"
+      - "Do you remember the day a child arrived in your life?"
+      - "Was there a day everything changed?"
+
+  senses_and_weather:
+    any:
+      - "What did winter sound like where you grew up?"
+      - "Is there a smell that takes you straight back somewhere?"
+      - "What song do you associate with a specific summer?"
+      - "What was the coldest you've ever been?"
+      - "What did the rain sound like on the roof?"
+
+  recent_life:
+    recent:
+      - "What happened yesterday that was worth remembering?"
+      - "Is there something small from this week you liked?"
+      - "Who did you talk to today?"
+      - "Was there a moment this year that surprised you?"
+
+# Era overlay — these are sensory hooks Hugh can weave in when the user's
+# childhood decade is known. They're not standalone prompts; they're flavor
+# Hugh can use in a follow-up ("Was there a radio on the counter?").
+
+era_hooks:
+  1940s:
+    sounds: [radio_dramas, air_raid_sirens, horse_drawn_milk_carts, rationing_queues]
+    objects: [ration_books, victory_gardens, linoleum, coal_stoves, iceboxes]
+    foods: [spam, powdered_eggs, condensed_milk, bread_and_dripping]
+  1950s:
+    sounds: [rock_and_roll_on_am_radio, dial_telephones, steam_trains, church_bells]
+    objects: [milk_bottles_on_the_step, coal_fires, wringer_washers, party_lines]
+    foods: [sunday_roast, jelly_and_custard, tinned_fruit, white_bread]
+  1960s:
+    sounds: [transistor_radios, beatles_and_stones, tv_turning_on_to_a_test_card]
+    objects: [black_and_white_tv, formica_kitchens, bakelite_phones, polaroids]
+    foods: [fish_fingers, angel_delight, blue_riband, tang]
+  1970s:
+    sounds: [vinyl_records, the_hum_of_a_vcr, saturday_morning_cartoons]
+    objects: [shag_carpet, wood_panel_walls, curly_phone_cords, pong]
+    foods: [tv_dinners, spaghetti_hoops, space_dust, tab_cola]
+  1980s:
+    sounds: [mix_tapes, dial_up_modems_later, a_ham_radio_in_the_garage]
+    objects: [walkmans, atari, corded_phones_in_the_hallway, polaroid_cameras]
+    foods: [pop_tarts, capri_sun, microwaved_meals, wine_coolers]
+  1990s:
+    sounds: [dial_up_handshake, cd_players_skipping, nintendo_theme_songs]
+    objects: [beepers, cordless_phones, vhs_tapes, beanie_babies]
+    foods: [lunchables, bagel_bites, hi_c_ecto_cooler, gushers]
+  2000s:
+    sounds: [nokia_ringtones, msn_messenger_login, ipod_click_wheel]
+    objects: [flip_phones, razor_scooters, livestrong_bands, ipod_minis]
+    foods: [red_bull, lunchtime_pizza, energy_drinks, atkins_everything]
+
+# How the app uses this:
+# 1. On session start, app picks a default cluster based on:
+#    - user's stated preference ("old" vs "recent")
+#    - birth_year (if known → use childhood decade for era_hooks)
+#    - last_memory_topic (to avoid repeating)
+# 2. App passes a small context to the agent each turn:
+#      suggested_cluster: [5 prompt seeds from the chosen theme/life_stage]
+#      era_hooks: [3-5 objects/sounds/foods from the childhood decade]
+# 3. Hugh uses these as inspiration, never verbatim. He picks up on whatever
+#    the user actually said and asks about that first; the seeds are only a
+#    safety net when the conversation stalls.

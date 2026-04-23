@@ -1,0 +1,299 @@
+import SwiftUI
+import AVFoundation
+
+// MARK: - Recording Complete View
+struct RecordingCompleteView: View {
+    let transcription: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var isPlaying = false
+    @State private var showingSaveSuccess = false
+    @State private var selectedStory: String? = nil
+    @State private var currentWord = 0
+    @State private var storyTitle = ""
+    
+    var body: some View {
+        ZStack {
+            DesignSystem.backgroundBeige
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .font(DesignSystem.body)
+                    .foregroundColor(DesignSystem.textSecondary)
+                    
+                    Spacer()
+                    
+                    Text("Recording Complete")
+                        .font(DesignSystem.title)
+                        .foregroundColor(DesignSystem.textPrimary)
+                    
+                    Spacer()
+                    
+                    // Invisible placeholder for balance
+                    Text("Cancel")
+                        .font(DesignSystem.body)
+                        .foregroundColor(.clear)
+                }
+                .padding()
+                
+                ScrollView {
+                    VStack(spacing: 25) {
+                        // Success Icon
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 60))
+                            .foregroundColor(.green)
+                            .padding(.top, 20)
+                        
+                        Text("Great memory captured!")
+                            .font(DesignSystem.title)
+                            .foregroundColor(DesignSystem.textPrimary)
+                        
+                        // What I Captured Section
+                        VStack(alignment: .leading, spacing: 15) {
+                            HStack {
+                                Image(systemName: "mic.fill")
+                                    .font(.body)
+                                    .foregroundColor(DesignSystem.primaryTeal)
+                                Text("What I captured")
+                                    .font(DesignSystem.buttonText)
+                                    .foregroundColor(DesignSystem.textPrimary)
+                                
+                                Spacer()
+                                
+                                Text("\(transcription.split(separator: " ").count) words")
+                                    .font(DesignSystem.caption)
+                                    .foregroundColor(DesignSystem.textSecondary)
+                                
+                                Button(action: togglePlayback) {
+                                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                        .font(.system(size: 35))
+                                        .foregroundColor(DesignSystem.primaryTeal)
+                                }
+                            }
+                            
+                            // Transcription with word highlighting
+                            TranscriptionView(
+                                text: transcription,
+                                currentWord: currentWord,
+                                isPlaying: isPlaying
+                            )
+                        }
+                        .padding(20)
+                        .background(Color.white)
+                        .cornerRadius(DesignSystem.cardCornerRadius)
+                        .shadow(color: .black.opacity(0.05), radius: 5, y: 2)
+                        
+                        // How I heard it (AI Enhanced)
+                        VStack(alignment: .leading, spacing: 15) {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .font(.body)
+                                    .foregroundColor(Color.orange)
+                                Text("Enhanced version")
+                                    .font(DesignSystem.buttonText)
+                                    .foregroundColor(DesignSystem.textPrimary)
+                                
+                                Spacer()
+                                
+                                Button(action: {}) {
+                                    Image(systemName: "play.circle.fill")
+                                        .font(.system(size: 35))
+                                        .foregroundColor(Color.orange)
+                                }
+                            }
+                            
+                            Text("When I was young, we used to play marbles in the schoolyard. It was such a simple game, but we had tremendous fun. We'd draw a circle in the dirt and try to knock each other's marbles out of the ring.")
+                                .font(DesignSystem.body)
+                                .foregroundColor(DesignSystem.textPrimary)
+                                .lineSpacing(5)
+                        }
+                        .padding(20)
+                        .background(Color.white)
+                        .cornerRadius(DesignSystem.cardCornerRadius)
+                        .shadow(color: .black.opacity(0.05), radius: 5, y: 2)
+                        
+                        // Add to Story Section
+                        VStack(spacing: 15) {
+                            Text("Add to story")
+                                .font(DesignSystem.body)
+                                .foregroundColor(DesignSystem.textSecondary)
+                            
+                            // Story Title Input
+                            TextField("Give this memory a title", text: $storyTitle)
+                                .font(DesignSystem.body)
+                                .padding()
+                                .frame(height: 55)
+                                .background(Color.white)
+                                .cornerRadius(DesignSystem.cardCornerRadius)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignSystem.cardCornerRadius)
+                                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                                )
+                        }
+                        
+                        // Action Buttons
+                        VStack(spacing: 15) {
+                            Button(action: saveStory) {
+                                Text("Save This Memory")
+                                    .font(DesignSystem.buttonText)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: DesignSystem.primaryButtonHeight)
+                                    .background(DesignSystem.primaryTeal)
+                                    .cornerRadius(DesignSystem.cornerRadius)
+                            }
+                            
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Text("Record Another")
+                                    .font(DesignSystem.body)
+                                    .foregroundColor(DesignSystem.primaryTeal)
+                            }
+                        }
+                        .padding(.bottom, 30)
+                    }
+                    .padding(.horizontal, DesignSystem.largePadding)
+                }
+            }
+            
+            // Success overlay
+            if showingSaveSuccess {
+                SaveSuccessOverlay()
+                    .transition(.scale.combined(with: .opacity))
+                    .zIndex(1)
+            }
+        }
+    }
+    
+    func togglePlayback() {
+        isPlaying.toggle()
+        if isPlaying {
+            simulatePlayback()
+        }
+    }
+    
+    func simulatePlayback() {
+        let words = transcription.split(separator: " ")
+        currentWord = 0
+        
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
+            if currentWord < words.count && isPlaying {
+                currentWord += 1
+            } else {
+                timer.invalidate()
+                isPlaying = false
+                currentWord = 0
+            }
+        }
+    }
+    
+    func saveStory() {
+        // Haptic feedback
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+        
+        withAnimation(.spring()) {
+            showingSaveSuccess = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            dismiss()
+        }
+    }
+}
+
+// MARK: - Transcription View with Word Highlighting
+struct TranscriptionView: View {
+    let text: String
+    let currentWord: Int
+    let isPlaying: Bool
+    
+    var words: [String] {
+        text.split(separator: " ").map(String.init)
+    }
+    
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                Text(attributedText)
+                    .font(DesignSystem.body)
+                    .lineSpacing(5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxHeight: 150)
+            .onChange(of: currentWord) { newValue in
+                if isPlaying && newValue > 0 {
+                    withAnimation {
+                        proxy.scrollTo(newValue, anchor: .center)
+                    }
+                }
+            }
+        }
+    }
+    
+    var attributedText: AttributedString {
+        var result = AttributedString()
+        
+        for (index, word) in words.enumerated() {
+            var wordAttr = AttributedString(word + " ")
+            
+            if isPlaying {
+                if index == currentWord {
+                    // Current word - orange
+                    wordAttr.foregroundColor = Color.orange
+                    wordAttr.backgroundColor = Color.orange.opacity(0.1)
+                } else if index == currentWord - 1 {
+                    // Previous word - pale orange
+                    wordAttr.foregroundColor = Color.orange.opacity(0.6)
+                } else if index < currentWord {
+                    // Already read - gray
+                    wordAttr.foregroundColor = DesignSystem.textSecondary
+                } else {
+                    // Not yet read
+                    wordAttr.foregroundColor = DesignSystem.textPrimary
+                }
+            } else {
+                wordAttr.foregroundColor = DesignSystem.textPrimary
+            }
+            
+            result.append(wordAttr)
+        }
+        
+        return result
+    }
+}
+
+// MARK: - Save Success Overlay
+struct SaveSuccessOverlay: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 20) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 80))
+                    .foregroundColor(.white)
+                
+                Text("Memory Saved!")
+                    .font(DesignSystem.largeTitle)
+                    .foregroundColor(.white)
+            }
+            .padding(40)
+            .background(DesignSystem.primaryTeal)
+            .cornerRadius(DesignSystem.cornerRadius)
+        }
+    }
+}
+
+// MARK: - Preview
+struct RecordingCompleteView_Previews: PreviewProvider {
+    static var previews: some View {
+        RecordingCompleteView(transcription: "Today I want to tell you about when I was young, we used to play marbles in the schoolyard. It was such a simple game, but we had so much fun.")
+    }
+}

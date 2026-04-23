@@ -1,0 +1,433 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Technical Specification System API",
+    "description": "API for managing 150,000 word technical specifications with collaborative editing",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/documents": {
+      "get": {
+        "summary": "List documents",
+        "tags": ["Documents"],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["draft", "review", "approved", "published"]}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "documents": {
+                      "type": "array",
+                      "items": {"$ref": "#/components/schemas/Document"}
+                    },
+                    "pagination": {"$ref": "#/components/schemas/Pagination"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create document",
+        "tags": ["Documents"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/CreateDocumentRequest"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Document created",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Document"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/documents/{id}": {
+      "get": {
+        "summary": "Get document",
+        "tags": ["Documents"],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Document details",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/DocumentWithSections"}
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update document",
+        "tags": ["Documents"],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/UpdateDocumentRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document updated",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Document"}
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete document",
+        "tags": ["Documents"],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "204": {"description": "Document deleted"}
+        }
+      }
+    },
+    "/documents/{id}/sections": {
+      "get": {
+        "summary": "Get document sections",
+        "tags": ["Sections"],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Document sections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/Section"}
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create section",
+        "tags": ["Sections"],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/CreateSectionRequest"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Section created",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Section"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/documents/{id}/export": {
+      "post": {
+        "summary": "Export document",
+        "tags": ["Export"],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ExportRequest"}
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Export initiated",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Export"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exports/{id}": {
+      "get": {
+        "summary": "Get export status",
+        "tags": ["Export"],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Export status",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Export"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "Search documents",
+        "tags": ["Search"],
+        "parameters": [
+          {"name": "q", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "filters", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SearchResults"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates": {
+      "get": {
+        "summary": "List templates",
+        "tags": ["Templates"],
+        "responses": {
+          "200": {
+            "description": "Template list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/Template"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "summary": "Get current user",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/User"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Document": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "wordCount": {"type": "integer"},
+          "status": {"type": "string", "enum": ["draft", "review", "approved", "published"]},
+          "version": {"type": "string"},
+          "createdAt": {"type": "string", "format": "date-time"},
+          "updatedAt": {"type": "string", "format": "date-time"},
+          "createdBy": {"$ref": "#/components/schemas/User"},
+          "owner": {"$ref": "#/components/schemas/User"}
+        }
+      },
+      "DocumentWithSections": {
+        "allOf": [
+          {"$ref": "#/components/schemas/Document"},
+          {
+            "type": "object",
+            "properties": {
+              "content": {"type": "object"},
+              "sections": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/Section"}
+              }
+            }
+          }
+        ]
+      },
+      "Section": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "content": {"type": "string"},
+          "level": {"type": "integer", "minimum": 0, "maximum": 6},
+          "order": {"type": "integer"},
+          "wordCount": {"type": "integer"},
+          "children": {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/Section"}
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "email": {"type": "string"},
+          "name": {"type": "string"},
+          "avatar": {"type": "string"},
+          "role": {"type": "string", "enum": ["admin", "editor", "viewer"]}
+        }
+      },
+      "Template": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "category": {"type": "string"},
+          "structure": {"type": "object"},
+          "usageCount": {"type": "integer"}
+        }
+      },
+      "Export": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "format": {"type": "string", "enum": ["pdf", "html", "markdown", "word"]},
+          "status": {"type": "string", "enum": ["pending", "processing", "completed", "failed"]},
+          "filePath": {"type": "string"},
+          "fileSize": {"type": "integer"},
+          "createdAt": {"type": "string", "format": "date-time"},
+          "completedAt": {"type": "string", "format": "date-time"},
+          "errorMessage": {"type": "string"}
+        }
+      },
+      "SearchResults": {
+        "type": "object",
+        "properties": {
+          "query": {"type": "string"},
+          "total": {"type": "integer"},
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "document": {"$ref": "#/components/schemas/Document"},
+                "highlights": {"type": "array", "items": {"type": "string"}},
+                "score": {"type": "number"}
+              }
+            }
+          }
+        }
+      },
+      "CreateDocumentRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {"type": "string"},
+          "templateId": {"type": "string"},
+          "metadata": {"type": "object"}
+        }
+      },
+      "UpdateDocumentRequest": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string"},
+          "content": {"type": "object"},
+          "status": {"type": "string"},
+          "metadata": {"type": "object"}
+        }
+      },
+      "CreateSectionRequest": {
+        "type": "object",
+        "required": ["title", "level"],
+        "properties": {
+          "title": {"type": "string"},
+          "content": {"type": "string"},
+          "level": {"type": "integer", "minimum": 0, "maximum": 6},
+          "parentId": {"type": "string"},
+          "order": {"type": "integer"}
+        }
+      },
+      "ExportRequest": {
+        "type": "object",
+        "required": ["format"],
+        "properties": {
+          "format": {"type": "string", "enum": ["pdf", "html", "markdown", "word"]},
+          "parameters": {"type": "object"}
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {"type": "integer"},
+          "limit": {"type": "integer"},
+          "total": {"type": "integer"},
+          "pages": {"type": "integer"}
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {"bearerAuth": []}
+  ]
+}
