@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>go. — Beyond Pandora</title>
+<meta name="description" content="Beyond Pandora — single pane of glass for self-hosted apps">
+<meta name="theme-color" content="#dde4ed" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080d17" media="(prefers-color-scheme: dark)">
+<style>
+  :root {
+    /* Brand */
+    --sky: #61a5c2;
+    --sky-600: #4a8fae;
+    --sky-50: #eaf4f9;
+    --teal: #52b69a;
+    --teal-600: #3f9c82;
+    --teal-50: #e7f5ef;
+    --gold: #ffbf69;
+    --gold-600: #eaa249;
+    --gold-50: #fff4e2;
+
+    /* Light theme — matches sovrein.ai */
+    --background: #dde4ed;
+    --surface: #ffffff;
+    --surface-alt: #d3dbe4;
+    --surface-inset: #c8d1dc;
+    --border: #b9c3d0;
+    --border-strong: #9faab9;
+    --foreground: #0b1424;
+    --body: #2b3649;
+    --muted: #5b6478;
+    --muted-strong: #3a4559;
+
+    color-scheme: light;
+  }
+
+  html.dark {
+    --background: #080d17;
+    --surface: #0e1626;
+    --surface-alt: #13202f;
+    --surface-inset: #0b1422;
+    --border: #1c2a40;
+    --border-strong: #293a57;
+    --foreground: #eef2f7;
+    --body: #cdd5e2;
+    --muted: #7f8ba1;
+    --muted-strong: #b1bbcc;
+
+    --sky-50: #0f2535;
+    --teal-50: #0e2a22;
+    --gold-50: #3a2a14;
+
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    color: var(--body);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Subtle aurora behind the header */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -10% -10% auto -10%;
+    height: 480px;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 60% at 15% 20%, color-mix(in oklab, var(--sky) 28%, transparent) 0%, transparent 60%),
+      radial-gradient(50% 50% at 85% 15%, color-mix(in oklab, var(--teal) 22%, transparent) 0%, transparent 60%),
+      radial-gradient(45% 45% at 70% 80%, color-mix(in oklab, var(--gold) 18%, transparent) 0%, transparent 60%);
+    filter: blur(40px);
+    opacity: 0.65;
+  }
+  html.dark body::before { opacity: 0.32; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+    position: relative;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.035em;
+    color: var(--foreground);
+  }
+  h1 .dot {
+    background: linear-gradient(135deg, var(--sky), var(--teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .tagline {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted-strong);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .theme-toggle:hover {
+    color: var(--foreground);
+    border-color: var(--border-strong);
+    background: var(--surface-alt);
+  }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .icon-sun { display: none; }
+  html.dark .theme-toggle .icon-sun { display: block; }
+  html.dark .theme-toggle .icon-moon { display: none; }
+
+  .meta {
+    color: var(--muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .search {
+    margin: 0 0 36px;
+    position: relative;
+  }
+  .search input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    padding: 14px 18px 14px 44px;
+    font-size: 15px;
+    font-family: inherit;
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(11, 20, 36, 0.04);
+  }
+  .search input::placeholder { color: var(--muted); }
+  .search input:focus {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--sky) 18%, transparent);
+  }
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .kbd {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  section { margin-bottom: 36px; }
+
+  h2 {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--sky-600);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  /* Per-section accent rotation: sky → teal → gold → sky → ... */
+  section:nth-child(4n+3) > h2 { color: var(--teal-600); }
+  section:nth-child(4n+4) > h2 { color: var(--gold-600); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  a.card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    border-radius: 14px;
+    color: var(--foreground);
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(11, 20, 36, 0.04);
+    transition:
+      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 200ms ease;
+  }
+  a.card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--sky) 35%, var(--border));
+    box-shadow:
+      0 2px 4px rgba(11, 20, 36, 0.05),
+      0 14px 30px -10px rgba(97, 165, 194, 0.18);
+  }
+  html.dark a.card:hover {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      0 14px 30px -10px rgba(97, 165, 194, 0.22);
+  }
+  a.card:active { transform: translateY(0); }
+
+  .card .name {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+  }
+  .card .desc {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+
+  .hidden { display: none !important; }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  footer .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--teal-50);
+    color: var(--teal-600);
+    font-weight: 500;
+    font-size: 11px;
+  }
+  footer .pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    a.card { transition: none; }
+    a.card:hover { transform: none; }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .container { padding: 32px 20px 64px; }
+    header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .tagline { font-size: 12px; }
+    h1 { font-size: 28px; }
+    .grid { grid-template-columns: 1fr; }
+    .kbd { display: none; }
+  }
+</style>
+<script>
+  // Pre-hydration theme apply, prevents FOUC
+  (function() {
+    try {
+      var t = localStorage.getItem('go-theme');
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (t === 'dark') document.documentElement.classList.add('dark');
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>go<span class="dot">.</span></h1>
+  <div class="header-right">
+    <span class="tagline">Beyond Pandora &mdash; single pane of glass</span>
+    <button id="theme" class="theme-toggle" type="button" aria-label="Toggle theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="search">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  <input id="q" type="search" placeholder="Filter (press / to focus)&hellip;" autofocus autocomplete="off">
+  <span class="kbd">/</span>
+</div>
+
+<section data-group="Dashboards">
+  <h2>Dashboards</h2>
+  <div class="grid">
+    <a class="card" href="https://portal.beyondpandora.com"><div class="name">Hermes Portal</div><div class="desc">Laptop / GPU / services health</div></a>
+    <a class="card" href="https://labs.beyondpandora.com"><div class="name">Sovrein Labs</div><div class="desc">Project launchpad (Archon, JWM, &hellip;)</div></a>
+    <a class="card" href="https://automagic.beyondpandora.com"><div class="name">Automagic Console</div><div class="desc">PLAUD &rarr; n8n &rarr; Plane pipeline</div></a>
+    <a class="card" href="http://10.90.10.19:8888"><div class="name">Jake Portal (LAN)</div><div class="desc">No-auth LAN dashboard</div></a>
+  </div>
+</section>
+
+<section data-group="Projects &amp; AI">
+  <h2>Projects &amp; AI</h2>
+  <div class="grid">
+    <a class="card" href="https://archon.beyondpandora.com"><div class="name">Archon</div><div class="desc">RAG + task management</div></a>
+    <a class="card" href="https://openwebui.beyondpandora.com"><div class="name">Open WebUI</div><div class="desc">LLM chat</div></a>
+    <a class="card" href="https://litellm.beyondpandora.com"><div class="name">LiteLLM</div><div class="desc">Model gateway</div></a>
+    <a class="card" href="https://flowise.beyondpandora.com"><div class="name">Flowise</div><div class="desc">LLM flow builder</div></a>
+    <a class="card" href="https://jupyter.beyondpandora.com"><div class="name">Jupyter</div><div class="desc">Notebooks + data work</div></a>
+    <a class="card" href="https://jwm-demo.beyondpandora.com"><div class="name">JWM Demo</div><div class="desc">Sovrein customer project</div></a>
+    <a class="card" href="https://jwm-erp.beyondpandora.com"><div class="name">JWM ERPNext</div><div class="desc">Frappe backend (admin)</div></a>
+    <a class="card" href="https://jwm-ai.beyondpandora.com"><div class="name">JWM AI</div><div class="desc">JWM demo AI tooling</div></a>
+  </div>
+</section>
+
+<section data-group="Apps">
+  <h2>Apps</h2>
+  <div class="grid">
+    <a class="card" href="https://supercloud.beyondpandora.com"><div class="name">NextCloud (supercloud)</div><div class="desc">Primary NC instance</div></a>
+    <a class="card" href="https://kumo.beyondpandora.com"><div class="name">NextCloud (kumo)</div><div class="desc">Secondary NC instance</div></a>
+    <a class="card" href="https://office.beyondpandora.com"><div class="name">Collabora Office</div><div class="desc">Online docs editor</div></a>
+    <a class="card" href="https://immich.beyondpandora.com"><div class="name">Immich</div><div class="desc">Self-hosted photos</div></a>
+    <a class="card" href="https://paperless.beyondpandora.com"><div class="name">Paperless-ngx</div><div class="desc">Document archive</div></a>
+    <a class="card" href="https://plane.beyondpandora.com"><div class="name">Plane</div><div class="desc">Project management</div></a>
+    <a class="card" href="https://bookstack.beyondpandora.com"><div class="name">BookStack</div><div class="desc">Wiki / docs</div></a>
+    <a class="card" href="https://documenso.beyondpandora.com"><div class="name">Documenso</div><div class="desc">E-sign</div></a>
+    <a class="card" href="https://excalidraw.beyondpandora.com"><div class="name">Excalidraw</div><div class="desc">Whiteboard</div></a>
+    <a class="card" href="https://obsidian.beyondpandora.com"><div class="name">Obsidian Sync</div><div class="desc">Self-hosted LiveSync</div></a>
+    <a class="card" href="https://limesurvey.beyondpandora.com"><div class="name">LimeSurvey</div><div class="desc">Surveys</div></a>
+    <a class="card" href="https://git.beyondpandora.com"><div class="name">Gitea</div><div class="desc">Self-hosted git</div></a>
+  </div>
+</section>
+
+<section data-group="Automation">
+  <h2>Automation</h2>
+  <div class="grid">
+    <a class="card" href="https://n8n.beyondpandora.com"><div class="name">n8n (core)</div><div class="desc">Main automations</div></a>
+    <a class="card" href="https://n8n-ops.beyondpandora.com"><div class="name">n8n Ops</div><div class="desc">Ops automations</div></a>
+    <a class="card" href="https://n8nsamco.beyondpandora.com"><div class="name">n8n SamCo</div><div class="desc">Client workflows</div></a>
+    <a class="card" href="https://n8nsuperluxe.beyondpandora.com"><div class="name">n8n Superluxe</div><div class="desc">Client workflows</div></a>
+    <a class="card" href="https://n8nsovrein.beyondpandora.com"><div class="name">n8n Sovrein</div><div class="desc">Sovrein workflows</div></a>
+  </div>
+</section>
+
+<section data-group="Media">
+  <h2>Media</h2>
+  <div class="grid">
+    <a class="card" href="https://radarr.beyondpandora.com"><div class="name">Radarr</div><div class="desc">Movies</div></a>
+    <a class="card" href="https://sonarr.beyondpandora.com"><div class="name">Sonarr</div><div class="desc">TV</div></a>
+    <a class="card" href="https://prowlarr.beyondpandora.com"><div class="name">Prowlarr</div><div class="desc">Indexer</div></a>
+    <a class="card" href="https://sabnzbd.beyondpandora.com"><div class="name">SABnzbd</div><div class="desc">Usenet</div></a>
+    <a class="card" href="https://overseerr.beyondpandora.com"><div class="name">Overseerr</div><div class="desc">Requests</div></a>
+    <a class="card" href="https://tautulli.beyondpandora.com"><div class="name">Tautulli</div><div class="desc">Plex stats</div></a>
+  </div>
+</section>
+
+<section data-group="Search &amp; Tools">
+  <h2>Search &amp; Tools</h2>
+  <div class="grid">
+    <a class="card" href="https://search.beyondpandora.com"><div class="name">SearXNG</div><div class="desc">Private metasearch</div></a>
+    <a class="card" href="https://start.beyondpandora.com"><div class="name">Start Page</div><div class="desc">Browser homepage (SearXNG alias)</div></a>
+    <a class="card" href="https://webcheck.beyondpandora.com"><div class="name">Web-Check</div><div class="desc">Domain OSINT</div></a>
+    <a class="card" href="https://pdf.beyondpandora.com"><div class="name">PDF Tools</div><div class="desc">Stirling PDF</div></a>
+    <a class="card" href="https://alpine-it.beyondpandora.com"><div class="name">IT Tools</div><div class="desc">Alpine IT-Tools</div></a>
+  </div>
+</section>
+
+<section data-group="Infrastructure">
+  <h2>Infrastructure</h2>
+  <div class="grid">
+    <a class="card" href="https://pve.beyondpandora.com"><div class="name">Proxmox VE</div><div class="desc">Hypervisor</div></a>
+    <a class="card" href="https://pbs.beyondpandora.com"><div class="name">Proxmox Backup</div><div class="desc">PBS</div></a>
+    <a class="card" href="https://traefik.beyondpandora.com"><div class="name">Traefik</div><div class="desc">Reverse proxy dashboard</div></a>
+    <a class="card" href="https://adguard.beyondpandora.com"><div class="name">AdGuard Home</div><div class="desc">Primary DNS filter</div></a>
+    <a class="card" href="https://adguard-2.beyondpandora.com"><div class="name">AdGuard HA</div><div class="desc">Secondary DNS filter</div></a>
+    <a class="card" href="https://router.beyondpandora.com"><div class="name">UniFi Gateway</div><div class="desc">Router / WireGuard</div></a>
+    <a class="card" href="https://grafana.beyondpandora.com"><div class="name">Grafana</div><div class="desc">Metrics</div></a>
+    <a class="card" href="https://prometheus.beyondpandora.com"><div class="name">Prometheus</div><div class="desc">Metrics DB</div></a>
+    <a class="card" href="https://kuma.beyondpandora.com"><div class="name">Uptime Kuma</div><div class="desc">Uptime monitor</div></a>
+    <a class="card" href="https://signin.beyondpandora.com"><div class="name">Authentik</div><div class="desc">Identity / SSO</div></a>
+    <a class="card" href="https://wazuh.beyondpandora.com"><div class="name">Wazuh</div><div class="desc">Security monitoring</div></a>
+  </div>
+</section>
+
+<footer>
+  <span class="pill"><span class="dot"></span>Tailscale-only · no public route</span>
+  <span id="count"></span>
+</footer>
+
+</div>
+
+<script>
+  // ===== Search filter =====
+  const q = document.getElementById('q');
+  const cards = Array.from(document.querySelectorAll('a.card'));
+  const sections = Array.from(document.querySelectorAll('section'));
+  const countEl = document.getElementById('count');
+  const total = cards.length;
+
+  function refresh() {
+    const term = q.value.trim().toLowerCase();
+    let visible = 0;
+    for (const c of cards) {
+      const hit = !term || c.textContent.toLowerCase().includes(term);
+      c.classList.toggle('hidden', !hit);
+      if (hit) visible++;
+    }
+    for (const s of sections) {
+      const anyVisible = Array.from(s.querySelectorAll('a.card')).some(c => !c.classList.contains('hidden'));
+      s.classList.toggle('hidden', !anyVisible);
+    }
+    countEl.textContent = term ? `${visible}/${total}` : `${total} services`;
+  }
+
+  q.addEventListener('input', refresh);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { q.value = ''; refresh(); q.blur(); }
+    else if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+  });
+  refresh();
+
+  // ===== Theme toggle =====
+  const themeBtn = document.getElementById('theme');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    try { localStorage.setItem('go-theme', isDark ? 'dark' : 'light'); } catch(e) {}
+  });
+</script>
+</body>
+</html>
