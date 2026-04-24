@@ -15,6 +15,7 @@ import { ANCHOR_SYSTEM, ANCHOR_FORMAT_HINT } from "./prompts/anchor";
 export interface Env {
 	ELEVENLABS_API_KEY: string;
 	ELEVENLABS_AGENTS: string; // JSON string: {"<voice_id>": "<agent_id>"}
+	ELEVENLABS_DEFAULT_AGENT_ID: string; // fallback when voice_id isn't in the map
 	UNSPLASH_ACCESS_KEY: string;
 	ANTHROPIC_API_KEY: string;
 	COLLAGE_CACHE: KVNamespace;
@@ -84,7 +85,7 @@ async function handleAgentConfig(request: Request, env: Env): Promise<Response> 
 	} catch {
 		return err("ELEVENLABS_AGENTS is not valid JSON", 500);
 	}
-	const agent_id = agents[body.voice_id];
+	const agent_id = agents[body.voice_id] ?? env.ELEVENLABS_DEFAULT_AGENT_ID;
 	if (!agent_id) return err(`No agent configured for voice_id=${body.voice_id}`, 404);
 
 	// Fetch short-lived conversation token from ElevenLabs.
@@ -220,41 +221,48 @@ interface CollageBody {
 async function handleCollageImages(request: Request, env: Env): Promise<Response> {
 	const body = (await request.json()) as CollageBody;
 
-	const query = buildCollageQuery(body);
-	const cacheKey = `collage:${query}`;
+	// Unsplash path (when key is configured).
+	if (env.UNSPLASH_ACCESS_KEY) {
+		const query = buildCollageQuery(body);
+		const cacheKey = `collage:${query}`;
 
-	const cached = await env.COLLAGE_CACHE.get(cacheKey, "json");
-	if (cached) return json(cached);
+		const cached = await env.COLLAGE_CACHE?.get(cacheKey, "json");
+		if (cached) return json(cached);
 
-	const res = await fetch(
-		`https://api.unsplash.com/search/photos?per_page=5&orientation=portrait&query=${encodeURIComponent(query)}`,
-		{ headers: { Authorization: `Client-ID ${env.UNSPLASH_ACCESS_KEY}` } },
-	);
-	if (!res.ok) {
-		const detail = await res.text();
-		return err(`Unsplash fetch failed: ${res.status} ${detail}`, 502);
+		const res = await fetch(
+			`https://api.unsplash.com/search/photos?per_page=5&orientation=portrait&query=${encodeURIComponent(query)}`,
+			{ headers: { Authorization: `Client-ID ${env.UNSPLASH_ACCESS_KEY}` } },
+		);
+		if (res.ok) {
+			const data = (await res.json()) as {
+				results: Array<{ urls: { regular: string }; alt_description?: string | null; color?: string }>;
+			};
+			const images = (data.results || []).slice(0, 5).map((r) => ({
+				url: r.urls.regular,
+				alt: r.alt_description || "",
+			}));
+			const palette = data.results.map((r) => r.color).filter((c): c is string => !!c);
+			const gradient = { from: palette[0] || "#F4ECE1", to: palette[palette.length - 1] || "#E8D9C4" };
+			const payload = { images, gradient };
+			await env.COLLAGE_CACHE?.put(cacheKey, JSON.stringify(payload), { expirationTtl: 86400 });
+			return json(payload);
+		}
 	}
-	const data = (await res.json()) as {
-		results: Array<{ urls: { regular: string }; alt_description?: string | null; color?: string }>;
-	};
 
-	const images = (data.results || []).slice(0, 5).map((r) => ({
-		url: r.urls.regular,
-		alt: r.alt_description || "",
+	// Picsum fallback — no API key required; seeded by birth decade + hometown
+	// so images are stable per user across sessions.
+	const seed = buildPicsumSeed(body);
+	const images = Array.from({ length: 5 }, (_, i) => ({
+		url: `https://picsum.photos/seed/${seed}-${i}/600/900`,
+		alt: "",
 	}));
+	return json({ images, gradient: { from: "#F4ECE1", to: "#E8D9C4" } });
+}
 
-	const colors = data.results.map((r) => r.color).filter((c): c is string => !!c);
-	// Fallback gradient matches the app's warm theme (colors.bgTop / bgBottom).
-	const gradient = {
-		from: colors[0] || "#F4ECE1",
-		to: colors[colors.length - 1] || "#E8D9C4",
-	};
-
-	const payload = { images, gradient };
-	// KV TTL min is 60s; 24h = 86400.
-	await env.COLLAGE_CACHE.put(cacheKey, JSON.stringify(payload), { expirationTtl: 86400 });
-
-	return json(payload);
+function buildPicsumSeed({ birth_year, hometown }: CollageBody): string {
+	const decade = birth_year ? Math.floor((birth_year + 10) / 10) * 10 : 1950;
+	const place = (hometown || "home").toLowerCase().replace(/\s+/g, "-").slice(0, 12);
+	return `${decade}-${place}`;
 }
 
 function buildCollageQuery({ birth_year, hometown, theme }: CollageBody): string {

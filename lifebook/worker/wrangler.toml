@@ -4,7 +4,8 @@ compatibility_date = "2024-12-01"
 
 # Secrets to set via `npx wrangler secret put <NAME>`:
 #   ELEVENLABS_API_KEY
-#   ELEVENLABS_AGENTS    # JSON map {"<voice_id>": "<agent_id>"}
+#   ELEVENLABS_AGENTS              # JSON map {"<voice_id>": "<agent_id>"} — optional per-voice routing
+#   ELEVENLABS_DEFAULT_AGENT_ID    # fallback agent used when voice_id has no entry in AGENTS map
 #   UNSPLASH_ACCESS_KEY
 #   ANTHROPIC_API_KEY
 

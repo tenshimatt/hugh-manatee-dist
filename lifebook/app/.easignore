@@ -1,0 +1,53 @@
+# EAS Build — what NOT to upload.
+# This file overrides .gitignore behavior for EAS Build only. Start with the
+# same defaults, then add anything outside `lifebook/app/` that EAS might
+# otherwise pick up by climbing to the monorepo git root.
+
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# macOS / editor noise
+.DS_Store
+.vscode/
+.idea/
+
+# Env + secrets
+.env
+.env.local
+.env.*.local
+
+# Claude Code worktrees (monorepo root pollution)
+../.claude/
+../**/.claude/
+../../.claude/
+
+# Python venvs anywhere in the monorepo
+../.venv/
+../**/venv/
+../**/.venv/
+../**/__pycache__/
+**/*.pyc
+
+# Other pandora projects — we don't need them for this build
+../../archon/
+../../jwm-demo/
+../../happiecat-app/
+../../rawgle/
+../../messaging-app/
+../../health-tracker-demo/
+
+# Hugh's own sibling directories in the lifebook repo that EAS doesn't need
+../worker/
+../agent/
+../archive/
+../Obsidian/
+
+# Build outputs
+*.ipa
+*.aab
+*.apk
+*.zip
+*.tar.gz

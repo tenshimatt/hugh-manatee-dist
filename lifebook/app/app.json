@@ -18,7 +18,8 @@
       "bundleIdentifier": "com.beyondpandora.hughmanatee",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Hugh listens so you can record your memories by voice.",
-        "NSContactsUsageDescription": "Used only once to pre-fill your name from this phone. Not stored or sent."
+        "NSContactsUsageDescription": "Used only once to pre-fill your name from this phone. Not stored or sent.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -31,7 +32,13 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.READ_CONTACTS"
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "web": {
@@ -45,7 +52,17 @@
       "expo-secure-store"
     ],
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "04b93c2b-6be7-47a7-9242-a2d51268ef90"
+      }
+    },
+    "owner": "beyondpandora",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/04b93c2b-6be7-47a7-9242-a2d51268ef90"
     }
   }
 }
