@@ -72,7 +72,7 @@ ${TICKET_DESC}"
       --cwd /root/Archon/packages/cli \
       /root/Archon/packages/cli/src/cli.ts \
       workflow run hugh-manatee-feature \
-      --cwd /root/.archon/workspaces/tenshimatt/hugh-manatee/source \
+      --cwd /root/.archon/workspaces/tenshimatt/hugh-manatee-dist/source \
       --no-worktree \
       "$WF_INPUT"
   ) > "$LOG" 2>&1 &
