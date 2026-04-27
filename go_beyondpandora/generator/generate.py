@@ -60,12 +60,25 @@ SVG = {
 }
 
 def render_logo(icon: dict) -> str:
-    """Render an icon spec into a logo span."""
+    """Render an icon spec into a logo span.
+
+    For CDN-image logos we render a fallback Lucide SVG underneath the <img>.
+    The img sits on top via z-index. If the image loads OK, it covers the SVG.
+    If it errors, onerror simply hides the img and the SVG shows through.
+    This avoids the HTML-attribute escaping nightmare of `innerHTML` injection
+    where SVG path `d="..."` quotes broke the outer `onerror="..."` attribute.
+    """
     if not icon:
         icon = {"svg": "box", "tone": "sky"}
     if "slug" in icon:
         slug = icon["slug"]
-        return f'<span class="logo"><img src="{CDN}{slug}.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;>{SVG["box"]}</svg>\';this.parentElement.classList.add(\'tone-sky\');"></span>'
+        fallback_inner = SVG["box"]
+        return (
+            f'<span class="logo logo-with-img">'
+            f'<span class="logo-fallback tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{fallback_inner}</svg></span>'
+            f'<img src="{CDN}{slug}.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+            f'</span>'
+        )
     name = icon.get("svg", "box")
     tone = icon.get("tone", "sky")
     inner = SVG.get(name, SVG["box"])
