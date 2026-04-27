@@ -31,7 +31,12 @@ provider: claude
 
 nodes:
   - id: prime-context
-    bash: "bash .archon/scripts/prime-context.sh"
+    bash: |
+      # Rail #1 — Workspace cleanup: drop untracked test specs left by prior
+      # cancelled/failed runs (Bug 25). Only operates on tests/ so legitimate
+      # WIP elsewhere is untouched. Tracked tests stay intact.
+      git clean -fd tests/ 2>/dev/null || true
+      bash .archon/scripts/prime-context.sh
 
   # ──────────────────────────────────────────────────────────────
   # PHASE 0 — MISSION TRIAGE (cheap, before anything expensive)
@@ -268,6 +273,7 @@ nodes:
 
   - id: architect-review
     depends_on: [rag-check, plan]
+    provider: claude
     model: claude-opus-4-7[1m]
     context: fresh
     prompt: |
@@ -395,7 +401,7 @@ nodes:
         "files": {}
       }
 
-      Show in elements: actors (pet owners, vets, suppliers, admins), the value
+      Show in elements: actors (elderly user, family member, caregiver, app), the value
       they exchange, the user journey through this feature, decision
       points. NO technology — strictly business semantics.
 
@@ -564,9 +570,9 @@ nodes:
 
       Use the same Excalidraw envelope (source: ".../technology").
 
-      Show in elements: hosts/runtimes (Vercel, Supabase project,
-      Capacitor iOS, OpenRouter, MapTiler/OSM, Plane, etc.), network
-      paths between them, ports/protocols where relevant.
+      Show in elements: hosts/runtimes (Expo / React Native, Cloudflare Worker,
+      ElevenLabs CAI, LiveKit WebRTC, expo-sqlite, TestFlight / App Store,
+      EAS Build), network paths between them, ports/protocols where relevant.
 
       Always write the technology diagram (always applicable).
 
@@ -749,38 +755,83 @@ nodes:
   # PHASE 7 — TEST FIRST (Playwright + Maestro)
   # ──────────────────────────────────────────────────────────────
 
+  # Rail #2 — test-first: claude-sonnet-4-6 (tool-use loop), max_turns:20,
+  # imperative prompt (YOUR ONLY JOB IS TO INVOKE THE WRITE TOOL), no output_format.
+  # DeepSeek does NOT reliably call Write on the first pass — Claude required here.
   - id: test-first
     depends_on: [plane-tickets]
     provider: claude
     context: fresh
-    model: deepseek-v4-pro
+    model: claude-sonnet-4-6
+    max_turns: 20
     prompt: |
-      Write Playwright tests (and Maestro YAML if iOS-specific) BEFORE
-      any implementation, against the acceptance criteria from the plan.
+      Write Playwright tests BEFORE any implementation, against the
+      acceptance criteria from the plan.
 
-      For each Plane ticket from $plane-tickets.output, generate:
-        - tests/e2e/<slug>-<seq>.spec.ts — Playwright test(s) that
-          assert the acceptance criteria. They MUST fail right now
-          because nothing is implemented.
-        - .maestro/<seq>-<slug>.yaml if iOS-specific behaviour is in scope.
+      ## YOUR ONLY JOB IS TO INVOKE THE WRITE TOOL.
 
-      Run `bun x playwright test --project=iphone-15` and confirm the new
-      tests are RED. If any are green or skip, you've written the wrong
-      thing — re-do.
+      For each ticket in the plan, call the Write tool with path
+      `tests/e2e/<slug>-<seq>.spec.ts` and content that asserts the
+      acceptance criteria. Tests MUST fail right now because nothing is
+      implemented yet.
 
-      Output the list of created test files.
+      Do NOT skip Writing because "tests already exist" — they don't.
+      Do NOT respond with a JSON summary instead of doing the work.
+      Do NOT abbreviate the spec content. Each Write call should produce
+      a complete, runnable Playwright test file.
+
+      After all Writes, run `bun x playwright test --project=iphone-15
+      tests/e2e/<your-files>` and confirm RED. If green/skipped, fix.
+
+      Print a final line: `DONE: <N> spec files written` so the gate can verify.
+      The next node (gate-test-first) WILL fail the workflow if 0 files
+      appear in tests/e2e/.
+
+      Hard cap 20 turns.
+
+  # Rail #3 — fail fast if test-first didn't actually write specs to disk.
+  # Saves ~95min of implement thrashing on an empty NEW_TESTS variable.
+  - id: gate-test-first
+    depends_on: [test-first]
+    bash: |
+      set +e
+      NEW=$(git ls-files --others --exclude-standard tests/e2e | grep '\.spec\.ts$' | wc -l)
+      if [[ "$NEW" -eq 0 ]]; then
+        # also check newly-added on-branch case (less common, defensive)
+        NEW=$(git diff --name-only --diff-filter=A origin/main...HEAD -- 'tests/e2e/*.spec.ts' 2>/dev/null | wc -l)
+      fi
+      if [[ "$NEW" -eq 0 ]]; then
+        echo "✗ test-first wrote 0 spec files — halting before implement burns time/tokens" >&2
+        exit 5
+      fi
+      echo "test-first OK: $NEW new spec file(s) on disk"
 
   # ──────────────────────────────────────────────────────────────
   # PHASE 8 — IMPLEMENT (PIV loop until tests pass)
   # ──────────────────────────────────────────────────────────────
 
+  # Rail #4 — implement: claude-sonnet-4-6 (tool-use loop), max_turns:60,
+  # bail-on-empty NEW_TESTS at top (defence in depth behind gate-test-first).
   - id: implement
-    depends_on: [test-first]
+    depends_on: [gate-test-first]
     provider: claude
     context: fresh
-    model: deepseek-v4-pro
+    model: claude-sonnet-4-6
+    max_turns: 60
     prompt: |
       Implement the feature against the failing tests.
+
+      ## SAFETY RAIL — bail if no new tests were added (defence in depth)
+      Run this first. If empty, exit immediately with a non-zero status:
+        NEW_TESTS=$(git ls-files --others --exclude-standard tests/e2e | grep '\.spec\.ts$' | tr '\n' ' ')
+        if [[ -z "$NEW_TESTS" ]]; then
+          NEW_TESTS=$(git diff --name-only --diff-filter=A origin/main...HEAD -- 'tests/e2e/*.spec.ts' | tr '\n' ' ')
+        fi
+        if [[ -z "$NEW_TESTS" ]]; then
+          echo "✗ no new tests — refusing to run implement against full suite" >&2
+          exit 5
+        fi
+      Do NOT proceed without NEW_TESTS being a non-empty list.
 
       ## CONTEXT EFFICIENCY (CRITICAL — token discipline)
       You are running in a sub-agent context. To minimise tokens:
@@ -888,10 +939,13 @@ nodes:
         fi
       fi
 
-      # 4. New feature tests — added on this branch
-      NEW_TESTS=$(git ls-files --others --exclude-standard 'tests/e2e/**/*.spec.ts' 'tests/features/**/*.spec.ts' 2>/dev/null | tr '\n' ' ')
+      # 4. New feature tests — added on this branch.
+      # Rail #5: git pathspec does NOT expand `**` by default. Use plain
+      # directory pathspecs and grep-filter to .spec.ts. Attempt 7 hit
+      # this — the buggy glob returned empty even with 5 specs on disk.
+      NEW_TESTS=$(git ls-files --others --exclude-standard tests/e2e tests/features 2>/dev/null | grep '\.spec\.ts$' | tr '\n' ' ')
       if [[ -z "$NEW_TESTS" ]]; then
-        NEW_TESTS=$(git diff --name-only --diff-filter=A origin/main...HEAD -- 'tests/**/*.spec.ts' 2>/dev/null | tr '\n' ' ')
+        NEW_TESTS=$(git diff --name-only --diff-filter=A origin/main...HEAD -- tests/ 2>/dev/null | grep '\.spec\.ts$' | tr '\n' ' ')
       fi
       if [[ -n "$NEW_TESTS" ]]; then
         echo "feature: $NEW_TESTS"
@@ -958,44 +1012,65 @@ nodes:
       bash .archon/scripts/wait-for-approval.sh pr \
         "Final review verdict: $VERDICT. Test suite green. Approve to open PR."
 
+  # Rail #6 — open-pr is now a deterministic bash node.
+  # Was AI (DeepSeek-Flash) which hallucinated fake pr_url under output_format.
+  # Now: branch, commit, push, gh pr create. No AI in the path = no hallucination.
+  #
+  # Notes:
+  #  - set +e (NOT -e). `git diff --cached --quiet` exits 1 when diff exists,
+  #    which kills `set -e` scripts. Manual exit checks below.
+  #  - Harness wraps long-field interpolations in literal single quotes
+  #    (Bug 24). Strip with ${VAR//\'/}. Also strip § from PRD section.
   - id: open-pr
     depends_on: [gate-pr]
-    provider: claude
-    context: fresh
-    model: deepseek-v4-flash
-    prompt: |
-      Open the pull request for this feature using the Bash tool.
+    bash: |
+      set +e
+      SLUG_RAW="$prd-extend.output.slug"
+      SECTION_RAW="$prd-extend.output.prd_section"
+      SLUG="${SLUG_RAW//\'/}"
+      SECTION="${SECTION_RAW//\'/}"
+      SECTION="${SECTION#§}"
+      if [[ -z "$SLUG" ]]; then
+        echo "✗ no slug from prd-extend" >&2
+        exit 6
+      fi
+      BRANCH="archon/${SLUG}"
 
-      Inputs (read-only — these are safe alphanumeric/short fields):
-        - slug:    $prd-extend.output.slug
-        - section: $prd-extend.output.prd_section
+      git checkout -b "$BRANCH" 2>/dev/null || git checkout "$BRANCH"
+      [[ $? -ne 0 ]] && { echo "✗ branch checkout failed" >&2; exit 7; }
+      git add -A
+      if git diff --cached --quiet; then
+        echo "✗ no staged changes — implement produced no diff" >&2
+        exit 8
+      fi
 
-      Long fields (PR title, PR body, commit message) live in files —
-      read these and pass them to git/gh via heredoc to avoid any
-      shell quoting issues. NEVER interpolate long text via bash
-      string substitution (bug 24 — special chars break the harness
-      substitution mechanism).
+      TITLE_RAW=$(head -1 "docs/architecture/${SLUG}.md" 2>/dev/null | sed 's/^#* *//' | head -c 70)
+      [[ -z "$TITLE_RAW" ]] && TITLE_RAW="archon: ${SLUG}"
 
-      Steps:
-      1. Branch: `git checkout -b archon/<slug>`
-      2. Stage everything: `git add -A`
-      3. Read the plan at docs/architecture/<slug>.md and use its
-         first H1/H2 for a short PR title (≤ 70 chars).
-      4. Build the commit message body in a temp file:
-         - Line 1: short title
-         - PRD: <section>
-         - Plan link: docs/architecture/<slug>.md
-         - Final-review concerns addressed (read from final-review)
-         - Co-Authored-By: Pandomagic Harness <archon@beyondpandora.com>
-      5. `git commit -F <tmpfile>`
-      6. `git push -u origin archon/<slug>`
-      7. `gh pr create --base main --head archon/<slug> --title "<title>" --body-file <tmpfile>`
+      COMMIT_MSG_FILE=$(mktemp)
+      {
+        echo "$TITLE_RAW"
+        echo
+        echo "PRD: §${SECTION}"
+        echo "Plan: docs/architecture/${SLUG}.md"
+        echo
+        echo "Generated by Pandomagic harness — see workflow log on CT 111."
+        echo
+        echo "Co-Authored-By: Pandomagic Harness <archon@beyondpandora.com>"
+      } > "$COMMIT_MSG_FILE"
 
-      Output JSON: { "branch": "<branch>", "pr_url": "<url>", "pr_number": <int> }
-    output_format:
-      type: object
-      properties:
-        branch:    { type: string }
-        pr_url:    { type: string }
-        pr_number: { type: integer }
-      required: [branch, pr_url, pr_number]
+      git commit -F "$COMMIT_MSG_FILE" || { echo "✗ git commit failed" >&2; exit 9; }
+      git push -u origin "$BRANCH" || { echo "✗ git push failed" >&2; exit 10; }
+
+      GH_OUT=$(gh pr create --base main --head "$BRANCH" \
+        --title "$TITLE_RAW" --body-file "$COMMIT_MSG_FILE" 2>&1)
+      PR_URL=$(echo "$GH_OUT" | grep -oE 'https://github.com/[^ ]+/pull/[0-9]+' | head -1)
+
+      if [[ -z "$PR_URL" ]]; then
+        echo "✗ gh pr create did not return a URL. Output was:" >&2
+        echo "$GH_OUT" >&2
+        exit 11
+      fi
+      echo "PR opened: $PR_URL"
+      rm -f "$COMMIT_MSG_FILE"
+      exit 0
