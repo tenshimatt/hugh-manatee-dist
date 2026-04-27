@@ -9,7 +9,6 @@
 <meta name="theme-color" content="#080d17" media="(prefers-color-scheme: dark)">
 <style>
   :root {
-    /* Brand */
     --sky: #61a5c2;
     --sky-600: #4a8fae;
     --sky-50: #eaf4f9;
@@ -20,7 +19,6 @@
     --gold-600: #eaa249;
     --gold-50: #fff4e2;
 
-    /* Light theme — matches sovrein.ai */
     --background: #dde4ed;
     --surface: #ffffff;
     --surface-alt: #d3dbe4;
@@ -46,11 +44,9 @@
     --body: #cdd5e2;
     --muted: #7f8ba1;
     --muted-strong: #b1bbcc;
-
     --sky-50: #0f2535;
     --teal-50: #0e2a22;
     --gold-50: #3a2a14;
-
     color-scheme: dark;
   }
 
@@ -67,7 +63,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Subtle aurora behind the header */
   body::before {
     content: '';
     position: fixed;
@@ -145,12 +140,6 @@
   html.dark .theme-toggle .icon-sun { display: block; }
   html.dark .theme-toggle .icon-moon { display: none; }
 
-  .meta {
-    color: var(--muted);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-  }
-
   .search {
     margin: 0 0 36px;
     position: relative;
@@ -209,18 +198,19 @@
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
   }
-  /* Per-section accent rotation: sky → teal → gold → sky → ... */
   section:nth-child(4n+3) > h2 { color: var(--teal-600); }
   section:nth-child(4n+4) > h2 { color: var(--gold-600); }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px;
   }
 
   a.card {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     background: var(--surface);
     border: 1px solid var(--border);
     padding: 14px 16px;
@@ -232,6 +222,7 @@
       transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
       border-color 200ms ease;
+    min-height: 68px;
   }
   a.card:hover {
     transform: translateY(-2px);
@@ -247,17 +238,57 @@
   }
   a.card:active { transform: translateY(0); }
 
-  .card .name {
+  /* Logo container — square, rounded, holds either an <img> logo or an inline Lucide SVG */
+  .logo {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--surface-alt);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6px;
+    display: block;
+  }
+  .logo svg {
+    width: 22px;
+    height: 22px;
+  }
+  /* Tinted icon variants */
+  .logo.tone-sky  { background: var(--sky-50);  color: var(--sky-600);  }
+  .logo.tone-teal { background: var(--teal-50); color: var(--teal-600); }
+  .logo.tone-gold { background: var(--gold-50); color: var(--gold-600); }
+
+  /* Light-mode icon contrast: on a few logos with white interiors, the white panel
+     vanishes against a light background. A subtle inset ring helps. */
+  html:not(.dark) .logo {
+    box-shadow: inset 0 0 0 1px rgba(11, 20, 36, 0.05);
+  }
+
+  .content {
+    min-width: 0;
+    flex: 1;
+    line-height: 1.35;
+  }
+  .content .name {
     font-weight: 600;
     font-size: 14px;
     letter-spacing: -0.01em;
     color: var(--foreground);
   }
-  .card .desc {
+  .content .desc {
     color: var(--muted);
     font-size: 12px;
-    margin-top: 4px;
-    line-height: 1.45;
+    margin-top: 3px;
+    line-height: 1.4;
   }
 
   .hidden { display: none !important; }
@@ -291,13 +322,11 @@
     background: var(--teal);
   }
 
-  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     a.card { transition: none; }
     a.card:hover { transform: none; }
   }
 
-  /* Mobile */
   @media (max-width: 640px) {
     .container { padding: 32px 20px 64px; }
     header { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -308,7 +337,6 @@
   }
 </style>
 <script>
-  // Pre-hydration theme apply, prevents FOUC
   (function() {
     try {
       var t = localStorage.getItem('go-theme');
@@ -340,93 +368,246 @@
 <section data-group="Dashboards">
   <h2>Dashboards</h2>
   <div class="grid">
-    <a class="card" href="https://portal.beyondpandora.com"><div class="name">Hermes Portal</div><div class="desc">Laptop / GPU / services health</div></a>
-    <a class="card" href="https://labs.beyondpandora.com"><div class="name">Sovrein Labs</div><div class="desc">Project launchpad (Archon, JWM, &hellip;)</div></a>
-    <a class="card" href="https://automagic.beyondpandora.com"><div class="name">Automagic Console</div><div class="desc">PLAUD &rarr; n8n &rarr; Plane pipeline</div></a>
-    <a class="card" href="http://10.90.10.19:8888"><div class="name">Jake Portal (LAN)</div><div class="desc">No-auth LAN dashboard</div></a>
+    <a class="card" href="https://portal.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+      <div class="content"><div class="name">Hermes Portal</div><div class="desc">Laptop / GPU / services health</div></div>
+    </a>
+    <a class="card" href="https://labs.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></span>
+      <div class="content"><div class="name">Sovrein Labs</div><div class="desc">Project launchpad (Archon, JWM, &hellip;)</div></div>
+    </a>
+    <a class="card" href="https://automagic.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M21 11V8a2 2 0 0 0-2-2h-6"/><path d="m15 9-3-3 3-3"/><path d="M3 13v3a2 2 0 0 0 2 2h6"/><path d="m9 21 3-3-3-3"/></svg></span>
+      <div class="content"><div class="name">Automagic Console</div><div class="desc">PLAUD &rarr; n8n &rarr; Plane pipeline</div></div>
+    </a>
+    <a class="card" href="http://10.90.10.19:8888">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
+      <div class="content"><div class="name">Jake Portal (LAN)</div><div class="desc">No-auth LAN dashboard</div></div>
+    </a>
   </div>
 </section>
 
 <section data-group="Projects &amp; AI">
   <h2>Projects &amp; AI</h2>
   <div class="grid">
-    <a class="card" href="https://archon.beyondpandora.com"><div class="name">Archon</div><div class="desc">RAG + task management</div></a>
-    <a class="card" href="https://openwebui.beyondpandora.com"><div class="name">Open WebUI</div><div class="desc">LLM chat</div></a>
-    <a class="card" href="https://litellm.beyondpandora.com"><div class="name">LiteLLM</div><div class="desc">Model gateway</div></a>
-    <a class="card" href="https://flowise.beyondpandora.com"><div class="name">Flowise</div><div class="desc">LLM flow builder</div></a>
-    <a class="card" href="https://jupyter.beyondpandora.com"><div class="name">Jupyter</div><div class="desc">Notebooks + data work</div></a>
-    <a class="card" href="https://jwm-demo.beyondpandora.com"><div class="name">JWM Demo</div><div class="desc">Sovrein customer project</div></a>
-    <a class="card" href="https://jwm-erp.beyondpandora.com"><div class="name">JWM ERPNext</div><div class="desc">Frappe backend (admin)</div></a>
-    <a class="card" href="https://jwm-ai.beyondpandora.com"><div class="name">JWM AI</div><div class="desc">JWM demo AI tooling</div></a>
+    <a class="card" href="https://archon.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
+      <div class="content"><div class="name">Archon</div><div class="desc">RAG + task management</div></div>
+    </a>
+    <a class="card" href="https://openwebui.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/open-webui.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Open WebUI</div><div class="desc">LLM chat</div></div>
+    </a>
+    <a class="card" href="https://litellm.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg></span>
+      <div class="content"><div class="name">LiteLLM</div><div class="desc">Model gateway</div></div>
+    </a>
+    <a class="card" href="https://flowise.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/flowise.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Flowise</div><div class="desc">LLM flow builder</div></div>
+    </a>
+    <a class="card" href="https://jupyter.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jupyter.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Jupyter</div><div class="desc">Notebooks + data work</div></div>
+    </a>
+    <a class="card" href="https://jwm-demo.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></span>
+      <div class="content"><div class="name">JWM Demo</div><div class="desc">Sovrein customer project</div></div>
+    </a>
+    <a class="card" href="https://jwm-erp.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect x="2" y="6" width="20" height="14" rx="2"/></svg></span>
+      <div class="content"><div class="name">JWM ERPNext</div><div class="desc">Frappe backend (admin)</div></div>
+    </a>
+    <a class="card" href="https://jwm-ai.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg></span>
+      <div class="content"><div class="name">JWM AI</div><div class="desc">JWM demo AI tooling</div></div>
+    </a>
   </div>
 </section>
 
 <section data-group="Apps">
   <h2>Apps</h2>
   <div class="grid">
-    <a class="card" href="https://supercloud.beyondpandora.com"><div class="name">NextCloud (supercloud)</div><div class="desc">Primary NC instance</div></a>
-    <a class="card" href="https://kumo.beyondpandora.com"><div class="name">NextCloud (kumo)</div><div class="desc">Secondary NC instance</div></a>
-    <a class="card" href="https://office.beyondpandora.com"><div class="name">Collabora Office</div><div class="desc">Online docs editor</div></a>
-    <a class="card" href="https://immich.beyondpandora.com"><div class="name">Immich</div><div class="desc">Self-hosted photos</div></a>
-    <a class="card" href="https://paperless.beyondpandora.com"><div class="name">Paperless-ngx</div><div class="desc">Document archive</div></a>
-    <a class="card" href="https://plane.beyondpandora.com"><div class="name">Plane</div><div class="desc">Project management</div></a>
-    <a class="card" href="https://bookstack.beyondpandora.com"><div class="name">BookStack</div><div class="desc">Wiki / docs</div></a>
-    <a class="card" href="https://documenso.beyondpandora.com"><div class="name">Documenso</div><div class="desc">E-sign</div></a>
-    <a class="card" href="https://excalidraw.beyondpandora.com"><div class="name">Excalidraw</div><div class="desc">Whiteboard</div></a>
-    <a class="card" href="https://obsidian.beyondpandora.com"><div class="name">Obsidian Sync</div><div class="desc">Self-hosted LiveSync</div></a>
-    <a class="card" href="https://limesurvey.beyondpandora.com"><div class="name">LimeSurvey</div><div class="desc">Surveys</div></a>
-    <a class="card" href="https://git.beyondpandora.com"><div class="name">Gitea</div><div class="desc">Self-hosted git</div></a>
+    <a class="card" href="https://supercloud.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">NextCloud (supercloud)</div><div class="desc">Primary NC instance</div></div>
+    </a>
+    <a class="card" href="https://kumo.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">NextCloud (kumo)</div><div class="desc">Secondary NC instance</div></div>
+    </a>
+    <a class="card" href="https://office.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/collabora-online.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Collabora Office</div><div class="desc">Online docs editor</div></div>
+    </a>
+    <a class="card" href="https://immich.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/immich.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Immich</div><div class="desc">Self-hosted photos</div></div>
+    </a>
+    <a class="card" href="https://paperless.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/paperless-ngx.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Paperless-ngx</div><div class="desc">Document archive</div></div>
+    </a>
+    <a class="card" href="https://plane.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plane.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Plane</div><div class="desc">Project management</div></div>
+    </a>
+    <a class="card" href="https://bookstack.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/bookstack.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">BookStack</div><div class="desc">Wiki / docs</div></div>
+    </a>
+    <a class="card" href="https://documenso.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/documenso.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Documenso</div><div class="desc">E-sign</div></div>
+    </a>
+    <a class="card" href="https://excalidraw.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/excalidraw.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Excalidraw</div><div class="desc">Whiteboard</div></div>
+    </a>
+    <a class="card" href="https://obsidian.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/obsidian.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Obsidian Sync</div><div class="desc">Self-hosted LiveSync</div></div>
+    </a>
+    <a class="card" href="https://limesurvey.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/limesurvey.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">LimeSurvey</div><div class="desc">Surveys</div></div>
+    </a>
+    <a class="card" href="https://git.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gitea.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Gitea</div><div class="desc">Self-hosted git</div></div>
+    </a>
   </div>
 </section>
 
 <section data-group="Automation">
   <h2>Automation</h2>
   <div class="grid">
-    <a class="card" href="https://n8n.beyondpandora.com"><div class="name">n8n (core)</div><div class="desc">Main automations</div></a>
-    <a class="card" href="https://n8n-ops.beyondpandora.com"><div class="name">n8n Ops</div><div class="desc">Ops automations</div></a>
-    <a class="card" href="https://n8nsamco.beyondpandora.com"><div class="name">n8n SamCo</div><div class="desc">Client workflows</div></a>
-    <a class="card" href="https://n8nsuperluxe.beyondpandora.com"><div class="name">n8n Superluxe</div><div class="desc">Client workflows</div></a>
-    <a class="card" href="https://n8nsovrein.beyondpandora.com"><div class="name">n8n Sovrein</div><div class="desc">Sovrein workflows</div></a>
+    <a class="card" href="https://n8n.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">n8n (core)</div><div class="desc">Main automations</div></div>
+    </a>
+    <a class="card" href="https://n8n-ops.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">n8n Ops</div><div class="desc">Ops automations</div></div>
+    </a>
+    <a class="card" href="https://n8nsamco.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">n8n SamCo</div><div class="desc">Client workflows</div></div>
+    </a>
+    <a class="card" href="https://n8nsuperluxe.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">n8n Superluxe</div><div class="desc">Client workflows</div></div>
+    </a>
+    <a class="card" href="https://n8nsovrein.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">n8n Sovrein</div><div class="desc">Sovrein workflows</div></div>
+    </a>
   </div>
 </section>
 
 <section data-group="Media">
   <h2>Media</h2>
   <div class="grid">
-    <a class="card" href="https://radarr.beyondpandora.com"><div class="name">Radarr</div><div class="desc">Movies</div></a>
-    <a class="card" href="https://sonarr.beyondpandora.com"><div class="name">Sonarr</div><div class="desc">TV</div></a>
-    <a class="card" href="https://prowlarr.beyondpandora.com"><div class="name">Prowlarr</div><div class="desc">Indexer</div></a>
-    <a class="card" href="https://sabnzbd.beyondpandora.com"><div class="name">SABnzbd</div><div class="desc">Usenet</div></a>
-    <a class="card" href="https://overseerr.beyondpandora.com"><div class="name">Overseerr</div><div class="desc">Requests</div></a>
-    <a class="card" href="https://tautulli.beyondpandora.com"><div class="name">Tautulli</div><div class="desc">Plex stats</div></a>
+    <a class="card" href="https://radarr.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/radarr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Radarr</div><div class="desc">Movies</div></div>
+    </a>
+    <a class="card" href="https://sonarr.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/sonarr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Sonarr</div><div class="desc">TV</div></div>
+    </a>
+    <a class="card" href="https://prowlarr.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prowlarr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Prowlarr</div><div class="desc">Indexer</div></div>
+    </a>
+    <a class="card" href="https://sabnzbd.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/sabnzbd.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">SABnzbd</div><div class="desc">Usenet</div></div>
+    </a>
+    <a class="card" href="https://overseerr.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/overseerr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Overseerr</div><div class="desc">Requests</div></div>
+    </a>
+    <a class="card" href="https://tautulli.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/tautulli.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Tautulli</div><div class="desc">Plex stats</div></div>
+    </a>
   </div>
 </section>
 
 <section data-group="Search &amp; Tools">
   <h2>Search &amp; Tools</h2>
   <div class="grid">
-    <a class="card" href="https://search.beyondpandora.com"><div class="name">SearXNG</div><div class="desc">Private metasearch</div></a>
-    <a class="card" href="https://start.beyondpandora.com"><div class="name">Start Page</div><div class="desc">Browser homepage (SearXNG alias)</div></a>
-    <a class="card" href="https://webcheck.beyondpandora.com"><div class="name">Web-Check</div><div class="desc">Domain OSINT</div></a>
-    <a class="card" href="https://pdf.beyondpandora.com"><div class="name">PDF Tools</div><div class="desc">Stirling PDF</div></a>
-    <a class="card" href="https://alpine-it.beyondpandora.com"><div class="name">IT Tools</div><div class="desc">Alpine IT-Tools</div></a>
+    <a class="card" href="https://search.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/searxng.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">SearXNG</div><div class="desc">Private metasearch</div></div>
+    </a>
+    <a class="card" href="https://start.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/searxng.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Start Page</div><div class="desc">Browser homepage (SearXNG alias)</div></div>
+    </a>
+    <a class="card" href="https://webcheck.beyondpandora.com">
+      <span class="logo tone-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
+      <div class="content"><div class="name">Web-Check</div><div class="desc">Domain OSINT</div></div>
+    </a>
+    <a class="card" href="https://pdf.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/stirling-pdf.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">PDF Tools</div><div class="desc">Stirling PDF</div></div>
+    </a>
+    <a class="card" href="https://alpine-it.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/it-tools.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">IT Tools</div><div class="desc">Alpine IT-Tools</div></div>
+    </a>
   </div>
 </section>
 
 <section data-group="Infrastructure">
   <h2>Infrastructure</h2>
   <div class="grid">
-    <a class="card" href="https://pve.beyondpandora.com"><div class="name">Proxmox VE</div><div class="desc">Hypervisor</div></a>
-    <a class="card" href="https://pbs.beyondpandora.com"><div class="name">Proxmox Backup</div><div class="desc">PBS</div></a>
-    <a class="card" href="https://traefik.beyondpandora.com"><div class="name">Traefik</div><div class="desc">Reverse proxy dashboard</div></a>
-    <a class="card" href="https://adguard.beyondpandora.com"><div class="name">AdGuard Home</div><div class="desc">Primary DNS filter</div></a>
-    <a class="card" href="https://adguard-2.beyondpandora.com"><div class="name">AdGuard HA</div><div class="desc">Secondary DNS filter</div></a>
-    <a class="card" href="https://router.beyondpandora.com"><div class="name">UniFi Gateway</div><div class="desc">Router / WireGuard</div></a>
-    <a class="card" href="https://grafana.beyondpandora.com"><div class="name">Grafana</div><div class="desc">Metrics</div></a>
-    <a class="card" href="https://prometheus.beyondpandora.com"><div class="name">Prometheus</div><div class="desc">Metrics DB</div></a>
-    <a class="card" href="https://kuma.beyondpandora.com"><div class="name">Uptime Kuma</div><div class="desc">Uptime monitor</div></a>
-    <a class="card" href="https://signin.beyondpandora.com"><div class="name">Authentik</div><div class="desc">Identity / SSO</div></a>
-    <a class="card" href="https://wazuh.beyondpandora.com"><div class="name">Wazuh</div><div class="desc">Security monitoring</div></a>
+    <a class="card" href="https://pve.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Proxmox VE</div><div class="desc">Hypervisor</div></div>
+    </a>
+    <a class="card" href="https://pbs.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox-backup-server.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Proxmox Backup</div><div class="desc">PBS</div></div>
+    </a>
+    <a class="card" href="https://traefik.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/traefik.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Traefik</div><div class="desc">Reverse proxy dashboard</div></div>
+    </a>
+    <a class="card" href="https://adguard.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/adguard-home.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">AdGuard Home</div><div class="desc">Primary DNS filter</div></div>
+    </a>
+    <a class="card" href="https://adguard-2.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/adguard-home.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">AdGuard HA</div><div class="desc">Secondary DNS filter</div></div>
+    </a>
+    <a class="card" href="https://router.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/unifi.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">UniFi Gateway</div><div class="desc">Router / WireGuard</div></div>
+    </a>
+    <a class="card" href="https://grafana.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/grafana.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Grafana</div><div class="desc">Metrics</div></div>
+    </a>
+    <a class="card" href="https://prometheus.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prometheus.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Prometheus</div><div class="desc">Metrics DB</div></div>
+    </a>
+    <a class="card" href="https://kuma.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/uptime-kuma.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Uptime Kuma</div><div class="desc">Uptime monitor</div></div>
+    </a>
+    <a class="card" href="https://signin.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Authentik</div><div class="desc">Identity / SSO</div></div>
+    </a>
+    <a class="card" href="https://wazuh.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wazuh.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+      <div class="content"><div class="name">Wazuh</div><div class="desc">Security monitoring</div></div>
+    </a>
   </div>
 </section>
 

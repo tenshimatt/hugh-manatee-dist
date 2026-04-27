@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Pandora - Infrastructure Portal</title>
+    <style>
+        :root { --bg:#0a0e17; --card-bg:#111827; --border:#1e293b; --text:#e2e8f0; --text-dim:#94a3b8; --accent:#38bdf8; --accent-dim:#0284c7; --green:#22c55e; --red:#ef4444; --yellow:#eab308; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); padding:20px; max-width:1400px; margin:0 auto; }
+        header { text-align:center; padding:30px 0 20px; border-bottom:2px solid var(--accent-dim); margin-bottom:30px; }
+        header h1 { font-size:2rem; background:linear-gradient(135deg,var(--accent),#818cf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+        header p { color:var(--text-dim); font-size:0.9rem; }
+        .search-bar { width:100%; padding:12px 20px; background:var(--card-bg); border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:1rem; margin-bottom:20px; outline:none; }
+        .search-bar:focus { border-color:var(--accent); }
+        .search-bar::placeholder { color:var(--text-dim); }
+        .monitoring-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:30px; }
+        .monitoring-card { background:var(--card-bg); border:1px solid var(--border); border-radius:10px; padding:16px; text-decoration:none; color:var(--text); transition:all 0.2s; display:flex; align-items:center; gap:12px; cursor:pointer; }
+        .monitoring-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 12px rgba(56,189,248,0.1); }
+        .monitoring-card .icon { font-size:1.8rem; width:45px; text-align:center; }
+        .monitoring-card .info h3 { font-size:1rem; margin-bottom:2px; }
+        .monitoring-card .info p { font-size:0.75rem; color:var(--text-dim); }
+        .category { margin-bottom:25px; }
+        .category h2 { font-size:1.1rem; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:15px; }
+        .services-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+        .service-card { background:var(--card-bg); border:1px solid var(--border); border-radius:8px; padding:14px; text-decoration:none; color:var(--text); transition:all 0.2s; display:flex; flex-direction:column; gap:4px; overflow:hidden; cursor:pointer; }
+        .service-card:hover { border-color:var(--accent); transform:translateY(-1px); }
+        .service-card .name { font-weight:600; font-size:0.95rem; }
+        .service-card .url { font-size:0.7rem; color:var(--text-dim); word-break:break-all; }
+        .service-card.down { opacity:0.42; border-color:#a33; position:relative; }
+        .service-card.down:hover { transform:none; border-color:#c44; }
+        .service-card.down::after { content:"DOWN"; position:absolute; top:6px; right:8px; font-size:0.6rem; font-weight:700; color:#f88; background:rgba(170,51,51,0.18); padding:2px 6px; border-radius:4px; letter-spacing:0.5px; }
+        .footer { text-align:center; padding:20px; color:var(--text-dim); font-size:0.75rem; border-top:1px solid var(--border); margin-top:20px; }
+    
+        /* Agent Status Bar */
+.ticket-tracker { background:var(--card-bg); border:1px solid var(--border); border-radius:10px; margin-bottom:20px; overflow:hidden; }
+.ticket-header { display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer; background:linear-gradient(135deg, var(--card-bg) 0%, #1e1b4b 100%); border-bottom:1px solid var(--border); user-select:none; }
+.ticket-header:hover { background:linear-gradient(135deg, #1e293b 0%, #1e1b4b 100%); }
+.ticket-list { max-height:600px; transition:max-height 0.3s ease, opacity 0.3s ease; opacity:1; }
+.ticket-list.collapsed { max-height:0; opacity:0; pointer-events:none; }
+.ticket-item { display:flex; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border); transition:background 0.2s; }
+.ticket-item:last-child { border-bottom:none; }
+.ticket-item:hover { background:rgba(56,189,248,0.05); }
+.ticket-bar { width:4px; min-height:80px; border-radius:2px; }
+.ticket-bar.urgent { background:var(--red); }
+.ticket-bar.medium { background:var(--yellow); }
+.ticket-body { flex:1; }
+.ticket-link { color:var(--accent); text-decoration:none; font-weight:600; font-size:0.95rem; display:block; margin-bottom:6px; }
+.ticket-link:hover { color:#7dd3fc; text-decoration:underline; }
+.ticket-tags { display:flex; gap:8px; margin-bottom:6px; font-size:0.8rem; }
+.tag { color:var(--text-dim); }
+.tag.type { background:var(--accent-dim); color:#fff; padding:2px 8px; border-radius:12px; font-size:0.7rem; text-transform:uppercase; }
+.ticket-desc { color:var(--text-dim); font-size:0.85rem; line-height:1.5; margin:0; }
+
+/* Top Navigation Buttons */
+.top-nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.monitoring-card { background:var(--card-bg); border:1px solid var(--border); border-radius:10px; padding:16px; min-width:180px; flex-shrink:0; text-decoration:none; color:var(--text); transition:all 0.2s; display:flex; align-items:center; gap:12px; cursor:pointer; }
+.monitoring-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 12px rgba(56,189,248,0.1); }
+
+    /* MacBook Widget */
+    .laptop-widget { background:var(--card-bg); border:1px solid var(--border); border-radius:10px; margin-bottom:20px; overflow:hidden; }
+    .widget-header { display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer; background:linear-gradient(135deg, var(--card-bg) 0%, #1e1b4b 100%); border-bottom:1px solid var(--border); user-select:none; }
+    .widget-header:hover { background:linear-gradient(135deg, #1e293b 0%, #1e1b4b 100%); }
+    .widget-body { max-height:400px; transition:max-height 0.3s ease, opacity 0.3s ease; opacity:1; padding:0; }
+    .widget-body.collapsed { max-height:0; opacity:0; pointer-events:none; }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; padding:16px; }
+    .stat-card { background:rgba(15,23,42,0.5); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; }
+    .stat-label { font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; margin-bottom:4px; }
+    .stat-value { font-size:1.1rem; font-weight:600; color:var(--accent); }
+    .last-update { padding:8px 16px; font-size:0.75rem; color:var(--text-dim); text-align:center; border-top:1px solid var(--border); }
+    .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+    .status-dot.green { background:#22c55e; box-shadow:0 0 8px rgba(34,197,94,0.5); }
+    .status-dot.red { background:#ef4444; }
+    .monitoring-bar { display:flex; flex-wrap:nowrap; gap:12px; margin-bottom:20px; overflow-x:auto; padding-bottom:4px; }
+    @media (max-width: 1200px) { .monitoring-bar { flex-wrap:wrap; } }
+.monitoring-bar{display:flex;flex-wrap:nowrap;gap:12px;margin-bottom:20px;overflow-x:auto;padding-bottom:8px;}.monitoring-bar::-webkit-scrollbar{height:6px;}.monitoring-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}.monitoring-card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px 18px;min-width:200px;flex:0 0 auto;text-decoration:none;color:var(--text);transition:all 0.2s;display:flex;align-items:center;gap:12px;cursor:pointer;}.monitoring-card:hover{border-color:var(--accent);transform:translateY(-2px);}.monitoring-icon{font-size:1.8rem;width:45px;text-align:center;flex-shrink:0;}.monitoring-info{flex:1;}.monitoring-info h3{font-size:1rem;margin-bottom:2px;color:var(--text);}.monitoring-info p{font-size:0.75rem;color:var(--text-dim);line-height:1.4;}@media(max-width:1100px){.monitoring-bar{flex-wrap:wrap;gap:10px;}.monitoring-card{flex:1 1 calc(33% - 10px);min-width:180px;}}.laptop-widget{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;overflow:hidden;} .laptop-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;background:linear-gradient(135deg,var(--card-bg) 0%,#1e1b4b 100%);border-bottom:1px solid var(--border);user-select:none;} .laptop-header:hover{background:linear-gradient(135deg,#1e293b 0%,#1e1b4b 100%);} .laptop-body{max-height:400px;opacity:1;transition:all 0.3s ease;padding:16px;} .laptop-body.collapsed{max-height:0;opacity:0;padding:0 16px;overflow:hidden;} .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;} .stat-card{background:rgba(15,23,42,0.5);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;transition:all 0.2s;} .stat-card:hover{border-color:var(--accent);transform:translateY(-1px);} .stat-label{font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.5px;} .stat-value{font-size:1.1rem;font-weight:600;color:var(--accent);} .stat-sub{font-size:0.65rem;color:var(--text-dim);margin-top:4px;letter-spacing:0.3px;} .stat-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:8px;overflow:hidden;} .stat-bar-fill{height:100%;background:var(--accent);transition:width 0.4s ease, background 0.3s;} .stat-bar-fill.warn{background:#eab308;} .stat-bar-fill.crit{background:#ef4444;} .stat-value.warn{color:#eab308;} .stat-value.crit{color:#ef4444;} .last-update{margin-top:12px;padding-top:10px;font-size:0.75rem;color:var(--text-dim);text-align:center;border-top:1px solid var(--border);} .status-dot.green{background:#22c55e!important;box-shadow:0 0 8px rgba(34,197,94,0.5);} .status-dot.red{background:#ef4444!important;box-shadow:0 0 8px rgba(239,68,68,0.5);}
+/* === Logo injection === */
+.service-card { display:flex; flex-direction:row; align-items:center; gap:10px; }
+.service-card .logo { flex:0 0 auto; width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.04); display:inline-flex; align-items:center; justify-content:center; overflow:hidden; }
+.service-card .logo img { width:100%; height:100%; object-fit:contain; padding:4px; display:block; }
+.service-card .logo svg { width:18px; height:18px; }
+.service-card .logo.tone-sky  { background:rgba(97,165,194,0.16); color:#61a5c2; }
+.service-card .logo.tone-teal { background:rgba(82,182,154,0.16); color:#52b69a; }
+.service-card .logo.tone-gold { background:rgba(255,191,105,0.18); color:#ffbf69; }
+.service-card .info { min-width:0; flex:1; display:flex; flex-direction:column; gap:2px; }
+.service-card .name { font-weight:600; font-size:0.95rem; }
+.service-card .url { font-size:0.7rem; color:var(--text-dim); word-break:break-all; }
+</style>
+</head>
+<body>
+    <header style="position:relative;">
+        <h1>Beyond Pandora - Infrastructure Portal</h1>
+        <p>Centralized access to all services &middot; 63 Traefik routes &middot; 17 Uptime Kuma monitors</p>
+        <button id="refresh-btn" onclick="triggerRefresh()" title="Trigger server-side refresh of all portal data" style="position:absolute;top:30px;right:0;padding:10px 18px;background:var(--accent-dim);color:#fff;border:1px solid var(--accent);border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;transition:all 0.2s;">🔄 Refresh Data</button>
+        <div id="refresh-status" style="position:absolute;top:74px;right:0;font-size:0.72rem;color:var(--text-dim);min-height:1em;"></div>
+    </header>
+
+    <!-- Quick Stats Widgets -->
+        <!-- MacBook Stats Widget -->
+    <div class="laptop-widget" id="laptop-widget" style="display:block;">
+        <div class="laptop-header" onclick="toggleLaptopWidget()">
+            <span style="font-size:1.3rem;font-weight:600;color:var(--accent);flex:1;">💻 Mac Laptop</span>
+            <span class="status-dot" id="laptop-dot" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
+            <span id="laptop-toggle" style="color:var(--text-dim);transition:transform 0.3s;font-size:0.8rem;">▼</span>
+        </div>
+        <div class="laptop-body" id="laptop-body">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">CPU Busy</div>
+                    <div class="stat-value" id="lp-cpu">--</div>
+                    <div class="stat-sub" id="lp-cpu-sub">load --</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" id="lp-cpu-bar" style="width:0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Memory Used</div>
+                    <div class="stat-value" id="lp-mem">--</div>
+                    <div class="stat-sub" id="lp-mem-sub">-- GB</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" id="lp-mem-bar" style="width:0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Mem Pressure</div>
+                    <div class="stat-value" id="lp-press">--</div>
+                    <div class="stat-sub" id="lp-press-sub">-- % free</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Swap + Compressed</div>
+                    <div class="stat-value" id="lp-swap">--</div>
+                    <div class="stat-sub" id="lp-swap-sub">swap --</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Disk Free</div>
+                    <div class="stat-value" id="lp-disk">--</div>
+                    <div class="stat-sub" id="lp-disk-sub">-- / -- GB</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" id="lp-disk-bar" style="width:0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Net In</div>
+                    <div class="stat-value" id="lp-net-in">--</div>
+                    <div class="stat-sub">kbps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Net Out</div>
+                    <div class="stat-value" id="lp-net-out">--</div>
+                    <div class="stat-sub">kbps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Power</div>
+                    <div class="stat-value" id="lp-pwr">--</div>
+                    <div class="stat-sub" id="lp-pwr-sub">-- %</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Temp</div>
+                    <div class="stat-value" id="lp-temp">--</div>
+                    <div class="stat-sub">battery skin</div>
+                    <div class="stat-bar"><div class="stat-bar-fill" id="lp-temp-bar" style="width:0%"></div></div>
+                </div>
+            </div>
+            <div class="last-update" id="lp-time">Waiting for Mac to report...</div>
+        </div>
+    </div>
+
+        <!-- GPU Meter Widget -->
+    <div class="laptop-widget" id="gpu-widget" style="display:block;">
+        <div class="laptop-header" onclick="toggleGpuWidget()">
+            <span style="font-size:1.3rem;font-weight:600;color:var(--accent);flex:1;">🟢 GPU Meter (RTX A4000 16GB) <span id="gpu-mode" style="font-size:0.7rem;color:var(--text-dim);margin-left:8px;">(60s poll)</span></span>
+            <button id="gpu-live-btn" onclick="event.stopPropagation(); toggleGpuLive();" style="background:#0d6efd;color:#fff;border:0;padding:4px 10px;border-radius:4px;font-size:0.75rem;cursor:pointer;margin-right:8px;">▶ Start 1s live</button>
+            <span class="status-dot green" id="gpu-dot" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
+            <span id="gpu-toggle" style="color:var(--text-dim);transition:transform 0.3s;font-size:0.8rem;">▼</span>
+        </div>
+        <div class="laptop-body" id="gpu-body">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Power Draw</div><div class="stat-value" id="gpu-watts">--</div></div>
+                <div class="stat-card"><div class="stat-label">Temp</div><div class="stat-value" id="gpu-temp">--</div></div>
+                <div class="stat-card"><div class="stat-label">GPU Util</div><div class="stat-value" id="gpu-util">--</div></div>
+                <div class="stat-card"><div class="stat-label">VRAM</div><div class="stat-value" id="gpu-mem">--</div></div>
+                <div class="stat-card"><div class="stat-label">Fan</div><div class="stat-value" id="gpu-fan">--</div></div>
+                <div class="stat-card"><div class="stat-label">Clock</div><div class="stat-value" id="gpu-clock">--</div></div>
+            </div>
+            <div id="gpu-models" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;font-size:0.8rem;"></div>
+            <div class="last-update" id="gpu-time">Updating...</div>
+        </div>
+    </div>
+
+        <!-- Proxmox Backup Status Widget -->
+    <div class="laptop-widget" id="bk-widget" style="display:block;">
+        <div class="laptop-header" onclick="toggleBackupWidget()">
+            <span style="font-size:1.3rem;font-weight:600;color:var(--accent);flex:1;">💾 Proxmox Backups</span>
+            <span class="status-dot" id="bk-dot" style="width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;"></span>
+            <span id="bk-toggle" style="color:var(--text-dim);transition:transform 0.3s;font-size:0.8rem;">▼</span>
+        </div>
+        <div class="laptop-body collapsed" id="bk-body">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Last Backup</div><div class="stat-value" id="bk-last">--</div></div>
+                <div class="stat-card"><div class="stat-label">Last Status</div><div class="stat-value" id="bk-status">--</div></div>
+                <div class="stat-card"><div class="stat-label">Duration</div><div class="stat-value" id="bk-dur">--</div></div>
+                <div class="stat-card"><div class="stat-label">VMs Covered</div><div class="stat-value" id="bk-vms">--</div></div>
+                <div class="stat-card"><div class="stat-label">Total Backups</div><div class="stat-value" id="bk-total">--</div></div>
+                <div class="stat-card"><div class="stat-label">Failures (7d)</div><div class="stat-value" id="bk-fail">--</div></div>
+                <div class="stat-card"><div class="stat-label">Storage</div><div class="stat-value" id="bk-store" style="font-size:0.9rem;">--</div></div>
+                <div class="stat-card"><div class="stat-label">Schedule</div><div class="stat-value" id="bk-sched" style="font-size:0.9rem;">--</div></div>
+            </div>
+            <div class="last-update" id="bk-time">Loading backup status...</div>
+        </div>
+    </div>
+
+
+
+
+        <!-- Quick Stats Widgets -->
+     <input type="text" class="search-bar" placeholder="Search services..." id="search" oninput="filterServices()">
+
+    
+    
+    <!-- Active Tickets Tracker (loaded dynamically) -->
+    <div class="ticket-tracker">
+        <div class="ticket-header" onclick="toggleTickets()">
+            <span style="font-size:1.2rem;">🎫</span>
+            <span style="flex:1;font-weight:600;color:var(--accent);" id="ticket-count">Active Tickets (loading...)</span>
+            <span id="ticket-icon" style="color:var(--text-dim);transition:transform 0.3s;">▼</span>
+        </div>
+        <div class="ticket-list" id="ticket-list">
+            <!-- Tickets loaded via JS from /api/tickets or active_tickets.json -->
+        </div>
+    </div>
+
+
+                    <!-- GPU Meter Widget -->
+    
+
+
+
+    <div class="category" data-category="Automation & AI">
+        <h2>⚡ Automation & AI</h2>
+        <div class="services-grid">
+            <a href="https://ai-gateway.beyondpandora.com" class="service-card" target="_blank" data-search="ai gateway ai-gateway.beyondpandora.com ">
+                <span class="name">AI Gateway</span>
+                <span class="url">ai-gateway.beyondpandora.com</span>
+            </a>
+            <a href="https://flowiseai.beyondpandora.com" class="service-card" target="_blank" data-search="flowise ai flowiseai.beyondpandora.com ">
+                <span class="name">Flowise AI</span>
+                <span class="url">flowiseai.beyondpandora.com</span>
+            </a>
+            <a href="https://komodo.beyondpandora.com" class="service-card" target="_blank" data-search="komodo komodo.beyondpandora.com ">
+                <span class="name">Komodo</span>
+                <span class="url">komodo.beyondpandora.com</span>
+            </a>
+            <a href="https://mongodb.beyondpandora.com" class="service-card" target="_blank" data-search="mongodb mongodb.beyondpandora.com ">
+                <span class="name">MongoDB</span>
+                <span class="url">mongodb.beyondpandora.com</span>
+            </a>
+            <a href="https://ollama.beyondpandora.com" class="service-card" target="_blank" data-search="ollama ollama.beyondpandora.com ">
+                <span class="name">Ollama</span>
+                <span class="url">ollama.beyondpandora.com</span>
+            </a>
+            <a href="https://openwebui.beyondpandora.com" class="service-card" target="_blank" data-search="openwebui openwebui.beyondpandora.com ">
+                <span class="name">OpenWebUI</span>
+                <span class="url">openwebui.beyondpandora.com</span>
+            </a>
+            <a href="https://n8n.beyondpandora.com" class="service-card" target="_blank" data-search="n8n n8n.beyondpandora.com ">
+                <span class="name">n8n</span>
+                <span class="url">n8n.beyondpandora.com</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="category" data-category="Apps & Projects">
+        <h2>📦 Apps & Projects</h2>
+        <div class="services-grid">
+            <a href="https://bookstack.beyondpandora.com" class="service-card" target="_blank" data-search="bookstack bookstack.beyondpandora.com ">
+                <span class="name">BookStack</span>
+                <span class="url">bookstack.beyondpandora.com</span>
+            </a>
+            <a href="https://code.beyondpandora.com" class="service-card" target="_blank" data-search="code code.beyondpandora.com ">
+                <span class="name">Code</span>
+                <span class="url">code.beyondpandora.com</span>
+            </a>
+            <a href="https://comfy.beyondpandora.com" class="service-card" target="_blank" data-search="comfy comfy.beyondpandora.com ">
+                <span class="name">Comfy</span>
+                <span class="url">comfy.beyondpandora.com</span>
+            </a>
+            <a href="https://documenso.beyondpandora.com" class="service-card" target="_blank" data-search="documenso documenso.beyondpandora.com ">
+                <span class="name">Documenso</span>
+                <span class="url">documenso.beyondpandora.com</span>
+            </a>
+            <a href="https://draw.beyondpandora.com" class="service-card" target="_blank" data-search="draw draw.beyondpandora.com ">
+                <span class="name">Draw</span>
+                <span class="url">draw.beyondpandora.com</span>
+            </a>
+            <a href="https://project.beyondpandora.com" class="service-card" target="_blank" data-search="project project.beyondpandora.com ">
+                <span class="name">Project</span>
+                <span class="url">project.beyondpandora.com</span>
+            </a>
+            <a href="https://search.beyondpandora.com" class="service-card" target="_blank" data-search="search search.beyondpandora.com ">
+                <span class="name">Search</span>
+                <span class="url">search.beyondpandora.com</span>
+            </a>
+            <a href="https://wiki.beyondpandora.com" class="service-card" target="_blank" data-search="wiki wiki.beyondpandora.com ">
+                <span class="name">Wiki</span>
+                <span class="url">wiki.beyondpandora.com</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="category" data-category="Media & Entertainment">
+        <h2>🎬 Media & Entertainment</h2>
+        <div class="services-grid">
+            <a href="https://immich.beyondpandora.com" class="service-card" target="_blank" data-search="immich immich.beyondpandora.com ">
+                <span class="name">Immich</span>
+                <span class="url">immich.beyondpandora.com</span>
+            </a>
+            <a href="https://kumo.beyondpandora.com" class="service-card" target="_blank" data-search="kumo kumo.beyondpandora.com ">
+                <span class="name">Kumo</span>
+                <span class="url">kumo.beyondpandora.com</span>
+            </a>
+            <a href="https://prowlarr.beyondpandora.com" class="service-card" target="_blank" data-search="prowlarr prowlarr.beyondpandora.com ">
+                <span class="name">Prowlarr</span>
+                <span class="url">prowlarr.beyondpandora.com</span>
+            </a>
+            <a href="https://radarr.beyondpandora.com" class="service-card" target="_blank" data-search="radarr radarr.beyondpandora.com ">
+                <span class="name">Radarr</span>
+                <span class="url">radarr.beyondpandora.com</span>
+            </a>
+            <a href="https://sabnzbd.beyondpandora.com" class="service-card" target="_blank" data-search="sabnzbd sabnzbd.beyondpandora.com ">
+                <span class="name">SABnzbd</span>
+                <span class="url">sabnzbd.beyondpandora.com</span>
+            </a>
+            <a href="https://sonarr.beyondpandora.com" class="service-card" target="_blank" data-search="sonarr sonarr.beyondpandora.com ">
+                <span class="name">Sonarr</span>
+                <span class="url">sonarr.beyondpandora.com</span>
+            </a>
+            <a href="https://stream.beyondpandora.com" class="service-card" target="_blank" data-search="stream stream.beyondpandora.com ">
+                <span class="name">Stream</span>
+                <span class="url">stream.beyondpandora.com</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="category" data-category="Websites">
+        <h2>🌐 Websites</h2>
+        <div class="services-grid">
+            <a href="https://portal.beyondpandora.com" class="service-card" target="_blank" data-search="portal portal.beyondpandora.com ">
+                <span class="name">Portal</span>
+                <span class="url">portal.beyondpandora.com</span>
+            </a>
+            <a href="https://rawgle.beyondpandora.com" class="service-card" target="_blank" data-search="rawgle rawgle.beyondpandora.com ">
+                <span class="name">Rawgle</span>
+                <span class="url">rawgle.beyondpandora.com</span>
+            </a>
+            <a href="https://signin.beyondpandora.com" class="service-card" target="_blank" data-search="signin signin.beyondpandora.com ">
+                <span class="name">Signin</span>
+                <span class="url">signin.beyondpandora.com</span>
+            </a>
+            <a href="https://supercrm.beyondpandora.com" class="service-card" target="_blank" data-search="supercrm supercrm.beyondpandora.com ">
+                <span class="name">SuperCRM</span>
+                <span class="url">supercrm.beyondpandora.com</span>
+            </a>
+            <a href="https://supercloud.beyondpandora.com" class="service-card" target="_blank" data-search="supercloud supercloud.beyondpandora.com ">
+                <span class="name">SuperCloud</span>
+                <span class="url">supercloud.beyondpandora.com</span>
+            </a>
+            <a href="https://superops.beyondpandora.com" class="service-card" target="_blank" data-search="superops superops.beyondpandora.com ">
+                <span class="name">SuperOps</span>
+                <span class="url">superops.beyondpandora.com</span>
+            </a>
+            <a href="https://wordpress-yld.beyondpandora.com" class="service-card" target="_blank" data-search="wordpress yld wordpress-yld.beyondpandora.com ">
+                <span class="name">WordPress YLD</span>
+                <span class="url">wordpress-yld.beyondpandora.com</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="category" data-category="n8n Instances">
+        <h2>🤖 n8n Instances</h2>
+        <div class="services-grid">
+            <a href="https://n8n-ops.beyondpandora.com" class="service-card" target="_blank" data-search="n8n ops n8n-ops.beyondpandora.com ">
+                <span class="name">n8n Ops</span>
+                <span class="url">n8n-ops.beyondpandora.com</span>
+            </a>
+            <a href="https://n8n-ops-mcp.beyondpandora.com" class="service-card" target="_blank" data-search="n8n ops mcp n8n-ops-mcp.beyondpandora.com ">
+                <span class="name">n8n Ops MCP</span>
+                <span class="url">n8n-ops-mcp.beyondpandora.com</span>
+            </a>
+            <a href="https://n8nsamco.beyondpandora.com" class="service-card" target="_blank" data-search="n8n samco n8nsamco.beyondpandora.com ">
+                <span class="name">n8n SAMCO</span>
+                <span class="url">n8nsamco.beyondpandora.com</span>
+            </a>
+            <a href="https://n8nsovrein.beyondpandora.com" class="service-card" target="_blank" data-search="n8n sovrein n8nsovrein.beyondpandora.com ">
+                <span class="name">n8n Sovrein</span>
+                <span class="url">n8nsovrein.beyondpandora.com</span>
+            </a>
+            <a href="https://n8nsuperluxe.beyondpandora.com" class="service-card" target="_blank" data-search="n8n superluxe n8nsuperluxe.beyondpandora.com ">
+                <span class="name">n8n Superluxe</span>
+                <span class="url">n8nsuperluxe.beyondpandora.com</span>
+            </a>
+            <a href="https://n8nyld.beyondpandora.com" class="service-card" target="_blank" data-search="n8n yld n8nyld.beyondpandora.com ">
+                <span class="name">n8n YLD</span>
+                <span class="url">n8nyld.beyondpandora.com</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="category" data-category="Cloud & Storage">
+        <h2>☁️ Cloud & Storage</h2>
+        <div class="services-grid">
+            <a href="https://crm.beyondpandora.com" class="service-card" target="_blank" data-search="crm crm.beyondpandora.com ">
+                <span class="name">CRM</span>
+                <span class="url">crm.beyondpandora.com</span>
+            </a>
+            <a href="https://cloudaio.beyondpandora.com" class="service-card" target="_blank" data-search="cloud ai cloudaio.beyondpandora.com ">
+                <span class="name">Cloud AI</span>
+                <span class="url">cloudaio.beyondpandora.com</span>
+            </a>
+            <a href="https://collabora.beyondpandora.com" class="service-card" target="_blank" data-search="collabora collabora.beyondpandora.com ">
+                <span class="name">Collabora</span>
+                <span class="url">collabora.beyondpandora.com</span>
+            </a>
+            <a href="https://supercloud.beyondpandora.com" class="service-card" target="_blank" data-search="supercloud nextcloud supercloud.beyondpandora.com ">
+                <span class="name">SuperCloud Nextcloud</span>
+                <span class="url">supercloud.beyondpandora.com</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        Beyond Pandora Infrastructure Portal &middot; Generated 2026-04-06 &middot; 63 Traefik routes
+    </div>
+    <script>
+// 1. Search Bar
+function filterServices() {
+    var q = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.service-card').forEach(function(card) {
+        card.style.display = card.dataset.search.includes(q) ? '' : 'none';
+    });
+    document.querySelectorAll('.category').forEach(function(cat) {
+        var anyVisible = false;
+        cat.querySelectorAll('.service-card').forEach(function(sc) {
+            if (sc.style.display !== 'none') anyVisible = true;
+        });
+        cat.style.display = anyVisible ? '' : 'none';
+    });
+}
+
+// 3. Active Tickets Tracker
+function toggleTickets() {
+    var list = document.getElementById('ticket-list');
+    var icon = document.getElementById('ticket-icon');
+    if (list.classList.contains('collapsed')) {
+        list.classList.remove('collapsed');
+        icon.textContent = '▼';
+    } else {
+        list.classList.add('collapsed');
+        icon.textContent = '▶';
+    }
+}
+function loadTickets() {
+    fetch('/active_tickets.json?_=' + Date.now())
+        .then(r => { if (!r.ok) throw new Error('Not found'); return r.json(); })
+        .then(tickets => {
+            document.getElementById('ticket-count').textContent = 'Active Tickets (' + tickets.length + ')';
+            document.getElementById('ticket-list').innerHTML = tickets.map(t => {
+                var colors = {'in_progress':'medium', 'todo':'urgent', 'done':'low'};
+                var icons = {'in_progress':'🔄', 'todo':'⏳', 'done':'✅'};
+                return '<div class="ticket-item">' +
+                    '<div class="ticket-bar ' + (colors[t.state] || 'medium') + '"></div>' +
+                    '<div class="ticket-body">' +
+                    '<a href="' + t.url + '" target="_blank" class="ticket-link">BEYON-' + t.seq + ': ' + t.name + '</a>' +
+                    '<div class="ticket-tags"><span class="tag" style="color:var(--text-dim);">' + (icons[t.state] || '❓') + ' ' + t.state + '</span></div>' +
+                    '<p class="ticket-desc">' + (t.desc || '') + '</p>' +
+                    '</div></div>';
+            }).join('');
+        }).catch(err => {
+            document.getElementById('ticket-count').textContent = 'Active Tickets (0)';
+        });
+}
+document.addEventListener('DOMContentLoaded', loadTickets);
+setInterval(loadTickets, 300000);
+
+// 4. Laptop Widget
+function toggleLaptopWidget() {
+    var body = document.getElementById('laptop-body');
+    var icon = document.getElementById('laptop-toggle');
+    if (body.classList.contains('collapsed')) { body.classList.remove('collapsed'); icon.textContent = '▼'; }
+    else { body.classList.add('collapsed'); icon.textContent = '▶'; }
+}
+function loadLaptopStatus() {
+    fetch('/laptop_status.json?_=' + Date.now())
+        .then(function(r){ if(!r.ok) throw new Error('Not found'); return r.json(); })
+        .then(function(d){
+            var w = document.getElementById('laptop-widget');
+            if(w) w.style.display = 'block';
+
+            // Helper: set width + threshold color on a bar
+            function setBar(id, pct, warnAt, critAt) {
+                var b = document.getElementById(id);
+                if(!b) return;
+                b.style.width = Math.max(0, Math.min(100, pct)) + '%';
+                b.classList.remove('warn','crit');
+                if(pct >= critAt) b.classList.add('crit');
+                else if(pct >= warnAt) b.classList.add('warn');
+            }
+            function setValClass(id, level) {
+                var el = document.getElementById(id);
+                if(!el) return;
+                el.classList.remove('warn','crit');
+                if(level) el.classList.add(level);
+            }
+
+            // ----- CPU -----
+            var cpu = d.cpu || {};
+            if(cpu.busy_pct != null) {
+                document.getElementById('lp-cpu').textContent = cpu.busy_pct.toFixed(1) + '%';
+                setBar('lp-cpu-bar', cpu.busy_pct, 70, 90);
+            }
+            if(cpu.load_1m != null) {
+                document.getElementById('lp-cpu-sub').textContent = 'load ' + cpu.load_1m + ' / ' + (cpu.load_5m != null ? cpu.load_5m : '--');
+            }
+
+            // ----- Memory -----
+            var mem = d.memory || {};
+            if(mem.used_pct != null) {
+                document.getElementById('lp-mem').textContent = mem.used_pct + '%';
+                setBar('lp-mem-bar', mem.used_pct, 75, 90);
+            }
+            if(mem.used_gb != null && mem.total_gb != null) {
+                document.getElementById('lp-mem-sub').textContent = mem.used_gb + ' / ' + mem.total_gb + ' GB';
+            }
+            // Pressure card
+            if(mem.pressure_state) {
+                var pe = document.getElementById('lp-press');
+                pe.textContent = mem.pressure_state.toUpperCase();
+                var lvl = mem.pressure_state === 'normal' ? null
+                        : mem.pressure_state === 'warning' ? 'warn' : 'crit';
+                setValClass('lp-press', lvl);
+            }
+            if(mem.pressure_pct_free != null) {
+                document.getElementById('lp-press-sub').textContent = mem.pressure_pct_free + '% free';
+            }
+            // Swap + compressed card
+            if(mem.swap_used_mb != null) {
+                var swapText = mem.swap_used_mb > 0 ? mem.swap_used_mb.toFixed(0) + ' MB' : '0';
+                document.getElementById('lp-swap').textContent = swapText;
+                // Any swap usage at all is a warning
+                setValClass('lp-swap', mem.swap_used_mb > 100 ? 'crit' : (mem.swap_used_mb > 0 ? 'warn' : null));
+            }
+            if(mem.compressed_gb != null) {
+                document.getElementById('lp-swap-sub').textContent = 'compressed ' + mem.compressed_gb + ' GB';
+            }
+
+            // ----- Disk -----
+            var disk = d.disk || {};
+            if(disk.free_gb != null) {
+                document.getElementById('lp-disk').textContent = disk.free_gb + ' GB';
+            }
+            if(disk.used_gb != null && disk.total_gb != null) {
+                document.getElementById('lp-disk-sub').textContent = disk.used_gb + ' / ' + disk.total_gb + ' GB used';
+            }
+            if(disk.pct_used != null) {
+                setBar('lp-disk-bar', disk.pct_used, 80, 92);
+                // Invert for "free" semantic: very low free = crit
+                setValClass('lp-disk', disk.pct_used >= 92 ? 'crit' : (disk.pct_used >= 80 ? 'warn' : null));
+            }
+
+            // ----- Network -----
+            var net = d.network || {};
+            if(net.in_kbps != null) document.getElementById('lp-net-in').textContent = net.in_kbps.toFixed(1);
+            if(net.out_kbps != null) document.getElementById('lp-net-out').textContent = net.out_kbps.toFixed(1);
+
+            // ----- Power -----
+            var pwr = d.power || {};
+            if(pwr.source) {
+                var pwrLabel;
+                if(pwr.source === 'AC') {
+                    pwrLabel = pwr.charging ? 'CHARGING' : 'AC';
+                } else {
+                    pwrLabel = pwr.watts != null ? pwr.watts.toFixed(1) + ' W' : 'BATTERY';
+                }
+                document.getElementById('lp-pwr').textContent = pwrLabel;
+            }
+            if(pwr.battery_pct != null) {
+                document.getElementById('lp-pwr-sub').textContent = pwr.battery_pct + '% batt';
+                // Low battery warning when on battery
+                if(pwr.source === 'Battery') {
+                    setValClass('lp-pwr', pwr.battery_pct < 15 ? 'crit' : (pwr.battery_pct < 30 ? 'warn' : null));
+                } else {
+                    setValClass('lp-pwr', null);
+                }
+            }
+
+            // ----- Temperature -----
+            var temp = d.temperature || {};
+            if(temp.battery_c != null) {
+                document.getElementById('lp-temp').textContent = temp.battery_c.toFixed(1) + '°C';
+                // Battery temps: 20-35 normal, 35-40 warn, >40 crit. Bar maxes at 50°C.
+                var tempPct = Math.min(100, (temp.battery_c / 50) * 100);
+                setBar('lp-temp-bar', tempPct, 70, 80); // 35°C=70%, 40°C=80%
+                setValClass('lp-temp', temp.battery_c >= 40 ? 'crit' : (temp.battery_c >= 35 ? 'warn' : null));
+            }
+
+            // Timestamp + status dot
+            if(d.timestamp || d.received_at) {
+                var ts = (d.received_at || d.timestamp).replace('Z', '+00:00');
+                var dt = new Date(ts);
+                var ageMin = (Date.now() - dt.getTime()) / 60000;
+                document.getElementById('lp-time').textContent = 'Last updated: ' + dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ' (' + Math.floor(ageMin) + 'm ago)';
+                var dot = document.getElementById('laptop-dot');
+                if(dot) {
+                    dot.classList.remove('green','red');
+                    dot.classList.add(ageMin < 5 ? 'green' : 'red');
+                }
+            }
+        })
+        .catch(function(){ document.getElementById('lp-time').textContent = 'Waiting for Mac to report...'; });
+}
+document.addEventListener('DOMContentLoaded', loadLaptopStatus);
+setInterval(loadLaptopStatus, 60000);
+
+// 5. GPU Widget
+function toggleGpuWidget() {
+    var body = document.getElementById('gpu-body');
+    var icon = document.getElementById('gpu-toggle');
+    if (body.classList.contains('collapsed')) { body.classList.remove('collapsed'); icon.textContent = '▼'; }
+    else { body.classList.add('collapsed'); icon.textContent = '▶'; }
+}
+// GPU has two modes:
+//   baseline: fetch /gpu_status.json every 30s (file is updated by gpu-snapshot.timer every 60s)
+//   live:     open SSE to /api/gpu-stream -> 1s updates. Closes on Stop click, tab hidden, or unload.
+var _gpuBaselineTimer = null;
+var _gpuSse = null;
+
+function _renderGpu(d) {
+    var w = document.getElementById('gpu-widget');
+    if (w) w.style.display = 'block';
+    if (d.power_draw !== undefined) document.getElementById('gpu-watts').textContent = (typeof d.power_draw === 'number' ? d.power_draw.toFixed(1) : d.power_draw) + 'W';
+    if (d.temperature !== undefined) document.getElementById('gpu-temp').textContent = d.temperature + '°C';
+    if (d.gpu_util !== undefined) document.getElementById('gpu-util').textContent = d.gpu_util + '%';
+    if (d.memory_used !== undefined) {
+        var mt = d.memory_total ? (' / ' + Math.round(d.memory_total/1024) + 'G') : '';
+        document.getElementById('gpu-mem').textContent = d.memory_used + ' MiB' + mt;
+    }
+    if (d.fan_speed !== undefined) document.getElementById('gpu-fan').textContent = d.fan_speed + '%';
+    if (d.clock) document.getElementById('gpu-clock').textContent = d.clock + ' MHz';
+    if (d.timestamp) {
+        var dt = new Date(d.timestamp);
+        document.getElementById('gpu-time').textContent = 'Last sample: ' + dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    }
+    var mbox = document.getElementById('gpu-models');
+    if (mbox) {
+        var models = d.loaded_models || [];
+        if (models.length === 0) {
+            mbox.innerHTML = '<span style="color:var(--text-dim);font-style:italic;">No models loaded in VRAM</span>';
+        } else {
+            mbox.innerHTML = models.map(function(m){
+                var vram = m.vram_mb ? ' <span style="opacity:0.7;">(' + (m.vram_mb/1024).toFixed(1) + 'G VRAM)</span>' : '';
+                var ctx = m.context_length ? ' <span style="opacity:0.55;">· ' + Math.round(m.context_length/1024) + 'k ctx</span>' : '';
+                return '<span style="background:#0d6efd22;border:1px solid #0d6efd66;color:#fff;padding:4px 9px;border-radius:12px;white-space:nowrap;">🧠 ' + m.label + vram + ctx + '</span>';
+            }).join('');
+        }
+    }
+}
+
+function loadGpuStatus() {
+    return fetch('/gpu_status.json?_=' + Date.now())
+        .then(function(r){ if(!r.ok) throw new Error('No data'); return r.json(); })
+        .then(_renderGpu)
+        .catch(function(){ if(document.getElementById('gpu-time')) document.getElementById('gpu-time').textContent = 'GPU monitoring unavailable'; });
+}
+
+function startGpuBaseline() {
+    if (_gpuBaselineTimer) return;
+    loadGpuStatus();
+    _gpuBaselineTimer = setInterval(loadGpuStatus, 30000);
+}
+function stopGpuBaseline() {
+    if (_gpuBaselineTimer) { clearInterval(_gpuBaselineTimer); _gpuBaselineTimer = null; }
+}
+
+function startGpuLive() {
+    if (_gpuSse) return;
+    stopGpuBaseline();
+    _gpuSse = new EventSource('/api/gpu-stream');
+    _gpuSse.onmessage = function(ev) {
+        try { _renderGpu(JSON.parse(ev.data)); } catch(e) {}
+    };
+    _gpuSse.onerror = function() {
+        // EventSource auto-reconnects; if page is hidden we stop it ourselves.
+    };
+    var btn = document.getElementById('gpu-live-btn');
+    if (btn) { btn.textContent = '⏸ Stop live'; btn.style.background = '#dc3545'; }
+    var mode = document.getElementById('gpu-mode');
+    if (mode) { mode.textContent = '(LIVE 1s)'; mode.style.color = '#dc3545'; }
+}
+function stopGpuLive() {
+    if (_gpuSse) { _gpuSse.close(); _gpuSse = null; }
+    var btn = document.getElementById('gpu-live-btn');
+    if (btn) { btn.textContent = '▶ Start 1s live'; btn.style.background = '#0d6efd'; }
+    var mode = document.getElementById('gpu-mode');
+    if (mode) { mode.textContent = '(60s poll)'; mode.style.color = 'var(--text-dim)'; }
+    startGpuBaseline();
+}
+function toggleGpuLive() {
+    if (_gpuSse) stopGpuLive(); else startGpuLive();
+}
+
+document.addEventListener('DOMContentLoaded', startGpuBaseline);
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        if (_gpuSse) stopGpuLive();    // kill live when tab backgrounded
+        stopGpuBaseline();
+    } else {
+        startGpuBaseline();
+    }
+});
+window.addEventListener('beforeunload', function() {
+    if (_gpuSse) { _gpuSse.close(); _gpuSse = null; }
+});
+
+// 6. Proxmox Backup Widget
+function toggleBackupWidget() {
+    var body = document.getElementById('bk-body');
+    var icon = document.getElementById('bk-toggle');
+    if (body.classList.contains('collapsed')) { body.classList.remove('collapsed'); icon.textContent = '▼'; }
+    else { body.classList.add('collapsed'); icon.textContent = '▶'; }
+}
+function fmtRel(epoch) {
+    if (!epoch) return '--';
+    var diff = Math.floor(Date.now()/1000) - epoch;
+    var ago = diff >= 0;
+    var s = Math.abs(diff);
+    var label;
+    if (s < 60) label = s + 's';
+    else if (s < 3600) label = Math.floor(s/60) + 'm';
+    else if (s < 86400) label = Math.floor(s/3600) + 'h';
+    else label = Math.floor(s/86400) + 'd';
+    return ago ? (label + ' ago') : ('in ' + label);
+}
+function fmtAbs(epoch) {
+    if (!epoch) return '--';
+    var dt = new Date(epoch * 1000);
+    // e.g. "15 Apr 03:55"
+    var day = dt.getDate();
+    var mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()];
+    var hh = String(dt.getHours()).padStart(2,'0');
+    var mm = String(dt.getMinutes()).padStart(2,'0');
+    return day + ' ' + mon + ' ' + hh + ':' + mm;
+}
+function fmtDur(sec) {
+    if (sec == null) return '--';
+    if (sec < 60) return sec + 's';
+    if (sec < 3600) return Math.floor(sec/60) + 'm ' + (sec%60) + 's';
+    var h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+    return h + 'h ' + m + 'm';
+}
+function loadBackupStatus() {
+    fetch('/backup_status.json?_=' + Date.now())
+        .then(function(r){ if(!r.ok) throw new Error('No data'); return r.json(); })
+        .then(function(d){
+            var w = document.getElementById('bk-widget');
+            if(w) w.style.display = 'block';
+            var s = d.summary || {}, st = d.stats || {};
+            document.getElementById('bk-last').textContent = fmtAbs(s.last_backup_at);
+            document.getElementById('bk-last').title = fmtRel(s.last_backup_at);
+            document.getElementById('bk-status').textContent = s.last_backup_status || '--';
+            document.getElementById('bk-dur').textContent = fmtDur(s.last_backup_duration_sec);
+            document.getElementById('bk-vms').textContent = st.vms_covered != null ? st.vms_covered : '--';
+            document.getElementById('bk-total').textContent = st.total_backups != null ? st.total_backups : '--';
+            document.getElementById('bk-fail').textContent = st.failures_7d != null ? st.failures_7d : '--';
+            document.getElementById('bk-store').textContent = (s.storages || []).join(', ') || '--';
+            document.getElementById('bk-sched').textContent = (s.schedules || []).join(', ') || '--';
+            // status dot color
+            var dot = document.getElementById('bk-dot');
+            dot.classList.remove('green','red');
+            var ok = s.last_backup_status === 'OK';
+            var stale = s.last_backup_at && (Math.floor(Date.now()/1000) - s.last_backup_at) > 36*3600;
+            var failing = (st.failures_7d || 0) > 0;
+            if (ok && !stale && !failing) dot.classList.add('green');
+            else dot.classList.add('red');
+            // last-update line
+            if (d.timestamp) {
+                var dt = new Date(d.timestamp);
+                document.getElementById('bk-time').textContent = 'Last run ' + fmtRel(s.last_backup_at) + ' • snapshot ' + dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ' • ' + (s.jobs_configured || 0) + ' job(s) → ' + ((s.storages||[]).join(', ') || 'no storage') + ' • next ' + fmtAbs(s.next_backup_at);
+            }
+        })
+        .catch(function(){
+            document.getElementById('bk-time').textContent = 'Backup status unavailable';
+            var dot = document.getElementById('bk-dot');
+            if (dot) { dot.classList.remove('green'); dot.classList.add('red'); }
+        });
+}
+document.addEventListener('DOMContentLoaded', loadBackupStatus);
+setInterval(loadBackupStatus, 60000);
+
+// Broken-link grayout: marks .service-card down based on /status.json down_sites
+function loadHealthStatus() {
+    fetch('/status.json?_=' + Date.now())
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(d) {
+            if (!d) return;
+            var down = new Set();
+            (d.down_sites || []).forEach(function(s) {
+                if (s && s.name) down.add(s.name);
+            });
+            document.querySelectorAll('.service-card').forEach(function(card) {
+                var href = card.getAttribute('href') || '';
+                var host = '';
+                try { host = new URL(href).hostname; } catch (e) {}
+                if (host && down.has(host)) card.classList.add('down');
+                else card.classList.remove('down');
+            });
+        })
+        .catch(function() {});
+}
+document.addEventListener('DOMContentLoaded', loadHealthStatus);
+setInterval(loadHealthStatus, 60000);
+
+// Manual refresh: triggers server-side portal-refresh.service then re-loads all widgets.
+function triggerRefresh() {
+    var btn = document.getElementById('refresh-btn');
+    var status = document.getElementById('refresh-status');
+    if (!btn || btn.disabled) return;
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    btn.style.cursor = 'wait';
+    btn.textContent = '⏳ Refreshing...';
+    if (status) status.textContent = 'Triggering server refresh...';
+
+    fetch('/webhook/refresh', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: '{}'
+    })
+    .then(function(r) {
+        if (r.status === 429) {
+            return r.json().then(function(j) {
+                throw new Error('Cooldown: retry in ' + j.retry_after + 's');
+            });
+        }
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    })
+    .then(function() {
+        if (status) status.textContent = 'Triggered — reloading data in 8s...';
+        // Wait for portal-refresh.service pipeline (health check, get_status, plane_sync, health_alert)
+        setTimeout(function() {
+            try { if (typeof loadTickets === 'function') loadTickets(); } catch (e) {}
+            try { if (typeof loadLaptopStatus === 'function') loadLaptopStatus(); } catch (e) {}
+            try { if (typeof loadGpuStatus === 'function') loadGpuStatus(); } catch (e) {}
+            try { if (typeof loadBackupStatus === 'function') loadBackupStatus(); } catch (e) {}
+            try { if (typeof loadHealthStatus === 'function') loadHealthStatus(); } catch (e) {}
+            var now = new Date();
+            var hh = String(now.getHours()).padStart(2, '0');
+            var mm = String(now.getMinutes()).padStart(2, '0');
+            var ss = String(now.getSeconds()).padStart(2, '0');
+            if (status) status.textContent = 'Refreshed at ' + hh + ':' + mm + ':' + ss;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.textContent = '🔄 Refresh Data';
+        }, 8000);
+    })
+    .catch(function(err) {
+        if (status) status.textContent = 'Refresh failed: ' + err.message;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.textContent = '🔄 Refresh Data';
+    });
+}
+</script>
+
+<script>
+// === Service-card logo injector ===
+(function() {
+  const CDN = 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/';
+  // Lucide SVG inner paths (all 24x24, stroke-width:2, currentColor)
+  const SVG = {
+    activity:    '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+    globe:       '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    cloud:       '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+    briefcase:   '<rect width="20" height="14" x="2" y="6" rx="2"/><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+    cogserver:   '<rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/>',
+    plug:        '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+    box:         '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+  };
+  function svg(name, tone) {
+    const inner = SVG[name] || SVG.box;
+    return `<span class="logo tone-${tone || 'sky'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg></span>`;
+  }
+  function img(slug) {
+    return `<span class="logo"><img src="${CDN}${slug}.png" alt="" loading="lazy" onerror="this.parentElement.outerHTML='${svg('box','sky').replace(/'/g, '&#39;')}';"></span>`;
+  }
+  // Subdomain → { slug } (use dashboard-icon name) OR { svg, tone } (custom Lucide)
+  const MAP = {
+    'ai-gateway':     { svg: 'plug',       tone: 'teal' },
+    'portal':         { svg: 'activity',   tone: 'sky'  },
+    'rawgle':         { svg: 'globe',      tone: 'gold' },
+    'cloudaio':       { svg: 'cloud',      tone: 'sky'  },
+    'crm':            { svg: 'briefcase',  tone: 'teal' },
+    'supercrm':       { svg: 'briefcase',  tone: 'teal' },
+    'superops':       { svg: 'cogserver',  tone: 'gold' },
+    // Slug overrides where hostname ≠ dashboard-icons slug
+    'openwebui':      { slug: 'open-webui'        },
+    'comfy':          { slug: 'comfyui'           },
+    'draw':           { slug: 'excalidraw'        },
+    'project':        { slug: 'plane'             },
+    'search':         { slug: 'searxng'           },
+    'wiki':           { slug: 'bookstack'         },
+    'kumo':           { slug: 'nextcloud'         },
+    'supercloud':     { slug: 'nextcloud'         },
+    'stream':         { slug: 'plex'              },
+    'signin':         { slug: 'authentik'         },
+    'collabora':      { slug: 'collabora-online'  },
+    'wordpress-yld':  { slug: 'wordpress'         },
+    'code':           { slug: 'code-server'       },
+    'n8n-ops':        { slug: 'n8n'               },
+    'n8n-ops-mcp':    { slug: 'n8n'               },
+    'n8nsamco':       { slug: 'n8n'               },
+    'n8nsovrein':     { slug: 'n8n'               },
+    'n8nsuperluxe':   { slug: 'n8n'               },
+    'n8nyld':         { slug: 'n8n'               },
+  };
+  function logoFor(href) {
+    let host;
+    try { host = new URL(href).hostname; } catch (e) { return svg('box'); }
+    const sub = host.split('.')[0];
+    const m = MAP[sub];
+    if (m && m.svg) return svg(m.svg, m.tone);
+    if (m && m.slug) return img(m.slug);
+    return img(sub);
+  }
+  function inject() {
+    const cards = document.querySelectorAll('a.service-card');
+    cards.forEach(card => {
+      if (card.querySelector('.logo')) return;  // idempotent
+      // Wrap existing .name + .url in an <span class="info"> so the flex row reads:
+      //   [logo]  [info: name / url]
+      const name = card.querySelector('.name');
+      const url  = card.querySelector('.url');
+      if (!name) return;
+      const info = document.createElement('span');
+      info.className = 'info';
+      info.appendChild(name.cloneNode(true));
+      if (url) info.appendChild(url.cloneNode(true));
+      // Build new content
+      card.innerHTML = logoFor(card.href);
+      card.appendChild(info);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inject);
+  } else {
+    inject();
+  }
+})();
+</script>
+</body>
+</html>
