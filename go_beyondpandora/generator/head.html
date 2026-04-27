@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>go. — Beyond Pandora</title>
+<meta name="description" content="Beyond Pandora — single pane of glass for self-hosted apps">
+<meta name="theme-color" content="#dde4ed" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080d17" media="(prefers-color-scheme: dark)">
+<style>
+  :root {
+    --sky: #61a5c2;  --sky-600: #4a8fae;  --sky-50: #eaf4f9;
+    --teal: #52b69a; --teal-600: #3f9c82; --teal-50: #e7f5ef;
+    --gold: #ffbf69; --gold-600: #eaa249; --gold-50: #fff4e2;
+    --background: #dde4ed; --surface: #ffffff;
+    --surface-alt: #d3dbe4; --surface-inset: #c8d1dc;
+    --border: #b9c3d0; --border-strong: #9faab9;
+    --foreground: #0b1424; --body: #2b3649;
+    --muted: #5b6478; --muted-strong: #3a4559;
+    color-scheme: light;
+  }
+  html.dark {
+    --background: #080d17; --surface: #0e1626;
+    --surface-alt: #13202f; --surface-inset: #0b1422;
+    --border: #1c2a40; --border-strong: #293a57;
+    --foreground: #eef2f7; --body: #cdd5e2;
+    --muted: #7f8ba1; --muted-strong: #b1bbcc;
+    --sky-50: #0f2535; --teal-50: #0e2a22; --gold-50: #3a2a14;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--background); color: var(--body);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body::before {
+    content: ''; position: fixed; inset: -10% -10% auto -10%;
+    height: 480px; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(60% 60% at 15% 20%, color-mix(in oklab, var(--sky) 28%, transparent) 0%, transparent 60%),
+      radial-gradient(50% 50% at 85% 15%, color-mix(in oklab, var(--teal) 22%, transparent) 0%, transparent 60%),
+      radial-gradient(45% 45% at 70% 80%, color-mix(in oklab, var(--gold) 18%, transparent) 0%, transparent 60%);
+    filter: blur(40px); opacity: 0.65;
+  }
+  html.dark body::before { opacity: 0.32; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 48px 32px 96px; position: relative; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+  h1 { font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.035em; color: var(--foreground); }
+  h1 .dot {
+    background: linear-gradient(135deg, var(--sky), var(--teal));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .tagline { color: var(--muted); font-size: 13px; }
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted-strong); cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .theme-toggle:hover { color: var(--foreground); border-color: var(--border-strong); background: var(--surface-alt); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .icon-sun { display: none; }
+  html.dark .theme-toggle .icon-sun { display: block; }
+  html.dark .theme-toggle .icon-moon { display: none; }
+  .search { margin: 0 0 36px; position: relative; }
+  .search input {
+    width: 100%; background: var(--surface);
+    border: 1px solid var(--border); color: var(--foreground);
+    padding: 14px 18px 14px 44px; font-size: 15px;
+    font-family: inherit; border-radius: 14px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(11, 20, 36, 0.04);
+  }
+  .search input::placeholder { color: var(--muted); }
+  .search input:focus {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--sky) 18%, transparent);
+  }
+  .search-icon { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+  .kbd {
+    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px;
+    color: var(--muted); background: var(--surface-alt);
+    border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px;
+  }
+  section { margin-bottom: 36px; }
+  h2 {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--sky-600);
+    margin: 0 0 16px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  /* Section accent rotation: every 4th h2 cycles through teal/gold */
+  section:nth-of-type(3n+2) > h2 { color: var(--teal-600); }
+  section:nth-of-type(3n) > h2 { color: var(--gold-600); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  a.card {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 14px 16px; border-radius: 14px;
+    color: var(--foreground); text-decoration: none;
+    box-shadow: 0 1px 2px rgba(11, 20, 36, 0.04);
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 200ms ease;
+    min-height: 68px;
+  }
+  a.card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--sky) 35%, var(--border));
+    box-shadow: 0 2px 4px rgba(11, 20, 36, 0.05),
+                0 14px 30px -10px rgba(97, 165, 194, 0.18);
+  }
+  html.dark a.card:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 14px 30px -10px rgba(97, 165, 194, 0.22);
+  }
+  a.card:active { transform: translateY(0); }
+  .logo {
+    flex-shrink: 0; width: 40px; height: 40px;
+    border-radius: 10px; background: var(--surface-alt);
+    display: inline-flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; display: block; }
+  .logo svg { width: 22px; height: 22px; }
+  .logo.tone-sky  { background: var(--sky-50);  color: var(--sky-600);  }
+  .logo.tone-teal { background: var(--teal-50); color: var(--teal-600); }
+  .logo.tone-gold { background: var(--gold-50); color: var(--gold-600); }
+  html:not(.dark) .logo { box-shadow: inset 0 0 0 1px rgba(11, 20, 36, 0.05); }
+  .content { min-width: 0; flex: 1; line-height: 1.35; }
+  .content .name { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; color: var(--foreground); }
+  .content .desc { color: var(--muted); font-size: 12px; margin-top: 3px; line-height: 1.4; }
+  .hidden { display: none !important; }
+  footer {
+    margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 12px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  footer .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 999px;
+    background: var(--teal-50); color: var(--teal-600);
+    font-weight: 500; font-size: 11px;
+  }
+  footer .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+  @media (prefers-reduced-motion: reduce) {
+    a.card { transition: none; } a.card:hover { transform: none; }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 32px 20px 64px; }
+    header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .tagline { font-size: 12px; }
+    h1 { font-size: 28px; }
+    .grid { grid-template-columns: 1fr; }
+    .kbd { display: none; }
+  }
+</style>
+<script>
+  (function() {
+    try {
+      var t = localStorage.getItem('go-theme');
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (t === 'dark') document.documentElement.classList.add('dark');
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>go<span class="dot">.</span></h1>
+  <div class="header-right">
+    <span class="tagline">Beyond Pandora &mdash; single pane of glass</span>
+    <button id="theme" class="theme-toggle" type="button" aria-label="Toggle theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="search">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  <input id="q" type="search" placeholder="Filter (press / to focus)&hellip;" autofocus autocomplete="off">
+  <span class="kbd">/</span>
+</div>

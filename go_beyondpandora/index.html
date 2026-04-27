@@ -9,151 +9,71 @@
 <meta name="theme-color" content="#080d17" media="(prefers-color-scheme: dark)">
 <style>
   :root {
-    --sky: #61a5c2;
-    --sky-600: #4a8fae;
-    --sky-50: #eaf4f9;
-    --teal: #52b69a;
-    --teal-600: #3f9c82;
-    --teal-50: #e7f5ef;
-    --gold: #ffbf69;
-    --gold-600: #eaa249;
-    --gold-50: #fff4e2;
-
-    --background: #dde4ed;
-    --surface: #ffffff;
-    --surface-alt: #d3dbe4;
-    --surface-inset: #c8d1dc;
-    --border: #b9c3d0;
-    --border-strong: #9faab9;
-    --foreground: #0b1424;
-    --body: #2b3649;
-    --muted: #5b6478;
-    --muted-strong: #3a4559;
-
+    --sky: #61a5c2;  --sky-600: #4a8fae;  --sky-50: #eaf4f9;
+    --teal: #52b69a; --teal-600: #3f9c82; --teal-50: #e7f5ef;
+    --gold: #ffbf69; --gold-600: #eaa249; --gold-50: #fff4e2;
+    --background: #dde4ed; --surface: #ffffff;
+    --surface-alt: #d3dbe4; --surface-inset: #c8d1dc;
+    --border: #b9c3d0; --border-strong: #9faab9;
+    --foreground: #0b1424; --body: #2b3649;
+    --muted: #5b6478; --muted-strong: #3a4559;
     color-scheme: light;
   }
-
   html.dark {
-    --background: #080d17;
-    --surface: #0e1626;
-    --surface-alt: #13202f;
-    --surface-inset: #0b1422;
-    --border: #1c2a40;
-    --border-strong: #293a57;
-    --foreground: #eef2f7;
-    --body: #cdd5e2;
-    --muted: #7f8ba1;
-    --muted-strong: #b1bbcc;
-    --sky-50: #0f2535;
-    --teal-50: #0e2a22;
-    --gold-50: #3a2a14;
+    --background: #080d17; --surface: #0e1626;
+    --surface-alt: #13202f; --surface-inset: #0b1422;
+    --border: #1c2a40; --border-strong: #293a57;
+    --foreground: #eef2f7; --body: #cdd5e2;
+    --muted: #7f8ba1; --muted-strong: #b1bbcc;
+    --sky-50: #0f2535; --teal-50: #0e2a22; --gold-50: #3a2a14;
     color-scheme: dark;
   }
-
   * { box-sizing: border-box; }
-
   html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--background);
-    color: var(--body);
+    margin: 0; padding: 0;
+    background: var(--background); color: var(--body);
     font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-
   body::before {
-    content: '';
-    position: fixed;
-    inset: -10% -10% auto -10%;
-    height: 480px;
-    z-index: -1;
-    pointer-events: none;
+    content: ''; position: fixed; inset: -10% -10% auto -10%;
+    height: 480px; z-index: -1; pointer-events: none;
     background:
       radial-gradient(60% 60% at 15% 20%, color-mix(in oklab, var(--sky) 28%, transparent) 0%, transparent 60%),
       radial-gradient(50% 50% at 85% 15%, color-mix(in oklab, var(--teal) 22%, transparent) 0%, transparent 60%),
       radial-gradient(45% 45% at 70% 80%, color-mix(in oklab, var(--gold) 18%, transparent) 0%, transparent 60%);
-    filter: blur(40px);
-    opacity: 0.65;
+    filter: blur(40px); opacity: 0.65;
   }
   html.dark body::before { opacity: 0.32; }
-
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 48px 32px 96px;
-    position: relative;
-  }
-
-  header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  h1 {
-    font-size: 32px;
-    font-weight: 800;
-    margin: 0;
-    letter-spacing: -0.035em;
-    color: var(--foreground);
-  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 48px 32px 96px; position: relative; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+  h1 { font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.035em; color: var(--foreground); }
   h1 .dot {
     background: linear-gradient(135deg, var(--sky), var(--teal));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .tagline {
-    color: var(--muted);
-    font-size: 13px;
-  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .tagline { color: var(--muted); font-size: 13px; }
   .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--muted-strong);
-    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted-strong); cursor: pointer;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
   }
-  .theme-toggle:hover {
-    color: var(--foreground);
-    border-color: var(--border-strong);
-    background: var(--surface-alt);
-  }
+  .theme-toggle:hover { color: var(--foreground); border-color: var(--border-strong); background: var(--surface-alt); }
   .theme-toggle svg { width: 16px; height: 16px; }
   .theme-toggle .icon-sun { display: none; }
   html.dark .theme-toggle .icon-sun { display: block; }
   html.dark .theme-toggle .icon-moon { display: none; }
-
-  .search {
-    margin: 0 0 36px;
-    position: relative;
-  }
+  .search { margin: 0 0 36px; position: relative; }
   .search input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--foreground);
-    padding: 14px 18px 14px 44px;
-    font-size: 15px;
-    font-family: inherit;
-    border-radius: 14px;
-    outline: none;
+    width: 100%; background: var(--surface);
+    border: 1px solid var(--border); color: var(--foreground);
+    padding: 14px 18px 14px 44px; font-size: 15px;
+    font-family: inherit; border-radius: 14px; outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
     box-shadow: 0 1px 2px rgba(11, 20, 36, 0.04);
   }
@@ -162,171 +82,77 @@
     border-color: var(--sky);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--sky) 18%, transparent);
   }
-  .search-icon {
-    position: absolute;
-    top: 50%;
-    left: 16px;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    color: var(--muted);
-    pointer-events: none;
-  }
+  .search-icon { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
   .kbd {
-    position: absolute;
-    top: 50%;
-    right: 14px;
-    transform: translateY(-50%);
-    font-family: ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--surface-alt);
-    border: 1px solid var(--border);
-    padding: 2px 6px;
-    border-radius: 4px;
+    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px;
+    color: var(--muted); background: var(--surface-alt);
+    border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px;
   }
-
   section { margin-bottom: 36px; }
-
   h2 {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--sky-600);
-    margin: 0 0 16px;
-    padding-bottom: 10px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--sky-600);
+    margin: 0 0 16px; padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
   }
-  section:nth-child(4n+3) > h2 { color: var(--teal-600); }
-  section:nth-child(4n+4) > h2 { color: var(--gold-600); }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-  }
-
+  /* Section accent rotation: every 4th h2 cycles through teal/gold */
+  section:nth-of-type(3n+2) > h2 { color: var(--teal-600); }
+  section:nth-of-type(3n) > h2 { color: var(--gold-600); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
   a.card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 14px 16px;
-    border-radius: 14px;
-    color: var(--foreground);
-    text-decoration: none;
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 14px 16px; border-radius: 14px;
+    color: var(--foreground); text-decoration: none;
     box-shadow: 0 1px 2px rgba(11, 20, 36, 0.04);
-    transition:
-      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 200ms ease;
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 200ms ease;
     min-height: 68px;
   }
   a.card:hover {
     transform: translateY(-2px);
     border-color: color-mix(in oklab, var(--sky) 35%, var(--border));
-    box-shadow:
-      0 2px 4px rgba(11, 20, 36, 0.05),
-      0 14px 30px -10px rgba(97, 165, 194, 0.18);
+    box-shadow: 0 2px 4px rgba(11, 20, 36, 0.05),
+                0 14px 30px -10px rgba(97, 165, 194, 0.18);
   }
   html.dark a.card:hover {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.3),
-      0 14px 30px -10px rgba(97, 165, 194, 0.22);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 14px 30px -10px rgba(97, 165, 194, 0.22);
   }
   a.card:active { transform: translateY(0); }
-
-  /* Logo container — square, rounded, holds either an <img> logo or an inline Lucide SVG */
   .logo {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: var(--surface-alt);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
+    flex-shrink: 0; width: 40px; height: 40px;
+    border-radius: 10px; background: var(--surface-alt);
+    display: inline-flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
   }
-  .logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 6px;
-    display: block;
-  }
-  .logo svg {
-    width: 22px;
-    height: 22px;
-  }
-  /* Tinted icon variants */
+  .logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; display: block; }
+  .logo svg { width: 22px; height: 22px; }
   .logo.tone-sky  { background: var(--sky-50);  color: var(--sky-600);  }
   .logo.tone-teal { background: var(--teal-50); color: var(--teal-600); }
   .logo.tone-gold { background: var(--gold-50); color: var(--gold-600); }
-
-  /* Light-mode icon contrast: on a few logos with white interiors, the white panel
-     vanishes against a light background. A subtle inset ring helps. */
-  html:not(.dark) .logo {
-    box-shadow: inset 0 0 0 1px rgba(11, 20, 36, 0.05);
-  }
-
-  .content {
-    min-width: 0;
-    flex: 1;
-    line-height: 1.35;
-  }
-  .content .name {
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: -0.01em;
-    color: var(--foreground);
-  }
-  .content .desc {
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 3px;
-    line-height: 1.4;
-  }
-
+  html:not(.dark) .logo { box-shadow: inset 0 0 0 1px rgba(11, 20, 36, 0.05); }
+  .content { min-width: 0; flex: 1; line-height: 1.35; }
+  .content .name { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; color: var(--foreground); }
+  .content .desc { color: var(--muted); font-size: 12px; margin-top: 3px; line-height: 1.4; }
   .hidden { display: none !important; }
-
   footer {
-    margin-top: 64px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 12px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
+    margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 12px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
   }
   footer .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: var(--teal-50);
-    color: var(--teal-600);
-    font-weight: 500;
-    font-size: 11px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 999px;
+    background: var(--teal-50); color: var(--teal-600);
+    font-weight: 500; font-size: 11px;
   }
-  footer .pill .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--teal);
-  }
-
+  footer .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
   @media (prefers-reduced-motion: reduce) {
-    a.card { transition: none; }
-    a.card:hover { transform: none; }
+    a.card { transition: none; } a.card:hover { transform: none; }
   }
-
   @media (max-width: 640px) {
     .container { padding: 32px 20px 64px; }
     header { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -365,62 +191,96 @@
   <span class="kbd">/</span>
 </div>
 
-<section data-group="Dashboards">
-  <h2>Dashboards</h2>
+<section data-group="Home">
+  <h2>Home</h2>
   <div class="grid">
-    <a class="card" href="https://portal.beyondpandora.com">
-      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
-      <div class="content"><div class="name">Hermes Portal</div><div class="desc">Laptop / GPU / services health</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://homeassistant.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/home-assistant.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Home Assistant</div><div class="desc">Home automation</div></div>
     </a>
-    <a class="card" href="https://labs.beyondpandora.com">
-      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></span>
-      <div class="content"><div class="name">Sovrein Labs</div><div class="desc">Project launchpad (Archon, JWM, &hellip;)</div></div>
-    </a>
-    <a class="card" href="https://automagic.beyondpandora.com">
-      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M21 11V8a2 2 0 0 0-2-2h-6"/><path d="m15 9-3-3 3-3"/><path d="M3 13v3a2 2 0 0 0 2 2h6"/><path d="m9 21 3-3-3-3"/></svg></span>
-      <div class="content"><div class="name">Automagic Console</div><div class="desc">PLAUD &rarr; n8n &rarr; Plane pipeline</div></div>
-    </a>
-    <a class="card" href="http://10.90.10.19:8888">
-      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
-      <div class="content"><div class="name">Jake Portal (LAN)</div><div class="desc">No-auth LAN dashboard</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://surthrival.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <div class="content"><div class="name">Surthrival (Nomad)</div><div class="desc">Home / family hub</div></div>
     </a>
   </div>
 </section>
 
-<section data-group="Projects &amp; AI">
-  <h2>Projects &amp; AI</h2>
+<section data-group="Dashboards">
+  <h2>Dashboards</h2>
   <div class="grid">
-    <a class="card" href="https://archon.beyondpandora.com">
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://automagic.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M21 11V8a2 2 0 0 0-2-2h-6"/><path d="m15 9-3-3 3-3"/><path d="M3 13v3a2 2 0 0 0 2 2h6"/><path d="m9 21 3-3-3-3"/></svg></span>
+      <div class="content"><div class="name">Automagic Console</div><div class="desc">PLAUD → n8n → Plane pipeline</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://portal.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+      <div class="content"><div class="name">Hermes Portal</div><div class="desc">Laptop / GPU / services health</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://komodo.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/komodo.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Komodo</div><div class="desc">Container orchestrator UI</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://pvedash.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Proxmox Dash</div><div class="desc">PVE custom dashboard</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://pve-cluster.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">PVE Cluster</div><div class="desc">Cluster status view</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://labs.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg></span>
+      <div class="content"><div class="name">Sovrein Labs</div><div class="desc">Project launchpad (Archon, JWM, …)</div></div>
+    </a>
+  </div>
+</section>
+
+<section data-group="Projects & AI">
+  <h2>Projects & AI</h2>
+  <div class="grid">
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://archon-v1.beyondpandora.com">
       <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
-      <div class="content"><div class="name">Archon</div><div class="desc">RAG + task management</div></div>
+      <div class="content"><div class="name">Archon v1</div><div class="desc">Knowledge base v1 (port 3737)</div></div>
     </a>
-    <a class="card" href="https://openwebui.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/open-webui.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Open WebUI</div><div class="desc">LLM chat</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://archon.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
+      <div class="content"><div class="name">Archon v2</div><div class="desc">Knowledge base v2 (port 5173)</div></div>
     </a>
-    <a class="card" href="https://litellm.beyondpandora.com">
-      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg></span>
-      <div class="content"><div class="name">LiteLLM</div><div class="desc">Model gateway</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://chat.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>
+      <div class="content"><div class="name">Chat</div><div class="desc">General chat interface</div></div>
     </a>
-    <a class="card" href="https://flowise.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/flowise.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://flowiseai.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/flowise.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Flowise</div><div class="desc">LLM flow builder</div></div>
     </a>
-    <a class="card" href="https://jupyter.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jupyter.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Jupyter</div><div class="desc">Notebooks + data work</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://jwm-ai.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg></span>
+      <div class="content"><div class="name">JWM AI</div><div class="desc">JWM AI tooling</div></div>
     </a>
-    <a class="card" href="https://jwm-demo.beyondpandora.com">
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://jwm-demo.beyondpandora.com">
       <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></span>
       <div class="content"><div class="name">JWM Demo</div><div class="desc">Sovrein customer project</div></div>
     </a>
-    <a class="card" href="https://jwm-erp.beyondpandora.com">
-      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect x="2" y="6" width="20" height="14" rx="2"/></svg></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://jwm-erp.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="6" rx="2"/><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
       <div class="content"><div class="name">JWM ERPNext</div><div class="desc">Frappe backend (admin)</div></div>
     </a>
-    <a class="card" href="https://jwm-ai.beyondpandora.com">
-      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg></span>
-      <div class="content"><div class="name">JWM AI</div><div class="desc">JWM demo AI tooling</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://ai-gateway.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg></span>
+      <div class="content"><div class="name">LiteLLM</div><div class="desc">Model gateway</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://ollama.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/ollama.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Ollama</div><div class="desc">Local LLM runtime</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://openwebui.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/open-webui.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Open WebUI</div><div class="desc">LLM chat</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://pandomagic.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span>
+      <div class="content"><div class="name">Pandomagic</div><div class="desc">Internal AI tooling</div></div>
     </a>
   </div>
 </section>
@@ -428,53 +288,69 @@
 <section data-group="Apps">
   <h2>Apps</h2>
   <div class="grid">
-    <a class="card" href="https://supercloud.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">NextCloud (supercloud)</div><div class="desc">Primary NC instance</div></div>
-    </a>
-    <a class="card" href="https://kumo.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">NextCloud (kumo)</div><div class="desc">Secondary NC instance</div></div>
-    </a>
-    <a class="card" href="https://office.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/collabora-online.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Collabora Office</div><div class="desc">Online docs editor</div></div>
-    </a>
-    <a class="card" href="https://immich.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/immich.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Immich</div><div class="desc">Self-hosted photos</div></div>
-    </a>
-    <a class="card" href="https://paperless.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/paperless-ngx.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Paperless-ngx</div><div class="desc">Document archive</div></div>
-    </a>
-    <a class="card" href="https://plane.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plane.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Plane</div><div class="desc">Project management</div></div>
-    </a>
-    <a class="card" href="https://bookstack.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/bookstack.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://bookstack.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/bookstack.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">BookStack</div><div class="desc">Wiki / docs</div></div>
     </a>
-    <a class="card" href="https://documenso.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/documenso.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://collabora.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/collabora-online.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Collabora Office</div><div class="desc">Online docs editor</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://documenso.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/documenso.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Documenso</div><div class="desc">E-sign</div></div>
     </a>
-    <a class="card" href="https://excalidraw.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/excalidraw.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://draw.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/excalidraw.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Excalidraw</div><div class="desc">Whiteboard</div></div>
     </a>
-    <a class="card" href="https://obsidian.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/obsidian.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://files.beyondpandora.com">
+      <span class="logo tone-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span>
+      <div class="content"><div class="name">Files</div><div class="desc">General file access</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://immich.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/immich.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Immich</div><div class="desc">Self-hosted photos</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://mail.beyondpandora.com">
+      <span class="logo tone-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+      <div class="content"><div class="name">Mail</div><div class="desc">Mail server admin</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://matrix.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/matrix.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Matrix</div><div class="desc">Federated chat</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://kumo.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">NextCloud (kumo)</div><div class="desc">Secondary NextCloud</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://supercloud.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nextcloud.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">NextCloud (supercloud)</div><div class="desc">Primary NextCloud</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://obsidian.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/obsidian.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Obsidian Sync</div><div class="desc">Self-hosted LiveSync</div></div>
     </a>
-    <a class="card" href="https://limesurvey.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/limesurvey.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">LimeSurvey</div><div class="desc">Surveys</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://plane.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plane.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Plane</div><div class="desc">Project management</div></div>
     </a>
-    <a class="card" href="https://git.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gitea.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Gitea</div><div class="desc">Self-hosted git</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://project.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plane.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Plane (alias)</div><div class="desc">Project management (alt URL)</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://supercrm.beyondpandora.com">
+      <span class="logo tone-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="6" rx="2"/><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+      <div class="content"><div class="name">SuperCRM</div><div class="desc">CRM</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://syncthing.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/syncthing.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Syncthing</div><div class="desc">P2P file sync</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://webmail.beyondpandora.com">
+      <span class="logo tone-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+      <div class="content"><div class="name">Webmail</div><div class="desc">Webmail client</div></div>
     </a>
   </div>
 </section>
@@ -482,25 +358,29 @@
 <section data-group="Automation">
   <h2>Automation</h2>
   <div class="grid">
-    <a class="card" href="https://n8n.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://n8n.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">n8n (core)</div><div class="desc">Main automations</div></div>
     </a>
-    <a class="card" href="https://n8n-ops.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://n8n-ops.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">n8n Ops</div><div class="desc">Ops automations</div></div>
     </a>
-    <a class="card" href="https://n8nsamco.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">n8n SamCo</div><div class="desc">Client workflows</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://n8n-ops-mcp.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">n8n Ops MCP</div><div class="desc">MCP-enabled ops automations</div></div>
     </a>
-    <a class="card" href="https://n8nsuperluxe.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">n8n Superluxe</div><div class="desc">Client workflows</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://n8nsamco.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">n8n SAMCO</div><div class="desc">Client workflows</div></div>
     </a>
-    <a class="card" href="https://n8nsovrein.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://n8nsovrein.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">n8n Sovrein</div><div class="desc">Sovrein workflows</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://n8nsuperluxe.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/n8n.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">n8n Superluxe</div><div class="desc">Client workflows</div></div>
     </a>
   </div>
 </section>
@@ -508,55 +388,69 @@
 <section data-group="Media">
   <h2>Media</h2>
   <div class="grid">
-    <a class="card" href="https://radarr.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/radarr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Radarr</div><div class="desc">Movies</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://download.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></span>
+      <div class="content"><div class="name">Download</div><div class="desc">Torrent / general download</div></div>
     </a>
-    <a class="card" href="https://sonarr.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/sonarr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Sonarr</div><div class="desc">TV</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://request.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/overseerr.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Overseerr</div><div class="desc">Media requests</div></div>
     </a>
-    <a class="card" href="https://prowlarr.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prowlarr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://prowlarr.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prowlarr.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Prowlarr</div><div class="desc">Indexer</div></div>
     </a>
-    <a class="card" href="https://sabnzbd.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/sabnzbd.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">SABnzbd</div><div class="desc">Usenet</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://radarr.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/radarr.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Radarr</div><div class="desc">Movies</div></div>
     </a>
-    <a class="card" href="https://overseerr.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/overseerr.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Overseerr</div><div class="desc">Requests</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://sabnzbd.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/sabnzbd.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">SABnzbd</div><div class="desc">Usenet downloader</div></div>
     </a>
-    <a class="card" href="https://tautulli.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/tautulli.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Tautulli</div><div class="desc">Plex stats</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://sonarr.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/sonarr.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Sonarr</div><div class="desc">TV</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://stream.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plex.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Stream</div><div class="desc">Streaming server</div></div>
     </a>
   </div>
 </section>
 
-<section data-group="Search &amp; Tools">
-  <h2>Search &amp; Tools</h2>
+<section data-group="Search & Tools">
+  <h2>Search & Tools</h2>
   <div class="grid">
-    <a class="card" href="https://search.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/searxng.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://ittools.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/it-tools.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">IT Tools</div><div class="desc">Sysadmin toolkit</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://mcpmon.beyondpandora.com">
+      <span class="logo tone-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>
+      <div class="content"><div class="name">MCP Monitor</div><div class="desc">MCP server monitor</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://search.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/searxng.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">SearXNG</div><div class="desc">Private metasearch</div></div>
     </a>
-    <a class="card" href="https://start.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/searxng.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://start.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/searxng.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Start Page</div><div class="desc">Browser homepage (SearXNG alias)</div></div>
     </a>
-    <a class="card" href="https://webcheck.beyondpandora.com">
-      <span class="logo tone-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
-      <div class="content"><div class="name">Web-Check</div><div class="desc">Domain OSINT</div></div>
+  </div>
+</section>
+
+<section data-group="Websites">
+  <h2>Websites</h2>
+  <div class="grid">
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://rawgle.beyondpandora.com">
+      <span class="logo tone-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
+      <div class="content"><div class="name">Rawgle</div><div class="desc">Rawgle main site</div></div>
     </a>
-    <a class="card" href="https://pdf.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/stirling-pdf.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">PDF Tools</div><div class="desc">Stirling PDF</div></div>
-    </a>
-    <a class="card" href="https://alpine-it.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/it-tools.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">IT Tools</div><div class="desc">Alpine IT-Tools</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://wordpress-yld.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wordpress.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">WordPress YLD</div><div class="desc">YLD WordPress site</div></div>
     </a>
   </div>
 </section>
@@ -564,68 +458,70 @@
 <section data-group="Infrastructure">
   <h2>Infrastructure</h2>
   <div class="grid">
-    <a class="card" href="https://pve.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Proxmox VE</div><div class="desc">Hypervisor</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://adguard.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/adguard-home.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">AdGuard Home (primary)</div><div class="desc">DNS filter — node 1 of 2</div></div>
     </a>
-    <a class="card" href="https://pbs.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox-backup-server.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Proxmox Backup</div><div class="desc">PBS</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://adguard-2.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/adguard-home.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">AdGuard Home (secondary)</div><div class="desc">DNS filter — node 2 of 2</div></div>
     </a>
-    <a class="card" href="https://traefik.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/traefik.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Traefik</div><div class="desc">Reverse proxy dashboard</div></div>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://auth.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Auth (Authentik)</div><div class="desc">Identity / SSO (alt)</div></div>
     </a>
-    <a class="card" href="https://adguard.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/adguard-home.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">AdGuard Home</div><div class="desc">Primary DNS filter</div></div>
-    </a>
-    <a class="card" href="https://adguard-2.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/adguard-home.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">AdGuard HA</div><div class="desc">Secondary DNS filter</div></div>
-    </a>
-    <a class="card" href="https://router.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/unifi.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">UniFi Gateway</div><div class="desc">Router / WireGuard</div></div>
-    </a>
-    <a class="card" href="https://grafana.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/grafana.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Grafana</div><div class="desc">Metrics</div></div>
-    </a>
-    <a class="card" href="https://prometheus.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prometheus.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Prometheus</div><div class="desc">Metrics DB</div></div>
-    </a>
-    <a class="card" href="https://kuma.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/uptime-kuma.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
-      <div class="content"><div class="name">Uptime Kuma</div><div class="desc">Uptime monitor</div></div>
-    </a>
-    <a class="card" href="https://signin.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://signin.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Authentik</div><div class="desc">Identity / SSO</div></div>
     </a>
-    <a class="card" href="https://wazuh.beyondpandora.com">
-      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wazuh.png" alt="" loading="lazy" onerror="this.style.display='none'"></span>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://mongodb.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/mongodb.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">MongoDB</div><div class="desc">Mongo admin</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://portainer.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/portainer.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Portainer</div><div class="desc">Docker UI</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://pbs.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Proxmox Backup</div><div class="desc">PBS</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://pve.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/proxmox.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Proxmox VE</div><div class="desc">Hypervisor</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://superops.beyondpandora.com">
+      <span class="logo tone-sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg></span>
+      <div class="content"><div class="name">SuperOps</div><div class="desc">Ops dashboard</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://traefik.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/traefik.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">Traefik</div><div class="desc">Reverse proxy dashboard</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://router.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/unifi.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
+      <div class="content"><div class="name">UniFi Gateway</div><div class="desc">Router / WireGuard</div></div>
+    </a>
+    <a class="card" target="_blank" rel="noopener noreferrer" href="https://wazuh.beyondpandora.com">
+      <span class="logo"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/wazuh.png" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>';this.parentElement.classList.add('tone-sky');"></span>
       <div class="content"><div class="name">Wazuh</div><div class="desc">Security monitoring</div></div>
     </a>
   </div>
 </section>
-
 <footer>
-  <span class="pill"><span class="dot"></span>Tailscale-only · no public route</span>
+  <span class="pill"><span class="dot"></span>Beyond Pandora · auto-generated from Traefik routes</span>
   <span id="count"></span>
 </footer>
 
 </div>
 
 <script>
-  // ===== Search filter =====
+  // Search filter
   const q = document.getElementById('q');
   const cards = Array.from(document.querySelectorAll('a.card'));
   const sections = Array.from(document.querySelectorAll('section'));
   const countEl = document.getElementById('count');
   const total = cards.length;
-
   function refresh() {
     const term = q.value.trim().toLowerCase();
     let visible = 0;
@@ -640,7 +536,6 @@
     }
     countEl.textContent = term ? `${visible}/${total}` : `${total} services`;
   }
-
   q.addEventListener('input', refresh);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { q.value = ''; refresh(); q.blur(); }
@@ -648,7 +543,7 @@
   });
   refresh();
 
-  // ===== Theme toggle =====
+  // Theme toggle
   const themeBtn = document.getElementById('theme');
   themeBtn.addEventListener('click', () => {
     const isDark = document.documentElement.classList.toggle('dark');

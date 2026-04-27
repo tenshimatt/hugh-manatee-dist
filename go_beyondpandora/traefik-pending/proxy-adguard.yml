@@ -1,0 +1,34 @@
+# Traefik configs for the two-node AdGuard Home cluster.
+# Both run their web UI on port 80 (plain HTTP).
+http:
+  routers:
+    adguard-rtr:
+      entryPoints:
+        - websecure
+      rule: Host(`adguard.beyondpandora.com`)
+      service: adguard-svc
+      middlewares:
+        - chain-auth@file
+      tls:
+        certResolver: letsencrypt
+    adguard-2-rtr:
+      entryPoints:
+        - websecure
+      rule: Host(`adguard-2.beyondpandora.com`)
+      service: adguard-2-svc
+      middlewares:
+        - chain-auth@file
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    adguard-svc:
+      loadBalancer:
+        servers:
+          - url: http://10.90.10.14:80
+        passHostHeader: true
+    adguard-2-svc:
+      loadBalancer:
+        servers:
+          - url: http://10.90.10.49:80
+        passHostHeader: true

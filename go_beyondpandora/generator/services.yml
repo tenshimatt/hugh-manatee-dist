@@ -1,0 +1,399 @@
+# Curated metadata for go.beyondpandora.com.
+# generate.py merges this with the live Traefik subdomain list.
+#
+# Layout: sections (display order) + per-host service overrides.
+# Any subdomain present in Traefik but missing from `services` below is still
+# emitted, slotted into `default_section`, with a friendly default name.
+#
+# Icons: { slug: foo }       → CDN logo from homarr-labs/dashboard-icons
+#        { svg: name, tone } → Inline Lucide icon, tone=sky|teal|gold
+# If both → tries CDN first, falls back to the SVG on 404 (handled in HTML).
+
+sections:
+  - { id: home,           label: "Home",            accent: sky  }
+  - { id: dashboards,     label: "Dashboards",      accent: sky  }
+  - { id: projects-ai,    label: "Projects & AI",   accent: teal }
+  - { id: apps,           label: "Apps",            accent: gold }
+  - { id: automation,     label: "Automation",      accent: sky  }
+  - { id: media,          label: "Media",           accent: teal }
+  - { id: tools,          label: "Search & Tools",  accent: gold }
+  - { id: websites,       label: "Websites",        accent: teal }
+  - { id: infrastructure, label: "Infrastructure",  accent: sky  }
+  - { id: uncategorized,  label: "Uncategorized",   accent: gold }
+
+default_section: uncategorized
+
+services:
+
+  # =================================================================
+  # Home
+  # =================================================================
+  surthrival.beyondpandora.com:
+    name: "Surthrival (Nomad)"
+    desc: "Home / family hub"
+    section: home
+    icon: { svg: home, tone: sky }
+  homeassistant.beyondpandora.com:
+    name: "Home Assistant"
+    desc: "Home automation"
+    section: home
+    icon: { slug: home-assistant }
+
+  # =================================================================
+  # Dashboards
+  # =================================================================
+  portal.beyondpandora.com:
+    name: "Hermes Portal"
+    desc: "Laptop / GPU / services health"
+    section: dashboards
+    icon: { svg: activity, tone: sky }
+  labs.beyondpandora.com:
+    name: "Sovrein Labs"
+    desc: "Project launchpad (Archon, JWM, …)"
+    section: dashboards
+    icon: { svg: flaskconical, tone: sky }
+  automagic.beyondpandora.com:
+    name: "Automagic Console"
+    desc: "PLAUD → n8n → Plane pipeline"
+    section: dashboards
+    icon: { svg: workflow, tone: sky }
+  pvedash.beyondpandora.com:
+    name: "Proxmox Dash"
+    desc: "PVE custom dashboard"
+    section: dashboards
+    icon: { slug: proxmox }
+  pve-cluster.beyondpandora.com:
+    name: "PVE Cluster"
+    desc: "Cluster status view"
+    section: dashboards
+    icon: { slug: proxmox }
+  komodo.beyondpandora.com:
+    name: "Komodo"
+    desc: "Container orchestrator UI"
+    section: dashboards
+    icon: { slug: komodo }
+
+  # =================================================================
+  # Projects & AI
+  # =================================================================
+  archon.beyondpandora.com:
+    name: "Archon v2"
+    desc: "Knowledge base v2 (port 5173)"
+    section: projects-ai
+    icon: { svg: bookopen, tone: teal }
+  archon-v1.beyondpandora.com:
+    name: "Archon v1"
+    desc: "Knowledge base v1 (port 3737)"
+    section: projects-ai
+    icon: { svg: bookopen, tone: teal }
+  openwebui.beyondpandora.com:
+    name: "Open WebUI"
+    desc: "LLM chat"
+    section: projects-ai
+    icon: { slug: open-webui }
+  ai-gateway.beyondpandora.com:
+    name: "LiteLLM"
+    desc: "Model gateway"
+    section: projects-ai
+    icon: { svg: plug, tone: teal }
+  ollama.beyondpandora.com:
+    name: "Ollama"
+    desc: "Local LLM runtime"
+    section: projects-ai
+    icon: { slug: ollama }
+  flowiseai.beyondpandora.com:
+    name: "Flowise"
+    desc: "LLM flow builder"
+    section: projects-ai
+    icon: { slug: flowise }
+  chat.beyondpandora.com:
+    name: "Chat"
+    desc: "General chat interface"
+    section: projects-ai
+    icon: { svg: messagecircle, tone: teal }
+  pandomagic.beyondpandora.com:
+    name: "Pandomagic"
+    desc: "Internal AI tooling"
+    section: projects-ai
+    icon: { svg: sparkles, tone: teal }
+  jwm-demo.beyondpandora.com:
+    name: "JWM Demo"
+    desc: "Sovrein customer project"
+    section: projects-ai
+    icon: { svg: building2, tone: teal }
+  jwm-erp.beyondpandora.com:
+    name: "JWM ERPNext"
+    desc: "Frappe backend (admin)"
+    section: projects-ai
+    icon: { svg: briefcase, tone: teal }
+  jwm-ai.beyondpandora.com:
+    name: "JWM AI"
+    desc: "JWM AI tooling"
+    section: projects-ai
+    icon: { svg: cpu, tone: teal }
+
+  # =================================================================
+  # Apps
+  # =================================================================
+  supercloud.beyondpandora.com:
+    name: "NextCloud (supercloud)"
+    desc: "Primary NextCloud"
+    section: apps
+    icon: { slug: nextcloud }
+  kumo.beyondpandora.com:
+    name: "NextCloud (kumo)"
+    desc: "Secondary NextCloud"
+    section: apps
+    icon: { slug: nextcloud }
+  files.beyondpandora.com:
+    name: "Files"
+    desc: "General file access"
+    section: apps
+    icon: { svg: folder, tone: gold }
+  collabora.beyondpandora.com:
+    name: "Collabora Office"
+    desc: "Online docs editor"
+    section: apps
+    icon: { slug: collabora-online }
+  immich.beyondpandora.com:
+    name: "Immich"
+    desc: "Self-hosted photos"
+    section: apps
+    icon: { slug: immich }
+  plane.beyondpandora.com:
+    name: "Plane"
+    desc: "Project management"
+    section: apps
+    icon: { slug: plane }
+  project.beyondpandora.com:
+    name: "Plane (alias)"
+    desc: "Project management (alt URL)"
+    section: apps
+    icon: { slug: plane }
+  bookstack.beyondpandora.com:
+    name: "BookStack"
+    desc: "Wiki / docs"
+    section: apps
+    icon: { slug: bookstack }
+  documenso.beyondpandora.com:
+    name: "Documenso"
+    desc: "E-sign"
+    section: apps
+    icon: { slug: documenso }
+  draw.beyondpandora.com:
+    name: "Excalidraw"
+    desc: "Whiteboard"
+    section: apps
+    icon: { slug: excalidraw }
+  obsidian.beyondpandora.com:
+    name: "Obsidian Sync"
+    desc: "Self-hosted LiveSync"
+    section: apps
+    icon: { slug: obsidian }
+  matrix.beyondpandora.com:
+    name: "Matrix"
+    desc: "Federated chat"
+    section: apps
+    icon: { slug: matrix }
+  mail.beyondpandora.com:
+    name: "Mail"
+    desc: "Mail server admin"
+    section: apps
+    icon: { svg: mail, tone: gold }
+  webmail.beyondpandora.com:
+    name: "Webmail"
+    desc: "Webmail client"
+    section: apps
+    icon: { svg: mail, tone: gold }
+  syncthing.beyondpandora.com:
+    name: "Syncthing"
+    desc: "P2P file sync"
+    section: apps
+    icon: { slug: syncthing }
+  supercrm.beyondpandora.com:
+    name: "SuperCRM"
+    desc: "CRM"
+    section: apps
+    icon: { svg: briefcase, tone: gold }
+
+  # =================================================================
+  # Automation
+  # =================================================================
+  n8n.beyondpandora.com:
+    name: "n8n (core)"
+    desc: "Main automations"
+    section: automation
+    icon: { slug: n8n }
+  n8n-ops.beyondpandora.com:
+    name: "n8n Ops"
+    desc: "Ops automations"
+    section: automation
+    icon: { slug: n8n }
+  n8n-ops-mcp.beyondpandora.com:
+    name: "n8n Ops MCP"
+    desc: "MCP-enabled ops automations"
+    section: automation
+    icon: { slug: n8n }
+  n8nsamco.beyondpandora.com:
+    name: "n8n SAMCO"
+    desc: "Client workflows"
+    section: automation
+    icon: { slug: n8n }
+  n8nsuperluxe.beyondpandora.com:
+    name: "n8n Superluxe"
+    desc: "Client workflows"
+    section: automation
+    icon: { slug: n8n }
+  n8nsovrein.beyondpandora.com:
+    name: "n8n Sovrein"
+    desc: "Sovrein workflows"
+    section: automation
+    icon: { slug: n8n }
+
+  # =================================================================
+  # Media
+  # =================================================================
+  radarr.beyondpandora.com:
+    name: "Radarr"
+    desc: "Movies"
+    section: media
+    icon: { slug: radarr }
+  sonarr.beyondpandora.com:
+    name: "Sonarr"
+    desc: "TV"
+    section: media
+    icon: { slug: sonarr }
+  prowlarr.beyondpandora.com:
+    name: "Prowlarr"
+    desc: "Indexer"
+    section: media
+    icon: { slug: prowlarr }
+  sabnzbd.beyondpandora.com:
+    name: "SABnzbd"
+    desc: "Usenet downloader"
+    section: media
+    icon: { slug: sabnzbd }
+  download.beyondpandora.com:
+    name: "Download"
+    desc: "Torrent / general download"
+    section: media
+    icon: { svg: download, tone: teal }
+  request.beyondpandora.com:
+    name: "Overseerr"
+    desc: "Media requests"
+    section: media
+    icon: { slug: overseerr }
+  stream.beyondpandora.com:
+    name: "Stream"
+    desc: "Streaming server"
+    section: media
+    icon: { slug: plex }
+
+  # =================================================================
+  # Search & Tools
+  # =================================================================
+  search.beyondpandora.com:
+    name: "SearXNG"
+    desc: "Private metasearch"
+    section: tools
+    icon: { slug: searxng }
+  start.beyondpandora.com:
+    name: "Start Page"
+    desc: "Browser homepage (SearXNG alias)"
+    section: tools
+    icon: { slug: searxng }
+  ittools.beyondpandora.com:
+    name: "IT Tools"
+    desc: "Sysadmin toolkit"
+    section: tools
+    icon: { slug: it-tools }
+  mcpmon.beyondpandora.com:
+    name: "MCP Monitor"
+    desc: "MCP server monitor"
+    section: tools
+    icon: { svg: monitor, tone: gold }
+
+  # =================================================================
+  # Websites
+  # =================================================================
+  rawgle.beyondpandora.com:
+    name: "Rawgle"
+    desc: "Rawgle main site"
+    section: websites
+    icon: { svg: globe, tone: teal }
+  wordpress-yld.beyondpandora.com:
+    name: "WordPress YLD"
+    desc: "YLD WordPress site"
+    section: websites
+    icon: { slug: wordpress }
+
+  # =================================================================
+  # Infrastructure
+  # =================================================================
+  pve.beyondpandora.com:
+    name: "Proxmox VE"
+    desc: "Hypervisor"
+    section: infrastructure
+    icon: { slug: proxmox }
+  pbs.beyondpandora.com:
+    name: "Proxmox Backup"
+    desc: "PBS"
+    section: infrastructure
+    icon: { slug: proxmox }
+  traefik.beyondpandora.com:
+    name: "Traefik"
+    desc: "Reverse proxy dashboard"
+    section: infrastructure
+    icon: { slug: traefik }
+  portainer.beyondpandora.com:
+    name: "Portainer"
+    desc: "Docker UI"
+    section: infrastructure
+    icon: { slug: portainer }
+  router.beyondpandora.com:
+    name: "UniFi Gateway"
+    desc: "Router / WireGuard"
+    section: infrastructure
+    icon: { slug: unifi }
+  signin.beyondpandora.com:
+    name: "Authentik"
+    desc: "Identity / SSO"
+    section: infrastructure
+    icon: { slug: authentik }
+  auth.beyondpandora.com:
+    name: "Auth (Authentik)"
+    desc: "Identity / SSO (alt)"
+    section: infrastructure
+    icon: { slug: authentik }
+  superops.beyondpandora.com:
+    name: "SuperOps"
+    desc: "Ops dashboard"
+    section: infrastructure
+    icon: { svg: cogserver, tone: sky }
+  mongodb.beyondpandora.com:
+    name: "MongoDB"
+    desc: "Mongo admin"
+    section: infrastructure
+    icon: { slug: mongodb }
+  wazuh.beyondpandora.com:
+    name: "Wazuh"
+    desc: "Security monitoring"
+    section: infrastructure
+    icon: { slug: wazuh }
+  adguard.beyondpandora.com:
+    name: "AdGuard Home (primary)"
+    desc: "DNS filter — node 1 of 2"
+    section: infrastructure
+    icon: { slug: adguard-home }
+  adguard-2.beyondpandora.com:
+    name: "AdGuard Home (secondary)"
+    desc: "DNS filter — node 2 of 2"
+    section: infrastructure
+    icon: { slug: adguard-home }
+
+# Synthetic services (NOT in Traefik discovery; emitted only if listed here AND
+# the host has been added to traefik-pending/ for review).
+synthetic:
+  - host: archon-v1.beyondpandora.com
+  # pbs.beyondpandora.com is intentionally in `services` above so it shows up
+  # once the Traefik route lands (auto-included from the Traefik scan after).

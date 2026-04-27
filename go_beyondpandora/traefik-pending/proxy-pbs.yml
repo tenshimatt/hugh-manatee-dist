@@ -1,0 +1,25 @@
+# Traefik config for pbs.beyondpandora.com
+# Backend: CT 102 (10.90.10.2:8007), HTTPS with self-signed cert.
+# PBS only speaks HTTPS, so we use scheme: https + insecureSkipVerify.
+http:
+  routers:
+    pbs-rtr:
+      entryPoints:
+        - websecure
+      rule: Host(`pbs.beyondpandora.com`)
+      service: pbs-svc
+      middlewares:
+        - chain-auth@file
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    pbs-svc:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: https://10.90.10.2:8007
+
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true

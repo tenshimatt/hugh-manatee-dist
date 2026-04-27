@@ -1,0 +1,21 @@
+# Traefik config for archon-v1.beyondpandora.com
+# Backend: CT 111 (10.90.10.11:3737), the Archon v1 UI.
+# Archon v2 lives at archon.beyondpandora.com → :5173 (proxy-archon.yml).
+http:
+  routers:
+    archon-v1-rtr:
+      entryPoints:
+        - websecure
+      rule: Host(`archon-v1.beyondpandora.com`)
+      service: archon-v1-svc
+      middlewares:
+        - chain-auth@file
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    archon-v1-svc:
+      loadBalancer:
+        servers:
+          - url: http://10.90.10.11:3737
+        passHostHeader: true

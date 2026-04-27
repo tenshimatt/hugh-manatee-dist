@@ -1,0 +1,24 @@
+# Traefik config for wazuh.beyondpandora.com
+# Backend: CT 109 (10.90.10.9:5601), Wazuh dashboard, HTTPS with self-signed cert.
+http:
+  routers:
+    wazuh-rtr:
+      entryPoints:
+        - websecure
+      rule: Host(`wazuh.beyondpandora.com`)
+      service: wazuh-svc
+      middlewares:
+        - chain-auth@file
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    wazuh-svc:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: https://10.90.10.9:5601
+
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true

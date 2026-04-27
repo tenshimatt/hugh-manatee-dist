@@ -1,0 +1,44 @@
+<footer>
+  <span class="pill"><span class="dot"></span>Beyond Pandora · auto-generated from Traefik routes</span>
+  <span id="count"></span>
+</footer>
+
+</div>
+
+<script>
+  // Search filter
+  const q = document.getElementById('q');
+  const cards = Array.from(document.querySelectorAll('a.card'));
+  const sections = Array.from(document.querySelectorAll('section'));
+  const countEl = document.getElementById('count');
+  const total = cards.length;
+  function refresh() {
+    const term = q.value.trim().toLowerCase();
+    let visible = 0;
+    for (const c of cards) {
+      const hit = !term || c.textContent.toLowerCase().includes(term);
+      c.classList.toggle('hidden', !hit);
+      if (hit) visible++;
+    }
+    for (const s of sections) {
+      const anyVisible = Array.from(s.querySelectorAll('a.card')).some(c => !c.classList.contains('hidden'));
+      s.classList.toggle('hidden', !anyVisible);
+    }
+    countEl.textContent = term ? `${visible}/${total}` : `${total} services`;
+  }
+  q.addEventListener('input', refresh);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { q.value = ''; refresh(); q.blur(); }
+    else if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+  });
+  refresh();
+
+  // Theme toggle
+  const themeBtn = document.getElementById('theme');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    try { localStorage.setItem('go-theme', isDark ? 'dark' : 'light'); } catch(e) {}
+  });
+</script>
+</body>
+</html>
