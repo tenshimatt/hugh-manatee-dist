@@ -1,0 +1,31 @@
+# Project-scoped Archon harness config for Hugh Manatee.
+# Read by archon-cli when run from the repo root.
+
+worktree:
+  baseBranch: main
+
+# Where the per-project Obsidian docs live (used by workflow nodes that
+# need to read or write the PRD anchor + architecture diagrams).
+obsidian:
+  project: /Users/mattwright/pandora/Obsidian/PROJECTS/Hugh Manatee
+  prd: 10-product/PRD.md
+  architecture_dir: 20-architecture
+
+# External services the workflow nodes call into.
+integrations:
+  plane:
+    base_url: https://plane.beyondpandora.com
+    workspace: beyond-pandora
+    project_id: a0855ada-7e70-494d-99dd-07c2598924d3
+    label_archon_ready:   a1cdc1dd-cf58-46a3-a6b6-17c876821f3d
+    label_archon_running: 45554f58-a5dd-449e-902e-06ff2b714bc8
+    label_archon_done:    bd48f0bc-989e-4969-85c5-efc861a17056
+    label_archon_failed:  f5a565dc-d117-4ed3-afb7-3609473e7233
+    feedback_label_id: TBD-PHASE-5
+    # token loaded via env PLANE_API_TOKEN
+  archon_rag:
+    base_url: http://localhost:8181
+    project_id: b096ff1c-b752-4818-91c5-617c9cd0932b
+  github:
+    repo: tenshimatt/hugh-manatee-dist
+    default_reviewer: tenshimatt
