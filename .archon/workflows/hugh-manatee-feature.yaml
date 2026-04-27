@@ -46,7 +46,7 @@ nodes:
 
   - id: mission-triage
     depends_on: [prime-context]
-    provider: claude
+    provider: deepseek
     model: deepseek-v4-flash
     prompt: |
       Triage the input against mission.md (loaded in primed context above).
@@ -104,7 +104,7 @@ nodes:
 
   - id: classify
     depends_on: [gate-mission]
-    provider: claude
+    provider: deepseek
     model: deepseek-v4-pro
     context: fresh
     prompt: |
@@ -169,7 +169,7 @@ nodes:
 
   - id: prd-extend
     depends_on: [gate-classify]
-    provider: claude
+    provider: deepseek
     model: deepseek-v4-pro
     prompt: |
       You are the architecture partner for Hugh Manatee. Your job in this step
@@ -249,7 +249,7 @@ nodes:
 
   - id: plan
     depends_on: [rag-check]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -311,7 +311,7 @@ nodes:
 
   - id: security-review
     depends_on: [rag-check, plan]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -356,7 +356,7 @@ nodes:
 
   - id: excalidraw-business
     depends_on: [plan]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -424,7 +424,7 @@ nodes:
 
   - id: excalidraw-data
     depends_on: [plan]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -480,7 +480,7 @@ nodes:
 
   - id: excalidraw-application
     depends_on: [plan]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -533,7 +533,7 @@ nodes:
 
   - id: excalidraw-technology
     depends_on: [plan]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -586,7 +586,7 @@ nodes:
 
   - id: excalidraw-security
     depends_on: [plan, security-review]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -639,7 +639,7 @@ nodes:
 
   - id: excalidraw-integration
     depends_on: [plan]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
@@ -719,7 +719,7 @@ nodes:
 
   - id: plane-tickets
     depends_on: [gate-plan]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-flash
     prompt: |
@@ -967,7 +967,7 @@ nodes:
 
   - id: final-review
     depends_on: [validate]
-    provider: claude
+    provider: deepseek
     context: fresh
     model: deepseek-v4-pro
     prompt: |
