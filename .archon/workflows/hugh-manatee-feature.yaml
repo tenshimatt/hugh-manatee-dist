@@ -255,16 +255,32 @@ nodes:
     prompt: |
       Build the implementation plan for PRD section $prd-extend.output.prd_section.
 
+      ## HARD STACK CONSTRAINT — read this before anything else (Bug HM-A)
+      Hugh Manatee is an **Expo / React Native iOS app**. The repo contains:
+        - `app/`    — Expo SDK 54, React Native 0.81.5 screens and components
+        - `worker/` — a single stateless Cloudflare Worker (TypeScript, no framework)
+      There is NO web frontend, NO Next.js, NO API routes, NO Express, NO database server,
+      NO collaborative editing, NO ProseMirror, NO version-polling UI, NO accounts (v1 is
+      on-device only per §11). If RAG findings describe web/API patterns from another
+      project, IGNORE them — they are not applicable here.
+
+      The plan MUST be implementable by editing files in `app/` and optionally `worker/`.
+      If your plan would create `next.config.js`, `pages/`, `src/api/`, `package.json`
+      at root, or any web-framework boilerplate → STOP. You are planning the wrong
+      feature. Re-read the input and PRD §1 (iOS voice recorder for elderly users).
+
+      ## PLANNING
+
       Use the RAG findings ($rag-check.output) for prior-art context — if
-      a similar pattern exists in the Archon v1 knowledge base, follow
-      it. If not, design from scratch.
+      a similar pattern exists in the Archon v1 knowledge base AND it applies
+      to a React Native app, follow it. Otherwise design from scratch.
 
       Plan must include:
         - List of tasks (atomic, 30 min – 4 hrs each)
         - For each task: acceptance criteria written as Playwright/Maestro
           assertions (exact selectors / text expectations) — these become
           the test-first artefacts
-        - File paths the task will touch
+        - File paths the task will touch (must be under `app/` or `worker/`)
         - Risk callouts (security, performance, cost)
         - Estimated token budget for the implement loop
 
@@ -779,6 +795,24 @@ nodes:
       Do NOT respond with a JSON summary instead of doing the work.
       Do NOT abbreviate the spec content. Each Write call should produce
       a complete, runnable Playwright test file.
+
+      ## PLAYWRIGHT PATTERNS — REQUIRED READING BEFORE WRITING TESTS (Bug HM-B)
+      This is a React Native app. When writing tests that need multiple auth contexts:
+        - Use `browser.newContext()` or the `request` fixture's `newContext()` method.
+        - NEVER access `(context as any)._playwright` or `(apiContext as any)._playwright`.
+          The `_playwright` private property does NOT exist in Playwright — any test
+          that accesses it will throw `TypeError: Cannot read properties of undefined
+          (reading 'request')` immediately.
+        - For multi-user scenarios: declare a second `{ browser }` fixture and call
+          `browser.newContext({ extraHTTPHeaders: {...} })` directly.
+        - For API-only multi-context: use `import { request as playwrightRequest } from
+          '@playwright/test'; const ctx = await playwrightRequest.newContext({...})`.
+
+      ## STACK CONSTRAINT (same as plan — belt-and-suspenders)
+      Tests must target the React Native app or the Cloudflare Worker endpoint.
+      Do NOT write tests for web pages, Next.js routes, or REST APIs that don't
+      exist in this repo. If the plan described something web-shaped, test only
+      the React Native screen or Worker endpoint that maps to it.
 
       After all Writes, run `bun x playwright test --project=iphone-15
       tests/e2e/<your-files>` and confirm RED. If green/skipped, fix.

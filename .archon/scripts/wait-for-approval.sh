@@ -25,10 +25,16 @@ MARKER="${MARKER_DIR}/${GATE}.pending"
 echo "PENDING $(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$MARKER"
 
 # Post a comment to the originating Plane ticket if we have one.
+# Bug HM-C fix: capture the gate comment's own ID and use it as LAST_SEEN.
+# Previously we did a separate fetch after posting — but the fetch could fail
+# (empty LAST_SEEN) and then the poll loop would accept any prior :approve:
+# (e.g. the one for gate-prd) as a valid gate-plan approval. Now we set
+# LAST_SEEN = the gate comment's ID, which we know for certain.
+LAST_SEEN=""
 if [[ -n "$TICKET" ]]; then
-  bash "$(dirname "$0")/plane-comment.sh" "$TICKET" \
+  LAST_SEEN="$(bash "$(dirname "$0")/plane-comment.sh" "$TICKET" \
     "<p>🛂 <strong>Gate: ${GATE}</strong></p><p>${MESSAGE}</p><p>Reply <code>:approve:</code> to continue or <code>:reject: &lt;reason&gt;</code> to halt.</p>" \
-    >/dev/null 2>&1 || true
+    2>/dev/null)" || LAST_SEEN=""
 fi
 
 echo "════════════════════════════════════════════════════════════" >&2
@@ -39,16 +45,8 @@ echo "  Local approve:    rm '${MARKER}'" >&2
 echo "  Local reject:     echo 'REJECT: <reason>' > '${MARKER}'" >&2
 [[ -n "$TICKET" ]] && echo "  Plane approve:    comment ':approve:' on ticket $TICKET" >&2
 [[ -n "$TICKET" ]] && echo "  Plane reject:     comment ':reject: <reason>'" >&2
+[[ -n "$LAST_SEEN" ]] && echo "  Gate anchor:      comment $LAST_SEEN (only replies after this count)" >&2
 echo "════════════════════════════════════════════════════════════" >&2
-
-# Track the newest comment id at gate-start. Only comments newer than this
-# count toward approval — prevents the bot's own gate-notice (which contains
-# the literal text `:approve:` as instructions) from auto-approving the gate.
-LAST_SEEN=""
-if [[ -n "$TICKET" && -n "${PLANE_API_TOKEN:-}" ]]; then
-  LAST_SEEN="$(bash "$(dirname "$0")/plane-fetch-ticket.sh" "$TICKET" 2>/dev/null \
-    | jq -r '(.comments.results // .comments) | sort_by(.created_at) | reverse | .[0].id // ""' 2>/dev/null || echo '')"
-fi
 
 # Poll up to 24h
 for _ in $(seq 1 8640); do
