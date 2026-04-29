@@ -45,14 +45,29 @@ class FrappeClient:
         self.dry_run = dry_run
         self._last = 0.0
         self._sess = requests.Session()
-        self._sess.headers.update(
-            {
-                "Host": host_header,
-                "Authorization": f"token {api_key}:{api_secret}",
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            }
-        )
+        # Allow session-cookie auth as a fallback when token doesn't validate
+        # (Frappe API key/secret encryption can desync after restores). Set
+        # FRAPPE_USR + FRAPPE_PWD to use admin/admin login → sid cookie.
+        usr = os.getenv("FRAPPE_USR")
+        pwd = os.getenv("FRAPPE_PWD")
+        if usr and pwd:
+            r = self._sess.post(
+                f"{base_url.rstrip('/')}/api/method/login",
+                data={"usr": usr, "pwd": pwd},
+                headers={"Host": host_header},
+                timeout=20,
+            )
+            r.raise_for_status()
+            self._sess.headers.update({"Host": host_header, "Accept": "application/json", "Content-Type": "application/json"})
+        else:
+            self._sess.headers.update(
+                {
+                    "Host": host_header,
+                    "Authorization": f"token {api_key}:{api_secret}",
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                }
+            )
         self.log_path = log_path
         # counters
         self.stats = {

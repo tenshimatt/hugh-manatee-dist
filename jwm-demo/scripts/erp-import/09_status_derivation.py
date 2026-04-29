@@ -49,7 +49,7 @@ LOG.addHandler(_tmp_handler)
 # ------------------------------ source file ---------------------------------
 ATTACH_CANDIDATES = [
     "/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/attachments/1010 A shop Production Schedule.xlsx",
-    "/Users/mattwright/pandora/Obsidian/PLAUD/PROJECTS/JWM/50-research/attachments/1010 A shop Production Schedule.xlsx",
+    "/Users/mattwright/pandora/Obsidian/PROJECTS/JWM/50-research/attachments/1010 A shop Production Schedule.xlsx",
 ]
 
 # ------------------------------ canonical stages ----------------------------
