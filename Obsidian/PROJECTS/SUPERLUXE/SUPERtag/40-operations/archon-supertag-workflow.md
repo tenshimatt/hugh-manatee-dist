@@ -14,6 +14,46 @@
 | 5 Out-of-tree registration | ✅ Done (2026-04-28) | RAG 5b44f239, poller-st.timer live |
 | 6 Memory + docs | ✅ Done | archon_supertag_workflow.md in memory |
 | 7 Smoke test | ✅ Done (2026-04-28) | STAG-16 ran 15/16 nodes (architect-review fails: Claude SDK root restriction — known, non-blocking) |
+| 8 P1 implementation | ✅ Done (2026-04-29) | STAG-17–22 implemented and merged (see below) |
+| 9 P2 implementation | ✅ Done (2026-04-29) | STAG-23–26 implemented and merged |
+| 10 Deployed | ✅ Done (2026-04-29) | CT 120 running supertag-web:3202 + supertag-api:3203 |
+
+## Implementation status (2026-04-29)
+
+### Tickets completed
+
+| Ticket | Description | PR | Status |
+|--------|-------------|-----|--------|
+| STAG-17 | PostgreSQL schema + migrations | #1 | ✅ |
+| STAG-18 | Next.js 14 + Fastify scaffold + OIDC stub | #2 | ✅ |
+| STAG-19 | ERC-721 smart contract (Polygon Amoy) | #3 | ✅ |
+| STAG-20 | Artwork onboarding wizard (7-step) | #4 | ✅ |
+| STAG-21 | Certificate PDF generator (Puppeteer A4) | #5 | ✅ |
+| STAG-22 | Public verify page + provenance timeline | #6 | ✅ |
+| DB wiring | Real postgres.js queries in all routes | #7 | ✅ |
+| STAG-23 | Artist portal (artwork confirm + image upload) | #8 | ✅ |
+| STAG-24 | Ownership transfer admin UI | #9 | ✅ |
+| STAG-25 | Lost/stolen reporting + replacement flow | #9 | ✅ |
+| STAG-26 | Public search page (FTS + filters) | #8,#10 | ✅ |
+
+### Remaining stubs (wiring needed)
+
+| Item | Notes |
+|------|-------|
+| Authentik OIDC JWT verify | `packages/api/src/plugins/auth.ts` — parse only, no verify |
+| R2 image upload | Stub in artwork wizard step 3 — STAG-28 |
+| PDF endpoint wiring | `GET /certificates/:id/pdf` returns 501 — STAG-21 wired but not connected to DB |
+| Smart contract deploy | `packages/contracts/` ready, needs DEPLOYER_PRIVATE_KEY from Proxmox vault |
+| CT 120 git pull deploy | Manual tar push — automate with `git pull` on CT 120 or CI webhook |
+
+### Deployment (2026-04-29)
+
+| Service | Port | URL |
+|---------|------|-----|
+| Next.js web | 3202 | https://supertag.beyondpandora.com |
+| Fastify API | 3203 | https://supertag-api.beyondpandora.com |
+| API health | — | https://supertag-api.beyondpandora.com/health |
+| DB | CT 117:5432 | `postgresql://postgres:ARChon@10.90.10.17:5432/postgres` |
 
 ## Key IDs
 
