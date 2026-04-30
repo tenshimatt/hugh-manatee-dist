@@ -1,7 +1,7 @@
 # Task backlog — mirror of Plane
 
 Source of truth: [plane.beyondpandora.com/hugh-manatee](https://plane.beyondpandora.com/hugh-manatee/projects/340bef5e-9194-449d-9f55-38cad79a2c8c/issues/)
-**Last synced:** 2026-04-24. HM-8 through HM-73 live in Plane with full descriptions.
+**Last synced:** 2026-04-30. HM-8 through HM-73 live in Plane.
 
 ---
 
@@ -44,6 +44,14 @@ Source of truth: [plane.beyondpandora.com/hugh-manatee](https://plane.beyondpand
 
 ---
 
+## 🔄 In Progress
+
+| HM# | ID | Title | Notes |
+|---|---|---|---|
+| HM-62 | A11Y-01 | Dynamic Type XXXL audit all screens | Pandomagic HUGH-35 run 4 active (2026-04-30). gate-prd pending. |
+
+---
+
 ## 🔲 Todo — next up
 
 ### Urgent / High
@@ -52,7 +60,6 @@ Source of truth: [plane.beyondpandora.com/hugh-manatee](https://plane.beyondpand
 | HM-11 | — | Rotate exposed Expo token from session logs |
 | HM-50 | VOICE-04 | VAD/barge-in validation with elderly users |
 | HM-51 | DATA-02 | Audio persistence — buffer to local file |
-| HM-62 | A11Y-01 | Dynamic Type XXXL audit all screens |
 | HM-66 | BETA-01 | Listening tests 3–5 elderly users |
 | HM-68 | BETA-03 | Replace PLACEHOLDER_VOICES with real IDs |
 | HM-69 | BETA-04 | EAS production build iOS + Android |

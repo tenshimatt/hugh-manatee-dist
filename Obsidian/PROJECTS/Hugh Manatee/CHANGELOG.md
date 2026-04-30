@@ -1,5 +1,33 @@
 # Hugh Manatee — Changelog
 
+## 2026-04-30 — Pandomagic run 4 in progress (A11Y-01 Dynamic Type XXXL)
+
+Archon workflow HUGH-35 triggered for A11Y-01 (Dynamic Type support up to XXXL across all screens). Three prior runs exposed and fixed four harness-level bugs:
+
+| Bug | Description | Fix |
+|-----|-------------|-----|
+| HM-A | plan node generated a Next.js web app instead of React Native | Added explicit Expo/RN stack constraint to `plan` prompt |
+| HM-B | test-first used `_playwright.request` private Playwright API — 6/57 tests crashed | Added PLAYWRIGHT PATTERNS section to `test-first` prompt |
+| HM-C | gate-plan auto-approved by a stale `:approve:` from gate-prd | `wait-for-approval.sh` now anchors on the gate comment's own ID as `LAST_SEEN` |
+| HM-D | architect-review Claude Code subprocess exceeded 60s `first_event_timeout` on CT 111 | Switched `architect-review` to `deepseek-v4-pro` (HTTP provider, no subprocess) |
+
+Run 4 triggered 2026-04-30 08:27 UTC. Awaiting gate-prd approval before continuing to plan → implement → PR.
+
+Dist repo: `tenshimatt/hugh-manatee-dist` commits `7def6d0` (HM-A/B/C), `cc01eaa` (HM-D attempt 1), `1576d6c` (HM-D final fix).
+
+---
+
+## 2026-04-27 — Pandomagic conversion complete
+
+Hugh Manatee is now on the Pandomagic Archon-driven dev process:
+- Workflow YAML: `tenshimatt/hugh-manatee-dist:.archon/workflows/hugh-manatee-feature.yaml` (26 nodes)
+- Poller: `archon-plane-poller-hm.timer` on CT 111 (fires every 5 min)
+- All governance files in dist repo: `mission.md`, `factory-rules.md`, `CLAUDE.md`, `docs/architecture/levels.md`
+- 6 Rawgle harness rails backported
+- DeepSeek first-class provider wired for all 25 worker nodes
+
+---
+
 ## 2026-04-24 — voice live end-to-end + UX polish
 
 ### Voice works

@@ -65,8 +65,9 @@ Open `https://archon.beyondpandora.com` (Archon v2) → Codebases → `tenshimat
 
 | Tier | Model | Used for |
 |------|-------|---------|
-| Architect | Claude Opus 4.7 | `architect-review` node only |
-| Worker | DeepSeek-V4-Pro / Flash | All 24 other nodes |
+| Worker (all nodes) | DeepSeek-V4-Pro / Flash | All 25 worker nodes including `architect-review` |
+
+> **Note (2026-04-30):** `architect-review` was originally Claude Opus 4.7 but caused a consistent 60s `first_event_timeout` on CT 111 (Bug HM-D). Switched to `deepseek-v4-pro` in commit `1576d6c`.
 
 ## PRD anchor rule
 
@@ -81,3 +82,14 @@ Every Plane ticket description MUST include a `§X.Y` citation to a section in `
 | `CLAUDE.md` | Tech stack + architecture contracts for code agent context |
 | `docs/architecture/levels.md` | L1–L5 pyramid + 7 L4 contract specs |
 | `.archon/config.yaml` | All IDs (Plane, RAG, GitHub) |
+
+---
+
+## Run history
+
+| Run | Date | Ticket | Result | Notes |
+|-----|------|--------|--------|-------|
+| HUGH-35 run 1 | 2026-04-28 | A11Y-01 | Failed at validate | Wrong feature (Next.js instead of RN), wrong Playwright API, stale gate approval. Bugs HM-A/B/C found. |
+| HUGH-35 run 2 | 2026-04-29 | A11Y-01 | Failed at architect-review | Claude Opus 4.7 subprocess `first_event_timeout` × 3 retries. Bug HM-D found. |
+| HUGH-35 run 3 | 2026-04-30 | A11Y-01 | Failed at architect-review | Removing `[1m]` extended thinking did not fix HM-D. |
+| HUGH-35 run 4 | 2026-04-30 | A11Y-01 | **In progress** | All 4 bugs fixed. architect-review on DeepSeek. Awaiting gate-prd. |
