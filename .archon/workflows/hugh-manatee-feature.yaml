@@ -290,7 +290,7 @@ nodes:
   - id: architect-review
     depends_on: [rag-check, plan]
     provider: claude
-    model: claude-opus-4-7[1m]
+    model: claude-opus-4-7
     context: fresh
     prompt: |
       You are the adversarial architect-reviewer. Your job is to
