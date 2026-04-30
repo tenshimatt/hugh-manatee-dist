@@ -17,8 +17,10 @@
 | 8 P1 implementation | ✅ Done (2026-04-29) | STAG-17–22 implemented and merged (see below) |
 | 9 P2 implementation | ✅ Done (2026-04-29) | STAG-23–26 implemented and merged |
 | 10 Deployed | ✅ Done (2026-04-29) | CT 120 running supertag-web:3202 + supertag-api:3203 |
+| 11 Post-deploy fixes | ✅ Done (2026-04-29) | Image upload, artist PATCH, search status fix, field name fixes |
+| 12 Session 2026-04-30 | ✅ Done | IPFS + email code live; CF Access bypass; light mode CSS; theme toggle; mint blocked on MATIC |
 
-## Implementation status (2026-04-29)
+## Implementation status (2026-04-30)
 
 ### Tickets completed
 
@@ -35,15 +37,42 @@
 | STAG-24 | Ownership transfer admin UI | #9 | ✅ |
 | STAG-25 | Lost/stolen reporting + replacement flow | #9 | ✅ |
 | STAG-26 | Public search page (FTS + filters) | #8,#10 | ✅ |
+| STAG-27 | IPFS pinning via Pinata | — | 🔶 Code live, needs `PINATA_JWT` in `/opt/supertag/packages/api/.env` |
+| STAG-29 | Email notifications (cert issued + transfer) | — | 🔶 Code live, needs `RESEND_API_KEY` in same `.env` |
+| STAG-28 | Admin SSO | — | ⏸ Deferred — no auth needed for now |
+
+### Session 2026-04-30 changes
+
+| Change | Status |
+|--------|--------|
+| IPFS pinning (`packages/api/src/routes/artworks.ts`) | ✅ Code deployed — activates on `PINATA_JWT` |
+| Email notifications (`packages/api/src/mailer.ts`) | ✅ Code deployed — activates on `RESEND_API_KEY` |
+| Cloudflare Access bypass (all 4 hostnames) | ✅ James + external users unblocked |
+| Theme toggle visibility | ✅ Fixed |
+| Dark mode foreground contrast bumped | ✅ `--foreground-muted` #a0a3bd→#c8cae0, `--foreground-subtle` #666666→#9496aa |
+| Mint | ⏳ Blocked — wallet needs MATIC (~0.013/tx). 1 token/24h from https://faucet.polygon.technology/ |
+
+### Blockchain deployment (2026-04-29)
+
+| Item | Value |
+|------|-------|
+| Contract | `SUPERtagNFT` |
+| Network | Polygon Amoy (testnet, chainId 80002) |
+| Address | `0x76310a8723284DFE439313A9b93eBEDA10801969` |
+| Deploy tx | `0xdf84d8dcd33c67d47bf9731293134d1a536567963d6c9ef85998c054dbdd97a0` |
+| Deployer | `0x3689b2CCd904599030e48Fe2dA9452d7DE010dCB` |
+| PolygonScan | https://amoy.polygonscan.com/address/0x76310a8723284DFE439313A9b93eBEDA10801969 |
+| Solidity | 0.8.25, evmVersion: cancun (OZ v5 requires mcopy) |
 
 ### Remaining stubs (wiring needed)
 
 | Item | Notes |
 |------|-------|
-| Authentik OIDC JWT verify | `packages/api/src/plugins/auth.ts` — parse only, no verify |
-| R2 image upload | Stub in artwork wizard step 3 — STAG-28 |
-| PDF endpoint wiring | `GET /certificates/:id/pdf` returns 501 — STAG-21 wired but not connected to DB |
-| Smart contract deploy | `packages/contracts/` ready, needs DEPLOYER_PRIVATE_KEY from Proxmox vault |
+| Authentik OIDC JWT verify | No auth for now — `SUPERTAG_DEMO_MODE=true` bypasses admin routes |
+| R2 image upload | Local FS fallback live (`/uploads/`); R2 activates via `R2_*` env vars |
+| Smart contract mint | `POST /artworks/:id/mint` wired — **blocked on MATIC**. Wallet `0x3689b2CCd904599030e48Fe2dA9452d7DE010dCB` balance ~0.003, needs ~0.013/tx. 1 token/24h: https://faucet.polygon.technology/ |
+| IPFS pinning | Code live — add `PINATA_JWT=<key>` to `/opt/supertag/packages/api/.env` |
+| Email notifications | Code live — add `RESEND_API_KEY=<key>` (and optionally `MAIL_FROM`) to same `.env` |
 | CT 120 git pull deploy | Manual tar push — automate with `git pull` on CT 120 or CI webhook |
 
 ### Deployment (2026-04-29)
