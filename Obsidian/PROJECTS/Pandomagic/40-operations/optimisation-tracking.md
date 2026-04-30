@@ -211,14 +211,32 @@ Build: 6 Rawgle rails backported. All 13 worker nodes on DeepSeek first-class pr
 1. Audit RAG project — ensure it contains only HM content (Expo/React Native)
 2. Add explicit stack constraint to plan node prompt: "This is an Expo/React Native iOS app. There is no web backend. No Next.js, no API routes."
 
+**Status: FIXED** — commit `7def6d0` on `tenshimatt/hugh-manatee-dist`
+
 ### Bug HM-B: test-first used `(apiContext as any)._playwright.request.newContext` private API
 
 6/57 tests failed with `TypeError: Cannot read properties of undefined (reading 'request')`. The pattern `(apiContext as any)._playwright.request.newContext` accesses a private Playwright property that doesn't exist. The correct pattern is `request.newContext()` from the `{ request }` fixture or `browser.newContext()`.
 
 **Fix:** Add to test-first prompt: "Use `request.newContext({...})` from the standard Playwright `request` fixture. Never access `_playwright` private properties."
 
+**Status: FIXED** — commit `7def6d0` on `tenshimatt/hugh-manatee-dist`
+
 ### Bug HM-C: gate-plan polling accepted a pre-existing :approve: from gate-prd (Bug 26)
 
 gate-plan polled for any `:approve:` comment on the ticket and found the comment posted for gate-prd approval (which was before the gate-plan comment was posted). Approved itself without human review.
 
-**Fix:** Gate bash scripts must only accept `:approve:` comments created AFTER the gate comment's own `created_at` timestamp. Needs a fix in the gate node bash logic — compare comment created_at to gate comment created_at.
+**Fix:** `wait-for-approval.sh` now captures the gate comment's own ID directly from `plane-comment.sh` stdout and uses it as `LAST_SEEN`. Previously the script did a separate fetch that could fail silently → empty `LAST_SEEN` → all prior comments scanned → stale `:approve:` accepted.
+
+**Status: FIXED** — commit `7def6d0` on `tenshimatt/hugh-manatee-dist`
+
+---
+
+### Bug HM-D: architect-review Claude Code subprocess `first_event_timeout` (60s)
+
+`architect-review` was configured `provider: claude, model: claude-opus-4-7`. The Archon harness spawns a Claude Code subprocess and waits for any stdout within 60s. Across runs 2 and 3 the subprocess produced no output at all (all 3 retries × 60s each), skipping everything from gate-plan onwards.
+
+**Root cause:** Claude Code subprocess cold-start in a non-TTY, non-interactive environment on CT 111 consistently exceeds the 60s `first_event_timeout`. The same node completed in 86s in run 1 (warm state), but fails reliably in subsequent runs. Removing the `[1m]` extended-thinking budget (commit `cc01eaa`) did not resolve it.
+
+**Fix:** Switch architect-review to `provider: deepseek, model: deepseek-v4-pro`. DeepSeek nodes use a direct HTTP provider (no Claude Code subprocess), so the 60s timeout cannot trigger.
+
+**Status: FIXED** — commit `1576d6c` on `tenshimatt/hugh-manatee-dist`. Applied before run 4 (2026-04-30).
