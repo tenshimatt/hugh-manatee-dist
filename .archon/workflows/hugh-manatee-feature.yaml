@@ -814,6 +814,14 @@ nodes:
       exist in this repo. If the plan described something web-shaped, test only
       the React Native screen or Worker endpoint that maps to it.
 
+      ## PACKAGE.JSON REQUIRED (Bug HM-E)
+      Before writing any spec files, check whether a `package.json` exists
+      at the repo root. If it does NOT exist, Write one now:
+        path: `package.json`
+        content: `{"name":"hugh-manatee-tests","private":true,"devDependencies":{"@playwright/test":"^1.44.0"}}`
+      Then run `bun install` so the playwright binary is available.
+      This is MANDATORY — validate will fail without it.
+
       After all Writes, run `bun x playwright test --project=iphone-15
       tests/e2e/<your-files>` and confirm RED. If green/skipped, fix.
 
