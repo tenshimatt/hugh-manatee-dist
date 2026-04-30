@@ -18,6 +18,7 @@
       "bundleIdentifier": "com.beyondpandora.hughmanatee",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Hugh listens so you can record your memories by voice.",
+        "NSCameraUsageDescription": "Camera access is not used by Hugh Manatee. This entry is required because a third-party library (WebRTC) references camera APIs.",
         "NSContactsUsageDescription": "Used only once to pre-fill your name from this phone. Not stored or sent.",
         "ITSAppUsesNonExemptEncryption": false
       }
