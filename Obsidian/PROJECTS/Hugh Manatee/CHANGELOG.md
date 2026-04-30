@@ -1,5 +1,14 @@
 # Hugh Manatee — Changelog
 
+## 2026-04-30 — TestFlight build uploaded + run 5 in progress
+
+- **TestFlight**: App Store-signed IPA (v1.0.0, Apr 24 archive) uploaded to App Store Connect via `xcrun altool`. Delivery UUID: `d91e86dd-f57d-4b7c-9e67-3f6c226d6c7b`. Build will appear in TestFlight after Apple processing (~10–30 min).
+- **Root cause of missing TestFlight**: builds were signed with AdHoc profile, not App Store. Fixed by exporting existing xcarchive with App Store profile (`HughManatee AppStore`) using system rsync (Homebrew rsync 3.4.1 doesn't support Apple's `-E` flag).
+- **App Store Connect API credentials** now stored in `.env.local` and CT 111 poller env for autonomous future uploads.
+- **Run 5 triggered**: Bug HM-E fixed (test-first now creates `package.json` at repo root). Run 4 correctly implemented Dynamic Type (29 `maxFontSizeMultiplier={1.15}` props) but validate failed at bun install.
+
+---
+
 ## 2026-04-30 — Pandomagic run 4 in progress (A11Y-01 Dynamic Type XXXL)
 
 Archon workflow HUGH-35 triggered for A11Y-01 (Dynamic Type support up to XXXL across all screens). Three prior runs exposed and fixed four harness-level bugs:

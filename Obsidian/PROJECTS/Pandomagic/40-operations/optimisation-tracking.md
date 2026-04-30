@@ -240,3 +240,15 @@ gate-plan polled for any `:approve:` comment on the ticket and found the comment
 **Fix:** Switch architect-review to `provider: deepseek, model: deepseek-v4-pro`. DeepSeek nodes use a direct HTTP provider (no Claude Code subprocess), so the 60s timeout cannot trigger.
 
 **Status: FIXED** — commit `1576d6c` on `tenshimatt/hugh-manatee-dist`. Applied before run 4 (2026-04-30).
+
+---
+
+### Bug HM-E: test-first creates Playwright specs but no `package.json` at repo root
+
+validate runs `bun install` at the workspace root. test-first wrote `playwright.config.ts`, `tests/e2e/`, and `node_modules/` at root but never created `package.json`, so `bun install` exited immediately with "could not find a package.json file".
+
+Run 4 result: implement was correct (29 `maxFontSizeMultiplier={1.15}` props across all screens), but validate failed at the bun install step before tests could run.
+
+**Fix:** Added "PACKAGE.JSON REQUIRED" instruction to `test-first` prompt: check for `package.json` at repo root; if absent, Write one with `@playwright/test` as dev dependency before writing any spec files.
+
+**Status: FIXED** — commit `dbade06` on `tenshimatt/hugh-manatee-dist`. Run 5 triggered (2026-04-30).
