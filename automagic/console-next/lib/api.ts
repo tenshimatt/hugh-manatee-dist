@@ -224,7 +224,6 @@ export const api = {
 export type LlmConfig = {
   provider: string | null;
   model: string | null;
-  apiKeyHint: string | null;
 };
 
 export const admin = {

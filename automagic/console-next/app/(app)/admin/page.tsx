@@ -1,25 +1,10 @@
 import { admin } from "@/lib/api";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { ExcludedProjectsPanel } from "@/components/admin/ExcludedProjectsPanel";
-import { Settings, Brain, Key, ShieldOff } from "lucide-react";
+import { LlmConfigPanel } from "@/components/admin/LlmConfigPanel";
+import { Settings, Brain, ShieldOff } from "lucide-react";
 
 export const dynamic = "force-dynamic";
-
-function maskKey(key: string | null): string {
-  if (!key) return "—";
-  if (key.length <= 8) return "••••••••";
-  return key.slice(0, 6) + "••••••••••••" + key.slice(-4);
-}
-
-function providerColor(provider: string | null): string {
-  if (!provider) return "secondary";
-  const p = provider.toLowerCase();
-  if (p.includes("deepseek")) return "default";
-  if (p.includes("anthropic")) return "secondary";
-  if (p.includes("openai")) return "default";
-  return "secondary";
-}
 
 export default async function AdminPage() {
   const [llmConfig, excludedProjects] = await Promise.all([
@@ -39,7 +24,6 @@ export default async function AdminPage() {
         </p>
       </header>
 
-      {/* AI Provider Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -48,52 +32,12 @@ export default async function AdminPage() {
           </CardTitle>
         </CardHeader>
         <CardBody>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-muted font-semibold mb-1">
-                Provider
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant={providerColor(llmConfig?.provider ?? null) as "default" | "secondary"}>
-                  {llmConfig?.provider ?? "Unknown"}
-                </Badge>
-              </div>
-            </div>
-
-            <div>
-              <div className="text-xs uppercase tracking-wider text-muted font-semibold mb-1">
-                Model
-              </div>
-              <div className="font-mono text-sm text-foreground">
-                {llmConfig?.model ?? "—"}
-              </div>
-              <div className="text-xs text-muted mt-0.5">
-                Routed via LiteLLM gateway (CT 123)
-              </div>
-            </div>
-
-            <div>
-              <div className="text-xs uppercase tracking-wider text-muted font-semibold mb-1 flex items-center gap-1">
-                <Key className="w-3 h-3" />
-                API Key
-              </div>
-              <div className="font-mono text-sm text-foreground">
-                {maskKey(llmConfig?.apiKeyHint ?? null)}
-              </div>
-              <div className="text-xs text-muted mt-0.5">
-                Stored in LiteLLM env on CT 123
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-border text-xs text-muted">
-            Model is read from the active n8n WF-1a workflow nodes. To change provider/model,
-            update the LiteLLM config on CT 123 and patch the model name in the n8n workflow.
-          </div>
+          <LlmConfigPanel
+            initial={{ provider: llmConfig?.provider ?? null, model: llmConfig?.model ?? null }}
+          />
         </CardBody>
       </Card>
 
-      {/* Excluded Projects Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

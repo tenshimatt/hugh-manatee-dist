@@ -267,14 +267,34 @@ function writeExcludedProjects(list) {
   fs.writeFileSync(EXCLUDED_PROJECTS_PATH, JSON.stringify(list, null, 2) + '\n');
 }
 
-// GET /api/admin/llm-config — reads active model from most recent n8n WF-1a execution
-app.get('/api/admin/llm-config', (req, res) => {
-  const n8nDb = n8n.getN8nDb ? n8n.getN8nDb() : null;
-  let model = null;
-  let provider = null;
-  let apiKeyHint = null;
+const LLM_CONFIG_PATH = path.join(__dirname, 'data', 'llm-config.json');
 
-  // Parse model name from workflow_entity nodes (the live config)
+function readLlmConfig() {
+  try {
+    if (fs.existsSync(LLM_CONFIG_PATH)) {
+      return JSON.parse(fs.readFileSync(LLM_CONFIG_PATH, 'utf8'));
+    }
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
+function deriveProvider(model) {
+  if (!model) return null;
+  if (model.startsWith('deepseek')) return 'DeepSeek';
+  if (model.startsWith('anthropic') || model.includes('claude')) return 'Anthropic';
+  if (model.startsWith('gpt') || model.startsWith('o3') || model.startsWith('o1')) return 'OpenAI';
+  if (model.startsWith('gemini')) return 'Google';
+  if (model.startsWith('ollama')) return 'Ollama';
+  return 'LiteLLM';
+}
+
+// GET /api/admin/llm-config — local config takes precedence; falls back to n8n workflow parse
+app.get('/api/admin/llm-config', (req, res) => {
+  const saved = readLlmConfig();
+  if (saved) return res.json({ provider: saved.provider, model: saved.model });
+
+  // Fallback: parse model from rsynced n8n.sqlite
+  let model = null;
   try {
     const n8nPath = path.join(__dirname, 'data', 'n8n.sqlite');
     if (fs.existsSync(n8nPath)) {
@@ -289,10 +309,7 @@ app.get('/api/admin/llm-config', (req, res) => {
         for (const node of nodes) {
           const body = node.parameters?.jsonBody || node.parameters?.jsCode || '';
           const match = String(body).match(/"model"\s*:\s*"([^"]+)"/);
-          if (match) {
-            model = match[1];
-            break;
-          }
+          if (match) { model = match[1]; break; }
         }
       }
     }
@@ -300,25 +317,16 @@ app.get('/api/admin/llm-config', (req, res) => {
     console.warn('[admin] Could not read n8n model config:', e.message);
   }
 
-  // Derive provider from model string
-  if (model) {
-    if (model.startsWith('deepseek')) provider = 'DeepSeek';
-    else if (model.startsWith('anthropic') || model.includes('claude')) provider = 'Anthropic';
-    else if (model.startsWith('gpt') || model.includes('openai')) provider = 'OpenAI';
-    else if (model.startsWith('gemini')) provider = 'Google';
-    else provider = 'LiteLLM';
-  }
+  res.json({ provider: deriveProvider(model), model });
+});
 
-  // Read masked API key from LiteLLM env on CT 123 — we store a local copy hint
-  const envPath = path.join(__dirname, 'data', 'provider-key-hint.json');
-  try {
-    if (fs.existsSync(envPath)) {
-      const hint = JSON.parse(fs.readFileSync(envPath, 'utf8'));
-      apiKeyHint = hint.apiKeyHint;
-    }
-  } catch (e) { /* ignore */ }
-
-  res.json({ provider, model, apiKeyHint });
+// POST /api/admin/llm-config — save provider + model selection
+app.post('/api/admin/llm-config', (req, res) => {
+  const { provider, model } = req.body;
+  if (!provider || !model) return res.status(400).json({ error: 'provider and model required' });
+  fs.writeFileSync(LLM_CONFIG_PATH, JSON.stringify({ provider, model }, null, 2) + '\n');
+  console.log('[admin] LLM config saved:', { provider, model });
+  res.json({ provider, model });
 });
 
 // GET /api/admin/excluded-projects
