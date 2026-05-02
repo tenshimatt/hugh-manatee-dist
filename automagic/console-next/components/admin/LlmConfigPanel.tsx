@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Zap, Database } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import type { ModelPricing } from "@/lib/api";
 
 type Tone = "sky" | "teal" | "gold" | "green" | "slate";
 
@@ -17,8 +18,8 @@ const PROVIDERS: Record<string, Provider> = {
     label: "DeepSeek",
     tone: "teal",
     models: [
-      { value: "deepseek-v4-pro", label: "DeepSeek V4 Pro (deepseek-chat)" },
-      { value: "deepseek/deepseek-reasoner", label: "DeepSeek R1 (reasoner)" },
+      { value: "deepseek-v4-pro", label: "DeepSeek V4 Pro" },
+      { value: "deepseek/deepseek-reasoner", label: "DeepSeek R1" },
     ],
   },
   Anthropic: {
@@ -51,9 +52,9 @@ const PROVIDERS: Record<string, Provider> = {
     label: "Ollama (local)",
     tone: "slate",
     models: [
-      { value: "ollama_chat/gpt-oss:20b", label: "GPT-OSS 20B (CT 146)" },
-      { value: "ollama_chat/qwen3:8b", label: "Qwen3 8B (CT 146)" },
-      { value: "ollama_chat/gemma4:e4b", label: "Gemma4 E4B (CT 146)" },
+      { value: "ollama_chat/gpt-oss:20b", label: "GPT-OSS 20B" },
+      { value: "ollama_chat/qwen3:8b", label: "Qwen3 8B" },
+      { value: "ollama_chat/gemma4:e4b", label: "Gemma4 E4B" },
     ],
   },
 };
@@ -68,11 +69,42 @@ function detectProvider(model: string | null): string {
   return "DeepSeek";
 }
 
-interface Props {
-  initial: { provider: string | null; model: string | null };
+function PriceTag({ modelId, pricing }: { modelId: string; pricing: ModelPricing }) {
+  const p = pricing[modelId];
+  if (!p) return null;
+
+  // Ollama = free
+  if (p.input === 0 && p.output === 0) {
+    return (
+      <span className="flex items-center gap-1 text-xs text-emerald-400 font-medium">
+        <Zap className="w-3 h-3" />
+        Free
+      </span>
+    );
+  }
+
+  const fmt = (n: number) =>
+    n >= 1 ? `$${n.toFixed(2)}` : n >= 0.01 ? `$${n.toFixed(3)}` : `$${n.toFixed(4)}`;
+
+  return (
+    <span className="flex items-center gap-1.5 text-xs text-muted">
+      <span title="Input price per 1M tokens" className="text-sky-brand/80">{fmt(p.input)}</span>
+      <span className="text-muted/50">·</span>
+      <span title="Output price per 1M tokens" className="text-amber-400/80">{fmt(p.output)}</span>
+      <span className="text-muted/50">/1M</span>
+      {p.source === "provider-docs" && (
+        <Database className="w-2.5 h-2.5 text-muted/40" aria-label="Pricing from provider docs" />
+      )}
+    </span>
+  );
 }
 
-export function LlmConfigPanel({ initial }: Props) {
+interface Props {
+  initial: { provider: string | null; model: string | null };
+  pricing: ModelPricing;
+}
+
+export function LlmConfigPanel({ initial, pricing }: Props) {
   const initProvider = initial.provider ?? detectProvider(initial.model);
   const [provider, setProvider] = useState(initProvider);
   const [model, setModel] = useState(
@@ -100,7 +132,7 @@ export function LlmConfigPanel({ initial }: Props) {
       });
       if (!r.ok) {
         const body = await r.json().catch(() => ({}));
-        throw new Error(body.error ?? `HTTP ${r.status}`);
+        throw new Error((body as { error?: string }).error ?? `HTTP ${r.status}`);
       }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -149,26 +181,33 @@ export function LlmConfigPanel({ initial }: Props) {
               key={m.value}
               onClick={() => { setModel(m.value); setSaved(false); }}
               className={[
-                "flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition-all",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all",
                 model === m.value
                   ? "bg-sky-brand/10 border-sky-brand text-foreground"
                   : "bg-surface border-border text-muted-strong hover:bg-surface-alt",
               ].join(" ")}
             >
               <span className="flex-1 text-sm">{m.label}</span>
-              <span className="font-mono text-xs text-muted">{m.value}</span>
+              <span className="font-mono text-xs text-muted hidden sm:block">{m.value}</span>
+              <PriceTag modelId={m.value} pricing={pricing} />
               {model === m.value && (
                 <Check className="w-3.5 h-3.5 text-sky-brand flex-shrink-0" />
               )}
             </button>
           ))}
         </div>
+        <p className="text-[10px] text-muted mt-2 flex items-center gap-1">
+          <span className="text-sky-brand/80 font-medium">Blue</span> = input &nbsp;·&nbsp;
+          <span className="text-amber-400/80 font-medium">Amber</span> = output &nbsp;·&nbsp;
+          per 1M tokens &nbsp;·&nbsp;
+          <Database className="w-2.5 h-2.5 inline" /> = from provider docs, not LiteLLM
+        </p>
       </div>
 
-      {/* Current selection summary + save */}
+      {/* Current selection + save */}
       <div className="flex items-center gap-3 pt-1">
         <Badge tone={pDef?.tone ?? "slate"}>{provider}</Badge>
-        <span className="font-mono text-xs text-muted">{model}</span>
+        <span className="font-mono text-xs text-muted truncate">{model}</span>
         <div className="flex-1" />
         <button
           onClick={save}
@@ -189,7 +228,7 @@ export function LlmConfigPanel({ initial }: Props) {
 
       <p className="text-xs text-muted border-t border-border pt-3">
         Saves the active provider and model. To apply to the live pipeline, update the
-        model string in n8n WF-1a and WF-1b nodes (LiteLLM — Summarise / Build Title Payload / Build Tag Payload).
+        model string in n8n WF-1a and WF-1b nodes.
       </p>
     </div>
   );

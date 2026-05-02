@@ -226,8 +226,15 @@ export type LlmConfig = {
   model: string | null;
 };
 
+export type ModelPricing = Record<string, {
+  input: number;
+  output: number;
+  source: 'litellm' | 'provider-docs';
+}>;
+
 export const admin = {
   llmConfig: () => apiFetch<LlmConfig>('/api/admin/llm-config'),
+  modelPricing: () => apiFetch<ModelPricing>('/api/admin/model-pricing'),
   excludedProjects: () => apiFetch<string[]>('/api/admin/excluded-projects'),
   addExcluded: (identifier: string) =>
     apiFetch<string[]>('/api/admin/excluded-projects', {

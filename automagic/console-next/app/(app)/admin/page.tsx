@@ -1,4 +1,4 @@
-import { admin } from "@/lib/api";
+import { admin, type ModelPricing } from "@/lib/api";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExcludedProjectsPanel } from "@/components/admin/ExcludedProjectsPanel";
 import { LlmConfigPanel } from "@/components/admin/LlmConfigPanel";
@@ -7,9 +7,10 @@ import { Settings, Brain, ShieldOff } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const [llmConfig, excludedProjects] = await Promise.all([
+  const [llmConfig, excludedProjects, modelPricing] = await Promise.all([
     admin.llmConfig(),
     admin.excludedProjects(),
+    admin.modelPricing(),
   ]);
 
   return (
@@ -34,6 +35,7 @@ export default async function AdminPage() {
         <CardBody>
           <LlmConfigPanel
             initial={{ provider: llmConfig?.provider ?? null, model: llmConfig?.model ?? null }}
+            pricing={modelPricing ?? {}}
           />
         </CardBody>
       </Card>

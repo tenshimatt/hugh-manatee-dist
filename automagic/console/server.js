@@ -252,6 +252,16 @@ app.get('/api/pipeline', (req, res) => {
 
 // --------------- Admin Routes ---------------
 
+// Static pricing fallback for models not covered by LiteLLM's cost DB (USD per 1M tokens)
+const STATIC_PRICING = {
+  'deepseek/deepseek-reasoner':              { input: 0.55,  output: 2.19 },
+  'gemini/gemini-2.5-pro-preview-03-25':     { input: 1.25,  output: 10.0 },
+  'gemini/gemini-2.5-flash-preview-04-17':   { input: 0.15,  output: 0.60 },
+  'ollama_chat/gpt-oss:20b':                 { input: 0,     output: 0    },
+  'ollama_chat/qwen3:8b':                    { input: 0,     output: 0    },
+  'ollama_chat/gemma4:e4b':                  { input: 0,     output: 0    },
+};
+
 const EXCLUDED_PROJECTS_PATH = path.join(__dirname, 'data', 'excluded-projects.json');
 
 function readExcludedProjects() {
@@ -327,6 +337,58 @@ app.post('/api/admin/llm-config', (req, res) => {
   fs.writeFileSync(LLM_CONFIG_PATH, JSON.stringify({ provider, model }, null, 2) + '\n');
   console.log('[admin] LLM config saved:', { provider, model });
   res.json({ provider, model });
+});
+
+// GET /api/admin/model-pricing — fetch live costs from LiteLLM, merge static fallbacks
+app.get('/api/admin/model-pricing', async (req, res) => {
+  const LITELLM_URL = process.env.LITELLM_URL || 'http://10.90.10.23:4000';
+  const LITELLM_KEY = process.env.LITELLM_MASTER_KEY || 'sk-admin-1234';
+
+  // Build lookup: litellm model_name → {input, output} per 1M tokens
+  const liveMap = {};
+  try {
+    const r = await fetch(`${LITELLM_URL}/model/info`, {
+      headers: { Authorization: `Bearer ${LITELLM_KEY}` },
+    });
+    if (r.ok) {
+      const data = await r.json();
+      for (const m of data.data || []) {
+        const inp = m.model_info?.input_cost_per_token;
+        const out = m.model_info?.output_cost_per_token;
+        if (inp != null && out != null) {
+          liveMap[m.model_name] = {
+            input: Math.round(inp * 1e6 * 10000) / 10000,
+            output: Math.round(out * 1e6 * 10000) / 10000,
+            source: 'litellm',
+          };
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[admin] LiteLLM pricing fetch failed:', e.message);
+  }
+
+  // For each model in our UI: try exact match, then openai/model fallback, then static
+  const MODEL_IDS = [
+    'deepseek-v4-pro', 'deepseek/deepseek-reasoner',
+    'anthropic/claude-opus-4-7', 'anthropic/claude-sonnet-4-6', 'anthropic/claude-haiku-4-5-20251001',
+    'gpt-4o', 'gpt-4o-mini', 'o3-mini',
+    'gemini/gemini-2.5-pro-preview-03-25', 'gemini/gemini-2.5-flash-preview-04-17',
+    'ollama_chat/gpt-oss:20b', 'ollama_chat/qwen3:8b', 'ollama_chat/gemma4:e4b',
+  ];
+
+  const result = {};
+  for (const id of MODEL_IDS) {
+    if (liveMap[id]) {
+      result[id] = liveMap[id];
+    } else if (liveMap[`openai/${id}`]) {
+      result[id] = { ...liveMap[`openai/${id}`], source: 'litellm' };
+    } else if (STATIC_PRICING[id]) {
+      result[id] = { ...STATIC_PRICING[id], source: 'provider-docs' };
+    }
+  }
+
+  res.json(result);
 });
 
 // GET /api/admin/excluded-projects
