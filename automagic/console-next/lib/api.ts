@@ -221,6 +221,25 @@ export const api = {
   },
 };
 
+export type LlmConfig = {
+  provider: string | null;
+  model: string | null;
+  apiKeyHint: string | null;
+};
+
+export const admin = {
+  llmConfig: () => apiFetch<LlmConfig>('/api/admin/llm-config'),
+  excludedProjects: () => apiFetch<string[]>('/api/admin/excluded-projects'),
+  addExcluded: (identifier: string) =>
+    apiFetch<string[]>('/api/admin/excluded-projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier }),
+    }),
+  removeExcluded: (identifier: string) =>
+    apiFetch<string[]>(`/api/admin/excluded-projects/${encodeURIComponent(identifier)}`, { method: 'DELETE' }),
+};
+
 export function parseTags(raw: string | null | undefined): string[] {
   if (!raw) return [];
   try {

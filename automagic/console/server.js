@@ -1,6 +1,7 @@
 // Automagic Console — Express server with API routes and SSE
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cron = require('node-cron');
 const { getDb } = require('./lib/db');
 const { search } = require('./lib/search');
@@ -247,6 +248,112 @@ app.get('/api/pipeline', (req, res) => {
   const breakdown = n8n.getWorkflowBreakdown(24);
 
   res.json({ executions, stats, breakdown });
+});
+
+// --------------- Admin Routes ---------------
+
+const EXCLUDED_PROJECTS_PATH = path.join(__dirname, 'data', 'excluded-projects.json');
+
+function readExcludedProjects() {
+  try {
+    if (fs.existsSync(EXCLUDED_PROJECTS_PATH)) {
+      return JSON.parse(fs.readFileSync(EXCLUDED_PROJECTS_PATH, 'utf8'));
+    }
+  } catch (e) { /* ignore */ }
+  return [];
+}
+
+function writeExcludedProjects(list) {
+  fs.writeFileSync(EXCLUDED_PROJECTS_PATH, JSON.stringify(list, null, 2) + '\n');
+}
+
+// GET /api/admin/llm-config — reads active model from most recent n8n WF-1a execution
+app.get('/api/admin/llm-config', (req, res) => {
+  const n8nDb = n8n.getN8nDb ? n8n.getN8nDb() : null;
+  let model = null;
+  let provider = null;
+  let apiKeyHint = null;
+
+  // Parse model name from workflow_entity nodes (the live config)
+  try {
+    const n8nPath = path.join(__dirname, 'data', 'n8n.sqlite');
+    if (fs.existsSync(n8nPath)) {
+      const Database = require('better-sqlite3');
+      const ndb = new Database(n8nPath, { readonly: true });
+      const row = ndb.prepare(
+        `SELECT nodes FROM workflow_entity WHERE name LIKE '%WF-1a%' OR name LIKE '%Transcribe%' ORDER BY updatedAt DESC LIMIT 1`
+      ).get();
+      ndb.close();
+      if (row) {
+        const nodes = JSON.parse(row.nodes);
+        for (const node of nodes) {
+          const body = node.parameters?.jsonBody || node.parameters?.jsCode || '';
+          const match = String(body).match(/"model"\s*:\s*"([^"]+)"/);
+          if (match) {
+            model = match[1];
+            break;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[admin] Could not read n8n model config:', e.message);
+  }
+
+  // Derive provider from model string
+  if (model) {
+    if (model.startsWith('deepseek')) provider = 'DeepSeek';
+    else if (model.startsWith('anthropic') || model.includes('claude')) provider = 'Anthropic';
+    else if (model.startsWith('gpt') || model.includes('openai')) provider = 'OpenAI';
+    else if (model.startsWith('gemini')) provider = 'Google';
+    else provider = 'LiteLLM';
+  }
+
+  // Read masked API key from LiteLLM env on CT 123 — we store a local copy hint
+  const envPath = path.join(__dirname, 'data', 'provider-key-hint.json');
+  try {
+    if (fs.existsSync(envPath)) {
+      const hint = JSON.parse(fs.readFileSync(envPath, 'utf8'));
+      apiKeyHint = hint.apiKeyHint;
+    }
+  } catch (e) { /* ignore */ }
+
+  res.json({ provider, model, apiKeyHint });
+});
+
+// GET /api/admin/excluded-projects
+app.get('/api/admin/excluded-projects', (req, res) => {
+  res.json(readExcludedProjects());
+});
+
+// POST /api/admin/excluded-projects — add an identifier
+app.post('/api/admin/excluded-projects', (req, res) => {
+  const { identifier } = req.body;
+  if (!identifier || typeof identifier !== 'string') {
+    return res.status(400).json({ error: 'identifier required' });
+  }
+  const list = readExcludedProjects();
+  if (!list.includes(identifier)) {
+    list.push(identifier);
+    writeExcludedProjects(list);
+    // Also remove from SQLite immediately
+    try {
+      const db = getDb();
+      const proj = db.prepare('SELECT id FROM plane_projects WHERE identifier = ?').get(identifier);
+      if (proj) {
+        db.prepare('DELETE FROM plane_issues WHERE project_id = ?').run(proj.id);
+        db.prepare('DELETE FROM plane_projects WHERE identifier = ?').run(identifier);
+      }
+    } catch (e) { /* ignore */ }
+  }
+  res.json(list);
+});
+
+// DELETE /api/admin/excluded-projects/:identifier — remove from exclusion list
+app.delete('/api/admin/excluded-projects/:identifier', (req, res) => {
+  const list = readExcludedProjects().filter(id => id !== req.params.identifier);
+  writeExcludedProjects(list);
+  res.json(list);
 });
 
 // SSE endpoint for live pipeline status

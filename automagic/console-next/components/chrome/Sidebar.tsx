@@ -9,6 +9,7 @@ import {
   Activity,
   Menu,
   Sparkles,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ const NAV = [
   { href: "/transcriptions", icon: FileText, label: "Transcriptions" },
   { href: "/projects", icon: FolderKanban, label: "Projects" },
   { href: "/pipeline", icon: Activity, label: "Pipeline" },
+  { href: "/admin", icon: Settings, label: "Admin" },
 ];
 
 export function Sidebar({
@@ -75,7 +77,7 @@ export function Sidebar({
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-strong">
               <Sparkles className="w-3.5 h-3.5 text-gold-brand" />
-              <span>n8n · Claude Sonnet · Whisper</span>
+              <span>n8n · DeepSeek · Whisper</span>
             </div>
           </div>
         )}
