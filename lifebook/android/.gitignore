@@ -1,0 +1,28 @@
+# Secrets — NEVER commit keys, tokens, or credentials
+*.p8
+*.jks
+*.keystore
+google-services.json
+.env
+.env.*
+!env.example
+local.properties
+credentials.json
+
+# Build output
+/build/
+/app/build/
+*.apk
+*.aab
+*.ap_
+
+# IDE
+.idea/
+*.iml
+.gradle/
+captures/
+.externalNativeBuild/
+
+# OS
+.DS_Store
+Thumbs.db
